@@ -1,11 +1,3 @@
-/*
-var cookie = new Cookie("cookieName");
-	var val = cookie.value("setToValue");
-	
-TODO:
-	* Allow data structure: {key:val,key:[val1,val2]} and transparent in/out
-
-*/
 
 
 
@@ -61,6 +53,7 @@ Cookie.prototype = {
 		function encodeData(data) {
 			switch(typeof data) {
 				case "object":
+					if(!data) return ""; //if null
 					var strVal = "";
 					var idx = 0;
 					var isArray = (data.constructor == Array);
