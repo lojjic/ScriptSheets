@@ -14,10 +14,9 @@ Example:
 
 
 
-function ScriptSheet(title, script, enabled) {
+function ScriptSheet(title, script) {
 	this.title = title;
 	this.script = window[script];
-	if(enabled) this.enable();
 	ScriptSheet.instances[ScriptSheet.instances.length] = this;
 }
 ScriptSheet.prototype = {
@@ -31,45 +30,55 @@ ScriptSheet.prototype = {
 ScriptSheet.instances = [];
 ScriptSheet.getPreferredStyle = function() {
 	var i, lnk, rel, ttl;
+	var lnks = document.getElementsByTagName("link");
+	
 	//look for cookie first:
 	if(typeof Cookie == "function") {
 		ttl = new Cookie("preferredStyle").getValue();
-		if(ttl) return ttl;
+		if(ttl) { //make sure the cookie value is an actual sheet title:
+			for(i=0; i<lnks.length; i++) if(lnks[i].getAttribute("title") == ttl) return ttl;
+		}
 	}
 	
 	//else get first titled sheet:
-	for(i=0; (lnk=document.getElementsByTagName("link")[i]); i++) {
-		rel = lnk.getAttribute("rel");
-		ttl = lnk.getAttribute("title");
+	for(i=0; i<lnks.length; i++) {
+		rel = lnks[i].getAttribute("rel");
+		ttl = lnks[i].getAttribute("title");
 		if(rel.match(/^\s*(style|script)sheet\s*$/i) && ttl) return ttl;
 	}
 	return null;
 };
 ScriptSheet.switchTo = function(title) {
-	var inst, i; 
-	for(i=0; (inst=ScriptSheet.instances[i]); i++) {
-		if(inst.title == title || !title) inst.enable();
-		else inst.disable();
+	var i, lnk, rel, ttl, hrf, match;
+	var scripts = [];
+	for(i=0; (lnk=document.getElementsByTagName("link")[i]); i++) {
+		rel = lnk.getAttribute("rel");
+		ttl = lnk.getAttribute("title");
+		hrf = lnk.getAttribute("href");
+		if(rel && (match=rel.match(/^\s*((alternate)\s+)?(script|style)sheet\s*$/i)) && hrf) {
+			if(match[3]=="style") { //handle stylesheets:
+				lnk.disabled = !(ttl == title || !ttl);
+			} else {
+				hrf = hrf.substring(hrf.indexOf("#")+1);
+				if(!lnk.scriptSheet) lnk.scriptSheet = new ScriptSheet(ttl, hrf);
+				lnk.scriptSheet.disable();
+				if(ttl == title || !ttl) scripts[scripts.length] = lnk.scriptSheet; //add to list
+			}
+		}
 	}
+	//enable all matching scripts:
+	for(i=0; i<scripts.length; i++) scripts[i].enable();
+	
+	//remember choice:
 	if(typeof Cookie == "function") {
 		var cook = new Cookie("preferredStyle");
 		cook.setLifespan(60*60*24*365); //1 year
 		cook.setValue(title);
 	}
 };
-
-
-function onScriptSheetDocLoaded() {
-	var i, lnk, rel, ttl, scr;
+ScriptSheet.onLoad = function() {
 	var pref = ScriptSheet.getPreferredStyle();
-	// XXX - move this all into .switchTo() and have it handle stylesheets too
-	for(var i=0; (lnk=document.getElementsByTagName("link")[i]); i++) {
-		rel = lnk.getAttribute("rel");
-		ttl = lnk.getAttribute("title");
-		scr = lnk.getAttribute("href");
-		if(rel && rel.match(/^\s*(alternate\s+)?scriptsheet\s*$/i) && scr) {
-			new ScriptSheet(ttl, scr, (ttl == pref || !ttl));
-		}
-	}
+	ScriptSheet.switchTo(pref);
 }
-window.addEventListener("load",onScriptSheetDocLoaded,false);
+
+window.addEventListener("load",ScriptSheet.onLoad,false);
