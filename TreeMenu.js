@@ -3,6 +3,7 @@
 
 TODO:
 	* Make keyboard-navigable (insert <a>s around branch labels)
+	* Don't construct collapser/outline elements on a node until that node is shown, to improve performance in large lists
 
 ISSUES:
 	* If <li> IDs are different across pages, persistence will be wrong (maybe associate URIs with IDs?)
@@ -66,7 +67,18 @@ function TreeMenuNode(elt, open) {
 TreeMenuNode.prototype = {
 	create : function() {
 		var v, h, i, j;
-		var elt = this.element;
+		var elt = this.element;		
+
+		//create dotted lines:
+		v = this.outlineVert = document.createElement("span");
+			v.className = "tree-menu-outline-vertical";
+			var isLast=true; var e=elt; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
+			if(isLast) v.className += " last-child-outline";
+			else if(v.style.setExpression) v.style.setExpression("height","this.parentNode.offsetHeight"); //hack to make IE set height to 100% of <li>
+		h = this.outlineHoriz = document.createElement("span");
+			h.className = "tree-menu-outline-horizontal";
+		elt.insertBefore(v, elt.firstChild);
+		elt.insertBefore(h, elt.firstChild);
 		
 		var subs = elt.getElementsByTagName("ul");
 		if(subs.length) {
@@ -93,17 +105,6 @@ TreeMenuNode.prototype = {
 			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
 			elt.insertBefore(this.icon, elt.firstChild);
 		}
-
-		//create dotted lines:
-		v = this.outlineVert = document.createElement("span");
-			v.className = "tree-menu-outline-vertical";
-			var isLast=true; var e=elt; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
-			if(isLast) v.className += " last-child-outline";
-			else if(v.style.setExpression) v.style.setExpression("height","this.parentNode.offsetHeight"); //hack to make IE set height to 100% of <li>
-		h = this.outlineHoriz = document.createElement("span");
-			h.className = "tree-menu-outline-horizontal";
-		elt.insertBefore(v, elt.firstChild);
-		elt.insertBefore(h, elt.firstChild);
 	},
 	
 	onClick : function(evt) {
