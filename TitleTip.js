@@ -39,14 +39,27 @@ TitleTipPopup.prototype.buildTip = function(evt) {
 	var elt = this.element = evt.currentTarget;
 	var ttl = this.title = elt.title;
 	elt.title = ""; //temp. remove title to prevent browser tooltip
-	var lnk=elt; while(lnk=lnk.parentNode) if(lnk.href) {window.status = lnk.href; break;} //if within a link, put href in status bar
-
+	
 	var thisRef = this;
 	elt.addEventListener("mousemove",this.mousemoveHandler=function(evt){thisRef.setPosition(evt);},false);
 	elt.addEventListener("mouseout",this.mouseoutHandler=function(){thisRef.destroy()},false);
 
 	var node = this.popupNode;
 	node.appendChild(document.createTextNode(ttl));
+	
+	//if within link, put href in status bar and tip
+	var lnk=elt; 
+	while(lnk) {
+		if(lnk.href) {
+			window.status = lnk.href;
+			var tipHref = document.createElement("div")
+				tipHref.className = "titletip-href";
+				tipHref.appendChild(document.createTextNode(lnk.href));
+			node.appendChild(tipHref);
+			break;
+		}
+		lnk=lnk.parentNode;
+	}
 }
 TitleTipPopup.prototype._tmpSetPos = TitleTipPopup.prototype.setPosition;
 TitleTipPopup.prototype.setPosition = function(evt) {
