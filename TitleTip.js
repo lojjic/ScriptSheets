@@ -53,7 +53,7 @@ TitleTipPopup.prototype.buildTip = function(evt) {
 	var elt = this.element = evt.currentTarget;
 	var ttl = this.title = elt.title;
 	elt.title = ""; //temp. remove title to prevent browser tooltip
-	var lnk=elt; while(lnk=lnk.parentNode) if(lnk.href) window.status = lnk.href; //if within a link, put href in status bar
+	var lnk=elt; while(lnk=lnk.parentNode) if(lnk.href) {window.status = lnk.href; break;} //if within a link, put href in status bar
 
 	var thisRef = this;
 	elt.addEventListener("mousemove",this.mousemoveHandler=function(evt){thisRef.setPosition(evt);},false);
