@@ -1,9 +1,11 @@
 .osx-bar {background:#F0F0F0; border:1px solid #9F9F9F; margin:0; padding:0;}
 	.osx-bar li {list-style-image:url(assets/icon-48x48.png);}
 	.osx-bar li li {list-style-image:none;}
-.osx-bar-popup-label {white-space:nowrap;}
-.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; margin:0; padding:0; padding-bottom:.1em;}
-	.osx-bar-popup-submenu-label {font-weight:bold; border-bottom:1px solid #999; margin:0; padding:.2em .5em; background:#EEE;}
-	.osx-bar-popup-submenu ul, .osx-bar-popup-submenu li {display:block; margin:0; padding:0;}
-	.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
+.osx-bar-popup-label {white-space:nowrap; margin-top:1.5em; padding:0px 12px; border:double #999; border-width:3px 0; background:#FFF;}
+.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; margin:0; padding:0;}
+	.osx-bar-popup-submenu-label {font-weight:bold; border-bottom:1px solid #999; margin:0; padding:3px 6px; background:#EEE;}
+	.osx-bar-popup-submenu ul {margin:3px 0 0; padding:0;}
+	.osx-bar-popup-submenu li {display:block; margin:0; padding:3px 0 3px 6px; border-bottom:1px solid #EEE;}
+	.osx-bar-popup-submenu li li {border-left:4px solid #CCC;}
+	.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; margin:-3px 0 -3px -6px; padding:3px 1em 3px 6px; color:#000; text-decoration:none;}
 	.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
