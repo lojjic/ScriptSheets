@@ -5,7 +5,8 @@
 **  This class provides a way to switch between 
 **  "script sheets" much like switching between 
 **  CSS style sheets. The preferred style choice
-**  is persisted in a cookie.
+**  is persisted. For usage and details see 
+**  ScriptSheet-doc.html.
 */
 
 function ScriptSheet(title, script) {
@@ -29,8 +30,9 @@ ScriptSheet.getPreferredStyle = function() {
 	//look for cookie first:
 	if(window.Cookie) {
 		ttl = new Cookie("preferredStyle").getValue();
-		if(ttl) { //make sure the cookie value is an actual sheet title:
-			for(i=0; (lnk=lnks[i]); i++) if(lnk.getAttribute("title") == ttl) return ttl;
+		if(ttl=="[basic]" || ttl=="[null]") return ttl;
+		if(ttl) { //make sure cookie value is an actual sheet title:
+			for(i=0; (lnk=lnks[i]); i++) if(lnk.getAttribute("title") == ttl) return ttl; 
 		}
 	}
 	//else get first titled sheet:
@@ -55,7 +57,7 @@ ScriptSheet.switchTo = function(title) {
 				hrf = hrf.substring(hrf.indexOf("#")+1);
 				if(!lnk.scriptSheet) lnk.scriptSheet = new ScriptSheet(ttl, hrf);
 				lnk.scriptSheet.disable();
-				if(ttl == title || !ttl) scripts[scripts.length] = lnk.scriptSheet; //add to list
+				if(ttl == title || (!ttl && title != "[null]")) scripts[scripts.length] = lnk.scriptSheet; //add to list
 			}
 		}
 	}
@@ -91,7 +93,8 @@ StyleChooser.prototype = {
 			ttl = lnk.getAttribute("title");
 			if(rel && rel.match(/\b(script|style)sheet\b/i) && ttl) styles[ttl] = ttl;
 		}
-		styles["No Style"] = ""; //add null style
+		styles["Basic Style"] = "[basic]"; //add basic style (only untitled sheets)
+		styles["No Style"] = "[null]"; //add null style (no sheets)
 		var pref = ScriptSheet.getPreferredStyle();
 		for(i in styles) {
 			opt = document.createElement("option");
