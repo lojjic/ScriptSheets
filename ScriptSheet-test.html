@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>Sort columns by clicking on column headers</title>
+
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="Cookie.js"></script>
+<script type="text/javascript" src="ScriptSheet.js"></script>
+<script type="text/javascript" src="PopupObject.js"></script>
+<script type="text/javascript" src="OSXBar.js"></script>
+<script type="text/javascript" src="TreeMenu.js"></script>
+
+<link rel="scriptsheet" type="text/javascript" href="OSXBar" title="Mac OS X Dock" />
+<link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu" title="Tree Menu" />
+
+	<style type="text/css">
+	* {font-size:12px; font-family:Arial,sans-serif;}
+	
+	
+	.osx-bar {background:#F0F0F0; border:1px solid #9F9F9F; margin:0; padding:0;}
+		.osx-bar li {list-style-image:url(assets/icon-48x48.png);}
+		.osx-bar li li {list-style-image:none;}
+	.osx-bar-popup-label {white-space:nowrap; /*apply margin to align with icon*/}
+	.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; margin:0; padding:0; padding-bottom:.1em;}
+		.osx-bar-popup-submenu-label {font-weight:bold; border-bottom:1px solid #999; margin:0; padding:.2em .5em; background:#EEE;}
+		.osx-bar-popup-submenu ul, .osx-bar-popup-submenu li {display:block; margin:0; padding:0;}
+		.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
+		.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
+
+
+	.tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid;}
+		.tree-menu ul {margin:0; padding:0; margin-left:0px;}
+		.tree-menu li {display:block; list-style-type:none; margin:0; padding:0; padding-left:16px;}
+		.tree-menu li.tree-menu-node {background-image:url(assets/minus.gif); background-repeat:no-repeat; background-position:3px 3px;}
+		.tree-menu li.tree-menu-node.tree-menu-collapsed {background-image:url(assets/plus.gif);}
+		.tree-menu li.tree-menu-node.tree-menu-collapsed ul {display:none;}
+	</style>
+
+</head>
+<body>
+
+	<select onchange="ScriptSheet.switchTo(this.value);">
+		<option value="Mac OS X Dock">Mac OS X Dock</option>
+		<option value="Tree Menu">Tree Menu</option>
+		<option value="null">No Style</option>
+	</select>
+	
+	<ul class="navigation">
+		<li>Menu Item 1
+			<ul>
+				<li>Submenu
+					<ul>
+						<li><a href="">Submenu 2</a></li>
+						<li><a href="">Submenu 2</a></li>
+						<li><a href="">Submenu 2</a></li>
+					</ul>
+				</li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li>Menu Item 2
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li>Menu Item 3
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li>Menu Item 4
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li>Menu Item 5
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+	</ul>
+	
+
+
+</body>
+</html>
