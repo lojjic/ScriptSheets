@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Style/ScriptSheet switching test</title>
+<title>Tree Menu test</title>
 
 
 <script type="text/javascript" src="IEtoW3C-loader.js"></script>
@@ -11,6 +11,9 @@
 </script>
 
 <link rel="stylesheet" type="text/css" href="TreeMenu.css" />
+<style type="text/css">
+.debug * {border:1px dotted red;}
+</style>
 
 </head>
 <body>
@@ -19,6 +22,7 @@
 		<!--<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>-->
 		<button onclick="alert(unescape(document.cookie));">Alert Cookies</button>
 		<button onclick="new Cookie('preferredStyle').forget(); new Cookie('treeMenuOpenNodes').forget();">Reset Cookies</button>
+		<button onclick="if(document.body.className.match('debug')) document.body.className = document.body.className.replace('debug',''); else document.body.className += ' debug';">Outline Elements</button>
 	</p>
 	
 	<ul class="navigation">
