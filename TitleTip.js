@@ -26,7 +26,13 @@ TitleTip.prototype.buildTip = function(evt) {
 	if(elt.href) window.status = elt.href;
 
 	var thisRef = this;
-	elt.addEventListener("mousemove",this.eltMousemoveHandler=function(evt){thisRef.setPosition(evt)},false);
+	elt.addEventListener("mousemove",this.eltMousemoveHandler=function(evt){
+		//Reduce movement to no more than once per 20ms:
+		var now = new Date();
+		if(thisRef.lastMovedTime && now - thisRef.lastMovedTime < 20) return;
+		thisRef.lastMovedTime = now;
+		thisRef.setPosition(evt); //move it
+	},false);
 	elt.addEventListener("mouseout",this.eltMouseoutHandler=function(){thisRef.destroy()},false);
 
 	var node = this.popupNode;
