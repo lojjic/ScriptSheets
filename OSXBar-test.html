@@ -53,7 +53,7 @@
 	
 		
 	
-	<form id="updateForm" onsubmit="updateOSXBarParams(); return false;">
+	<form id="updateForm">
 		<style type="text/css">
 			#updateForm {margin:10em;}
 			#updateForm th {text-align:right;}
@@ -63,11 +63,11 @@
 		<tr>
 			<th>Edge of Window:</th>
 			<td>
-				<select id="edge" onchange="OSXBar.instances[0].setProperty('edge',this.value)">
-				<option>left</option>
-				<option>bottom</option>
-				<option>right</option>
-				<option>top</option>
+				<select id="edge" onchange="OSXBar.instances[0].setProperty('edge',this.value);">
+				<option value="left">left</option>
+				<option value="bottom">bottom</option>
+				<option value="right">right</option>
+				<option value="top">top</option>
 				</select>
 			</td>
 		</tr>
@@ -88,7 +88,9 @@
 			<td><input type="text" size="3" id="smoothness" value="7" onchange="OSXBar.instances[0].setProperty('scaleReach',this.value)"> (bigger number is smoother curve)</td>
 		</tr>
 		</table>
-	</div>
+	</form>
+	
+	<p style="margin-top:200em; margin-left:200em; text-align:right; font-size:.8em;">Making the page scroll...</p>
 	
 
 		
