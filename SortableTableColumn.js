@@ -118,7 +118,7 @@ SortableTableColumn.prototype = {
 	destroy : function() {
 		var elt = this.element;
 		elt.removeEventListener("click", this.clickHandler, false);
-		elt.className = elt.className.replace(/^(?:.*\s)?sortable-table-column-sorted-(up|down)(?:\s.*)?$/g, " ");
+		elt.className = elt.className.replace(/\bsortable-table-column-sorted-(up|down)\b/g, " ");
 	}
 };
 SortableTableColumn.instances = [];
@@ -130,7 +130,7 @@ SortableTableColumn.enableScriptSheet = function() {
 	SortableTableColumn.disableScriptSheet();
 	var hdrs = document.getElementsByTagName("th");
 	for(var h=0;h<hdrs.length;h++) {
-		if(hdrs[h].className.match(/^(.*\s+)?sortable(\s+.*)?$/)) {
+		if(hdrs[h].className.match(/\bsortable\b/)) {
 			new SortableTableColumn(hdrs[h]);
 		}
 	}

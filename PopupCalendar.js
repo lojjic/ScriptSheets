@@ -40,7 +40,7 @@ PopupCalendar.enableScriptSheet = function() {
 	PopupCalendar.disableScriptSheet(); //prevent double-enabling
 	var flds = document.getElementsByTagName("input");
 	for(var i=0; i<flds.length; i++) {
-		if(flds[i].type=="text" && flds[i].className.match(/^(.*\s)?date(\s.*)?$/)) {
+		if(flds[i].type=="text" && flds[i].className.match(/\bdate\b/)) {
 			new PopupCalendar(flds[i]);
 		}
 	}

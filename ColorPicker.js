@@ -39,7 +39,7 @@ ColorPicker.enableScriptSheet = function() {
 	ColorPicker.disableScriptSheet(); //prevent double-enabling
 	var flds = document.getElementsByTagName("input");
 	for(var i=0; i<flds.length; i++) {
-		if(flds[i].type=="text" && flds[i].className.match(/^(.*\s)?color(\s.*)?$/)) {
+		if(flds[i].type=="text" && flds[i].className.match(/\bcolor\b/)) {
 			new ColorPicker(flds[i]);
 		}
 	}
