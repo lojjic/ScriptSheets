@@ -4,6 +4,6 @@
 }
 .color-picker-button {border:2px outset #FFF; background:#EEE; vertical-align:bottom; padding:0 2px;}
 .color-picker table {table-layout:fixed; empty-cells:show; border-spacing:0; border-collapse:separate;}
-.color-picker td {border:1px solid #EEE; width:14px; height:14px;}
+.color-picker td {border:1px solid #FFF; width:14px; height:14px;}
 	.color-picker td:hover {border:1px solid #999;}
 	.color-picker td.color-picker-selected {border:2px dotted #999;}
