@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>OSXBar.js Documentation</title>
+</head>
+<body>
+
+<h1>OSXBar.js Documentation</h1>
+
+<h2>What It Does:</h2>
+<p>This script presents an HTML unordered list (<code>&lt;ul&gt;</code>) as an icon bar similar to the Mac OS X dock.  The top-level items are presented as icons (which zoom in when the mouse moves near) and the secondary lists as popup menus.</p>
+
+<h2>Usage:</h2>
+<p>This script will only work on a properly formed HTML unordered list (<code>&lt;ul&gt;</code>). For example:</p>
+<pre><code>&lt;ul id="navigation">
+   &lt;li id="item1">&lt;a href="url">Label&lt;/a>&lt;/li>
+   &lt;li id="item2">Label
+         &lt;ul>
+            &lt;li>Submenu&lt;/li>
+            &lt;li>Submenu&lt;/li>
+            &lt;li>Submenu&lt;/li>
+         &lt;/ul>
+   &lt;/li>
+&lt;/ul></code></pre>
+
+<p>The script style is most easily applied to the element as a <a href="ScriptSheet-doc.html" title="A framework for applying scripts as styles and switching between them, narrowing the gap between CSS and script.">ScriptSheet</a>. By default it will match <code>&lt;ul&gt;</code> elements with a <code>class</code> or <code>id</code> of "navigation". You may override that by setting the <code>OSXBar.scriptSheetSelector</code> to your own CSS selector string.</p>
+
+<p>If you wish to use the script outside the ScriptSheet framework, you can call it like <code class="block">var bar = new OSXBar(elt, edge, minSize, maxSize, iconSpacing, scaleReach);</code> where:</p>
+<dl>
+	<dt><code>elt</code></dt>
+		<dd>A reference to the <code>&lt;ul&gt;</code> Element node to be styled.</dd>
+	<dt><code>edge</code></dt>
+		<dd>The edge of the browser window the bar should be positioned at. One of <code>"left"</code>, <code>"top"</code>, <code>"right"</code>, or <code>"bottom"</code>.</dd>
+	<dt><code>minSize</code></dt>
+		<dd>The size (integer) of the icons in pixels when the mouse is nowhere near them. They will appear at this size by default.</dd>
+	<dt><code>maxSize</code></dt>
+		<dd>The size (integer) of the icons in pixels when the mouse is over them. For best image quality, this should match the native size of the icon image.</dd>
+	<dt><code>iconSpacing</code></dt>
+		<dd>The distance (integer) in pixels between icons.</dd>
+	<dt><code>scaleReach</code></dt>
+		<dd>The distance (integer) at which an icon's scaling is affected by the mouse position. This is not a linear distance, but a larger number equals a larger reach (giving a more gradual curve to the icon scaling).</dd>
+</dl>
+
+
+<h2>Dependencies:</h2>
+<ul>
+	<li>IEtoW3C.js or IEtoW3C-loader.js (required for MSIE) - used to make MSIE understand DOM2 Events and Style methods</li>
+	<li>ScriptSheet.js for using the OSXBar style as a ScriptSheet</li>
+</ul>
+
+<h2>Compatibility:</h2>
+<p>Known to work in Mozilla 1.3+, MSIE 5.0+ (icon PNG alpha transparency in MSIE5.5+ only)</p>
+
+<h2>Demonstration:</h2>
+<ul>
+	<li><a href="OSXBar-test.html">OSXBar-test.html</a></li>
+</ul>
+
+<h2>To Do:</h2>
+<ul>
+	<li>Graduate scaling over several steps for smooth effect when entering and leaving active region</li>
+	<li>Create OSXBarConfigPanel class (inherit PopupObject) to allow user to set properties</li>
+	<li>Use position:fixed in browsers that support it, fall back to position:absolute w/scroll calc for others</li>
+</ul>
+	
+<h2>Known Issues:</h2>
+<ul>
+	<li>IE doesn't seem to like creating submenu if it contains a comment</li>
+	<li>If submenus are too long they go past the bottom of the window</li>
+	<li>If Windows system has no DirectX (like Win4Lin) the icons show up blank because we change the source to blank.gif but the filter fails to show the real image</li>
+	<li>Old Gecko doesn't do window.onscroll so bar position isn't updated when scrolled (position:fixed would work, but then fails in IE)</li>
+	<li>Elements added to &lt;li&gt; after bar is created don't get shown in submenu popup</li>
+</ul>
+
+<h2>License:</h2>
+<p>This work is licensed for use under the Creative Commons Attribution-NonCommercial-ShareAlike license. In summary, you may freely use, modify, and distribute this work as long as:</p>
+<ul>
+	<li>You give me (Jason Johnston) credit,</li>
+	<li>You do not use this work for commercial purposes, and</li>
+	<li>Any redistribution of this or derivative works is made available under a license identical to this one.</li>
+</ul>
+<p>Before using this work please read the full license at <a href="http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode">http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode</a>.</p>
+
+</body>
+</html>
