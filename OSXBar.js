@@ -88,7 +88,7 @@ OSXBar.prototype = {
 		this.scaled = false; //flag status
 		for(var i=0; i<this.icons.length; i++) {
 			this.icons[i].setSizeAndPosition(); //set all icons back to normal size and position (null event so scaling doesn't occur)
-			if(this.icons[i].popupSubmenu) this.icons[i].popupSubmenu.destroy(); //remove icon label
+			if(this.icons[i].popupSubmenu) this.icons[i].popupSubmenu.hide(); //remove icon label
 		}
 		this.setSizeAndPosition(); //set bar to normal length and position
 	},
@@ -166,6 +166,10 @@ OSXBarIcon.prototype = {
 		var kids = this.element.childNodes;
 		for(var i=0; i<kids.length; i++) this.contents[this.contents.length] = this.element.removeChild(kids[i]); //remove from DOM so they can be reused after moving
 		
+		//create label and submenu:
+		this.popupLabel = new OSXBarLabel(this);
+		this.popupSubmenu = new OSXBarSubmenu(this);
+
 		//create icon, set initial position:
 		var liImg = getComputedStyle(this.element,null).getPropertyValue("list-style-image");
 		var icon = this.icon = document.createElement(liImg ? "img" : "span");
@@ -182,7 +186,7 @@ OSXBarIcon.prototype = {
 			}
 			this.setSizeAndPosition();
 			this.parentBar.element.appendChild(icon);
-
+		
 		var thisRef = this;
 		icon.addEventListener("mouseover", function(evt){thisRef.onMouseOver(evt);}, false);
 		icon.addEventListener("mouseout", function(evt){thisRef.onMouseOut(evt);}, false);
@@ -194,13 +198,12 @@ OSXBarIcon.prototype = {
 
 	onMouseOver : function(evt) { 
 		//label pops up on hover:
-		if(!this.parentBar.scalingLocked && !this.popupSubmenu) this.popupLabel = new OSXBarPopupLabel(this);
+		if(!this.parentBar.scalingLocked) this.popupLabel.show();
 		if(this.link) window.status = this.link; //if link, put address in status bar
 	},
 
 	onMouseOut : function(evt) {
-		if(this.popupLabel) this.popupLabel.destroy(); //remove icon label
-		this.popupLabel = null;
+		if(!this.popupLabel.hidden) this.popupLabel.hide();
 		window.status = ""; //remove link from status bar
 	},
 
@@ -214,10 +217,13 @@ OSXBarIcon.prototype = {
 			location.href = this.link;
 			return;
 		}
+		
+		this.popupLabel.hide();
 
 		// if submenu, create popup:
 		// XXX - only if has child nodes...
-		this.popupSubmenu = new OSXBarPopupSubmenu(this);
+		this.popupSubmenu.show();
+		this.parentBar.scalingLocked = true;
 	},
 	
 	setSizeAndPosition : function(evt) {
@@ -241,19 +247,20 @@ OSXBarIcon.prototype = {
 		var fixPos = (bar.iconSpacing / 2) + "px";
 		var varPos = (this.position = newPos) + "px";
 		var size   = (this.size = newSize) + "px";
-		var l,t,r,b,h,w;
+		var l,t,r,b,h,w,s,p,i;
 		switch(bar.edge) {
 			case "top": l=varPos; t=fixPos; w=size; break;
 			case "right": t=varPos; r=fixPos; h=size; break;
 			case "bottom": l=varPos; b=fixPos; w=size; break;
 			default: t=varPos; l=fixPos; h=size; break;
 		}
-		var s = this.icon.style;
+		s = this.icon.style;
 			s.position = "absolute";
 			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
 			s.height = h || "auto"; s.width = w || "auto";
 		
-		if(this.popupLabel) this.popupLabel.setPosition(); //move label with icon
+		if(!this.popupLabel.hidden) this.popupLabel.setPosition(); //move label with icon
+		if(!this.popupSubmenu.hidden) this.popupSubmenu.setPosition(); //move submenu with icon
 	},
 	destroy : function() {
 		this.icon.parentNode.removeChild(this.icon);
@@ -265,54 +272,81 @@ OSXBarIcon.prototype = {
 
 
 
-function OSXBarPopup() {} //used as base class for OSXBarPopupLabel and OSXBarPopupSubmenu
-OSXBarPopup.prototype = new PopupObject("osx-bar-popup");
-OSXBarPopup.prototype.setPosition = function() {
-	var distFromIcon = 12; //distance of popup from its icon
-	var icon = this.parentIcon;
-	var bar = icon.parentBar;
-	var scrollX = (window.scrollX || document.body.scrollLeft || 0);
-	var scrollY = (window.scrollY || document.body.scrollTop  || 0);
-	var isVertical = (bar.edge=="left" || bar.edge=="right");
-	var isTopLeft  = (bar.edge=="left" || bar.edge=="top");
-	var fixPos = (bar.iconMaxSize + bar.iconSpacing + distFromIcon + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
-	var varPos = (icon.position + bar.position) + "px";
-	var l,t,r,b;
-	switch(bar.edge) {
-		case "top": l=varPos; t=fixPos; break;
-		case "right": t=varPos; r=fixPos; break;
-		case "bottom": l=varPos; b=fixPos; break;
-		default: t=varPos; l=fixPos; break;
+function OSXBarPopup() {} //base class for OSXBarLabel and OSXBarSubmenu
+OSXBarPopup.prototype = {
+	create : function() {
+		var p = this.popupNode = document.createElement("div");
+		var b = document.getElementsByTagName("body").item(0);
+		if(b) b.appendChild(p);
+		this.hide();
+		
+		var thisRef = this;
+		document.addEventListener("mousedown",this.docMousedownHandler=function(){thisRef.hide();},false);
+		this.popupNode.addEventListener("mousedown",function(e){e.stopPropagation()},false);
+	},
+	setPosition : function() {
+		var distFromIcon = 12; //distance of popup from its icon
+		var icon = this.parentIcon;
+		var bar = icon.parentBar;
+		var scrollX = (window.scrollX || document.body.scrollLeft || 0);
+		var scrollY = (window.scrollY || document.body.scrollTop  || 0);
+		var isVertical = (bar.edge=="left" || bar.edge=="right");
+		var isTopLeft  = (bar.edge=="left" || bar.edge=="top");
+		var fixPos = (bar.iconMaxSize + bar.iconSpacing + distFromIcon + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
+		var varPos = (icon.position + bar.position) + "px";
+		var l,t,r,b;
+		switch(bar.edge) {
+			case "top": l=varPos; t=fixPos; break;
+			case "right": t=varPos; r=fixPos; break;
+			case "bottom": l=varPos; b=fixPos; break;
+			default: t=varPos; l=fixPos; break;
+		}
+		var s = this.popupNode.style;
+			s.position = "absolute";
+			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
+	},
+	hide : function() {
+		this.popupNode.style.display = "none";
+		this.hidden = true;
+		this.parentIcon.parentBar.scalingLocked = false;
+	},
+	show : function() {
+		this.setPosition();
+		this.popupNode.style.display = "block";
+		this.hidden = false;
+	},
+	destroy : function() {
+		var b = document.getElementsByTagName("body").item(0);
+		if(b && this.popupNode) b.removeChild(this.popupNode);
+		document.removeEventListener("mousedown",this.docMousedownHandler,false);
 	}
-	var s = this.popupNode.style;
-		s.position = "absolute";
-		s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
 };
 
 
 
-function OSXBarPopupLabel(icon) {
+function OSXBarLabel(icon) {
 	this.parentIcon = icon;
 	this.create();
 	this.addContent();
 	this.setPosition();
 }
-OSXBarPopupLabel.prototype = new OSXBarPopup();
-OSXBarPopupLabel.prototype.addContent = function() {
+OSXBarLabel.prototype = new OSXBarPopup();
+OSXBarLabel.prototype.addContent = function() {
 	this.popupNode.className = "osx-bar-popup-label";
 	this.popupNode.appendChild(document.createTextNode(this.parentIcon.label)); // add label as content
 };
 
 
 
-function OSXBarPopupSubmenu(icon) {
+
+function OSXBarSubmenu(icon) {
 	this.parentIcon = icon;
 	this.create();
 	this.addContent();
 	this.setPosition();
 }
-OSXBarPopupSubmenu.prototype = new OSXBarPopup();
-OSXBarPopupSubmenu.prototype.addContent = function() {
+OSXBarSubmenu.prototype = new OSXBarPopup();
+OSXBarSubmenu.prototype.addContent = function() {
 	this.popupNode.className = "osx-bar-popup-submenu";
 
 	// add popup label:
@@ -322,14 +356,6 @@ OSXBarPopupSubmenu.prototype.addContent = function() {
 	this.popupNode.appendChild(label);
 	
 	// add <li> children to the popup:	
-	var contents = this.parentIcon.contents
+	var contents = this.parentIcon.contents;
 	for(var i=0; i<contents.length; i++) this.popupNode.appendChild(contents[i]);
-	
-	this.parentIcon.parentBar.scalingLocked = true; // keep icons scaled when popup open
-};
-OSXBarPopupSubmenu.prototype.destroyBase = OSXBarPopupSubmenu.prototype.destroy;
-OSXBarPopupSubmenu.prototype.destroy = function() {
-	this.destroyBase();
-	this.parentIcon.popupSubmenu = null;
-	this.parentIcon.parentBar.scalingLocked = false;
 };
