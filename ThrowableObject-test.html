@@ -1,0 +1,69 @@
+<html>
+<head>
+	<title>throwable objects</title>
+
+
+	<script type="text/javascript" src="IEtoW3C.js"></script>
+	<script type="text/javascript" src="ThrowableObject.js"></script>
+	<script type="text/javascript">
+
+	function createThrowableObject(width,height,plane,bg,color,text) {
+		var elt = document.createElement("div");
+			elt.style.width = width + "px";
+			elt.style.height = height + "px";
+			elt.style.backgroundColor = bg;
+			elt.style.color = color;
+		elt.appendChild(document.createTextNode(text));
+		document.body.appendChild(elt);
+		new ThrowableObject(elt,plane);
+	}
+
+	</script>
+
+</head>
+<body>
+
+<form onsubmit="createThrowableObject(
+					this.txtWidth.value,
+					this.txtHeight.value,
+					this.txtPlane.value,
+					this.txtBGColor.value,
+					this.txtTextColor.value,
+					this.txtText.value
+				);
+				event.preventDefault();
+				">
+	<table>
+	<tbody>
+		<tr>
+			<th>Width:</th>
+			<td><input type="text" name="txtWidth" value="60" size="3"> pixels</td>
+		</tr>
+		<tr>
+			<th>Height:</th>
+			<td><input type="text" name="txtHeight" value="60" size="3"> pixels</td>
+		</tr>
+		<tr>
+			<th>Plane:</th>
+			<td><input type="text" name="txtPlane" value="1" size="3"> (integer - objects in the same plane will interact)</td>
+		</tr>
+		<tr>
+			<th>BG Color:</th>
+			<td><input type="text" name="txtBGColor" value="#6666CC" size="7"> (color value like "#CD469E" or "blue")</td>
+		</tr>
+		<tr>
+			<th>Text Color:</th>
+			<td><input type="text" name="txtTextColor" value="#FFFFFF" size="7"> (color value like "#CD469E" or "blue")</td>
+		</tr>
+		<tr>
+			<th>Text Content:</th>
+			<td><textarea name="txtText">bouncy bouncy</textarea></td>
+		</tr>
+	</tbody>
+	</table>
+
+	<p><input type="submit" value="Create Object!"></p>
+</form>
+
+</body>
+</html>
