@@ -39,23 +39,6 @@ TitleTip.prototype.setPosition = function(evt) {
 	this.setPositionBase(evt,"topleft,16,16");
 }
 
-TitleTip.prototype.opacity = 0;
-TitleTip.prototype.fadeIn = function() {
-	if(this.opacity > 100) return;
-	this.popupNode.style.MozOpacity = this.opacity + "%";
-	this.popupNode.style.filter = "alpha(opacity=" + this.opacity + ")";
-	this.opacity += 10;
-	var thisRef = this;
-	setTimeout(function(){thisRef.fadeIn()},30);
-}
-TitleTip.prototype.clipping = 0;
-TitleTip.prototype.swipeIn = function() { //bleech! works poorly.
-	if(this.clipping > 110) return;
-	this.popupNode.style.clip = "rect(0," + this.clipping + "px,100%,0)";
-	this.clipping += 10;
-	var thisRef = this;
-	setTimeout(function(){thisRef.swipeIn()},30);
-}
 TitleTip.prototype.pressed = function(){return;}; //clicking on titletip destroys it
 TitleTip.prototype.destroyBase = TitleTip.prototype.destroy;
 TitleTip.prototype.destroy = function() {
