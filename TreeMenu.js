@@ -142,7 +142,7 @@ TreeMenuNode.prototype = {
 			if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") {
 				kids[i].style.display="";
 				for(j=0; (li=kids[i].childNodes[j]); j++) {
-					if(li.nodeType==1) this.nodes[this.nodes.length] = new TreeMenuNode(li, TreeMenu.getOpenNodes()[li.id]);
+					if(li.nodeType==1 && !li.treeMenuNode) this.nodes[this.nodes.length] = li.treeMenuNode = new TreeMenuNode(li, TreeMenu.getOpenNodes()[li.id]);
 				}
 			}
 		}
@@ -165,7 +165,6 @@ TreeMenuNode.prototype = {
 		//hide children:
 		var kids = this.element.childNodes;
 		for(i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="none";
-		for(i=0; i<this.nodes.length; i++) this.nodes[i].destroy(); this.nodes = [];
 			
 		//change icon:
 		c = this.collapser;
@@ -181,6 +180,7 @@ TreeMenuNode.prototype = {
 	destroy : function() {
 		var i;
 		var elt = this.element;
+		delete elt.treeMenuNode;
 		elt.className = elt.className.replace(/\btree-menu-node-(branch|leaf)\b/g, "");
 		var uls = this.element.getElementsByTagName("ul");
 			for(i=0; i<uls.length; i++) uls[i].style.display="";
