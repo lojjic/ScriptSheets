@@ -18,6 +18,7 @@ function highlight(selector) {
 	
 	//reset all:
 	elts = document.getElementsByTagName("*");
+	if(!elts.length && document.all) elts = document.all;
 	for(i=0; i<elts.length; i++) if(elts[i].tagName.toLowerCase()!="input") elts[i].style.border = "1px dotted #CCC";
 	
 	//highlight matching:
