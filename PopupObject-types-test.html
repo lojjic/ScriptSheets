@@ -15,8 +15,8 @@ PopupTypeOne.prototype = new PopupObject("popup-type-one");
 PopupTypeOne.prototype.buildContents = function() {
 	for(var i=0; i<4; i++) {
 		var btn = document.createElement("input");
-		btn.type = "button";
-		btn.value = "Popup Type Two";
+		btn.setAttribute("type", "button");
+		btn.setAttribute("value", "Popup Type Two");
 		btn.addEventListener("click",function(evt){new PopupTypeTwo(evt);},false);
 		this.popupNode.appendChild(btn);
 	}
@@ -31,7 +31,7 @@ PopupTypeTwo.prototype = new PopupObject("popup-type-two");
 PopupTypeTwo.prototype.buildContents = function() {
 	var txt = document.createElement("span");
 	txt.setAttribute("title","Booyah!")
-	txt.addEventListener("mouseover",function(evt){new TitleTip(evt)},false);
+	new TitleTip(txt);
 	txt.appendChild(document.createTextNode("Title Tip Text Here!"));
 	this.popupNode.appendChild(txt);
 }
@@ -45,7 +45,7 @@ PopupTypeTwo.prototype.buildContents = function() {
 .popup-type-one {border:1px solid; background:#EEE; padding:3em;}
 .popup-type-two {border:1px solid; background:#CCC; padding:3em;}
 
-button {display:block;}
+input {display:block;}
 </style>
 <link rel="stylesheet" type="text/css" href="TitleTips.css" />
 
