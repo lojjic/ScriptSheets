@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>Style/ScriptSheet switching test</title>
+
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="Cookie.js"></script>
+<script type="text/javascript" src="TreeMenu.js"></script>
+<script type="text/javascript">
+	window.addEventListener("load",TreeMenu.enableScriptSheet,false);
+</script>
+
+<link rel="stylesheet" type="text/css" href="TreeMenu.css" />
+
+</head>
+<body>
+	
+	<p>
+		<!--<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>-->
+		<button onclick="alert(unescape(document.cookie));">Alert Cookies</button>
+		<button onclick="new Cookie('preferredStyle').forget(); new Cookie('treeMenuOpenNodes').forget();">Reset Cookies</button>
+	</p>
+	
+	<ul class="navigation">
+		<li id="item1">Menu Item 1
+			<ul>
+				<li id="item1x1">Submenu
+					<ul>
+						<li><a href="">Submenu 2</a></li>
+						<li id="item1x1x2">Submenu 2
+							<ul>
+								<li><a href="">Submenu 3</a></li>
+								<li><a href="">Submenu 3</a></li>
+								<li><a href="">Submenu 3</a></li>
+							</ul>
+						</li>
+						<li id="item1x1x3">Submenu 2
+							<ul>
+								<li><a href="">Submenu 3</a></li>
+								<li><a href="">Submenu 3</a></li>
+								<li><a href="">Submenu 3</a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>Submenu
+					<div>Misc. crap</div>
+				</li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li id="item2">Menu Item 2
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li id="item3">Menu Item 3
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li id="item4">Menu Item 4
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+		<li id="item5">Menu Item 5
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
+	</ul>
+	
+	
+	
+
+
+</body>
+</html>
