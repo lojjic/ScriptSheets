@@ -6,9 +6,21 @@
 <script type="text/javascript">
 
 window.addEventListener("load", function() {
-	new Window(document.getElementById("one"), "Window Number One", 200, 200, 20, 20);
-	new Window(document.getElementById("two"), "Window Number Two", 300, 500, 300, 20);
-	new Window(document.getElementById("three"), "Window Number Three", 400, 200, 50, 530);
+	//Title from element within content element:
+	new Window(document.getElementById("one"), document.getElementById("one").getElementsByTagName("h1")[0], 200, 200, 20, 20);
+	
+	//Title from element outside content element:
+	new Window(document.getElementById("two"), document.getElementById("twoTitle"), 300, 500, 300, 20);
+	
+	//Title from text not in document:
+	new Window(document.getElementById("three"), document.createTextNode("Window Number Three"), 400, 200, 50, 530);
+	
+	//Completely script-generated:
+	var cont = document.createElement("div");
+		var ttl = document.createTextNode("Script-Generated Window");
+		var txt = document.createTextNode("Programming Web Services with Perl is principally a book on implementing solutions using XML-RPC and SOAP in Perl. It also covers complementary and alternative standards such as WSDL, UDDI, and REST in some detail. And on the periphery, it finishes with a whirlwind tour of developing message routing, alternative data encoding within XML, security, transactions, workflow, internationalization, service discovery, extension, and management techniques and specifications.");
+		cont.appendChild(txt);
+	new Window(cont, ttl, 200, 200, 40, 240);
 }, false);
 
 </script>
@@ -22,6 +34,8 @@ html, body {font-family:Verdana,Arial,sans-serif; font-size:12px;}
 .window-title-bar {margin:0; padding:.25em 1em; margin:0; background:#009; color:#FFF; font-weight:bold; cursor:default; white-space:nowrap; -moz-user-select:none;}
 .window-resizer {position:absolute; right:-5px; bottom:-5px; width:16px; height:16px; border:solid #666; border-width:0 1px 1px 0; cursor:se-resize;}
 
+h1 {font-size:1em; margin:0; padding:0;}
+
 </style>
 
 </head>
@@ -29,6 +43,7 @@ html, body {font-family:Verdana,Arial,sans-serif; font-size:12px;}
 <body>
 
 	<div id="one">
+		<h1>Window Number One</h1>
 		<p>In the 13th day of the ground campaign, coalition forces are moving closer to Baghdad, said Maj. Gen. Stanley McChrystal. The Baghdad Division in Kut and the Medina Division of the Republican Guard, he said, are no longer "credible forces."</p>
 		<p>At the same time, both McChrystal and Pentagon spokeswoman Victoria Clarke stressed that the most difficult battles may yet unfold.</p>
 		<p>"As much as we are making good progress -- and we are -- the toughest fighting could lie ahead," Clarke said. "The likelihood that they might use chemical weapons is in front of us now. We are not underestimating how tough it could be going forward."</p>
@@ -41,6 +56,7 @@ html, body {font-family:Verdana,Arial,sans-serif; font-size:12px;}
 		<p>The 3rd Infantry's 1st and 3rd Brigades took Karbala with little effort, Army sources told Rodgers. The 1st Brigade faced only a few tanks and some mortars as it moved through town. The 3rd Brigade came in behind the 1st to secure the city. </p>
 	</div>
 	
+	<h1 id="twoTitle">Window Number Two</h1>
 	<div id="two">
 		<p>A statement attributed to Iraqi President Saddam Hussein was read on Iraqi television Wednesday, urging Iraqis to defend their towns. Saddam did not appear.</p>
 		<p>"Victory is at hand, God willing, although we have only utilized a third or less of our army while the criminals have used everything they brought in," a statement read by an Iraqi television announcer said. "Their failure was manifested and victory is glowing, God willing."</p>
