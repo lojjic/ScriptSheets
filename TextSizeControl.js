@@ -106,3 +106,10 @@ TextSizeControl.prototype = {
 	}
 };
 TextSizeControl.instances = [];
+
+// Write CSS directly to document before final load, to avoid repaint:
+if(window.Cookie) {
+	var cook = new Cookie("fontSize").getValue();
+	if(cook) document.write('<style type="text/css">body {font-size:' + cook + 'px}</style>');
+}
+
