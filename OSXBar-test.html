@@ -58,27 +58,12 @@
 			#updateForm {margin:10em;}
 			#updateForm th {text-align:right;}
 		</style>
-		<script type="text/javascript">
-			function updateOSXBarParams() {
-				var bars = OSXBar.instances; 
-				function v(id) {
-					return parseInt(document.getElementById(id).value);
-				}
-				for(var i=0; i<bars.length; i++) {
-					bars[i].edge=document.getElementById("edge").value;
-					bars[i].iconMaxSize=v("maxsize");
-					bars[i].iconMinSize=v("minsize");
-					bars[i].iconSpacing=v("spacing");
-					bars[i].scaleReach =v("smoothness");
-					bars[i].onUnscale();
-				}
-			}
-		</script>
+		
 		<table>
 		<tr>
 			<th>Edge of Window:</th>
 			<td>
-				<select id="edge" onchange="updateOSXBarParams()">
+				<select id="edge" onchange="OSXBar.instances[0].setProperty('edge',this.value)">
 				<option>left</option>
 				<option>bottom</option>
 				<option>right</option>
@@ -88,19 +73,19 @@
 		</tr>
 		<tr>
 			<th>Minimum Icon Size:</th>
-			<td><input type="text" size="3" id="minsize" value="32" onchange="updateOSXBarParams()"> pixels</td>
+			<td><input type="text" size="3" id="minsize" value="24" onchange="OSXBar.instances[0].setProperty('iconMinSize',this.value)"> pixels</td>
 		</tr>
 		<tr>
 			<th>Maximum Icon Size:</th>
-			<td><input type="text" size="3" id="maxsize" value="48" onchange="updateOSXBarParams()"> pixels</td>
+			<td><input type="text" size="3" id="maxsize" value="48" onchange="OSXBar.instances[0].setProperty('iconMaxSize',this.value)"> pixels</td>
 		</tr>
 		<tr>
 			<th>Icon Spacing:</th>
-			<td><input type="text" size="3" id="spacing" value="8" onchange="updateOSXBarParams()"> pixels</td>
+			<td><input type="text" size="3" id="spacing" value="12" onchange="OSXBar.instances[0].setProperty('iconSpacing',this.value)"> pixels</td>
 		</tr>
 		<tr>
 			<th>Scaling Curve Smoothness:</th>
-			<td><input type="text" size="3" id="smoothness" value="6" onchange="updateOSXBarParams()"> (bigger number is smoother curve)</td>
+			<td><input type="text" size="3" id="smoothness" value="7" onchange="OSXBar.instances[0].setProperty('scaleReach',this.value)"> (bigger number is smoother curve)</td>
 		</tr>
 		</table>
 	</div>

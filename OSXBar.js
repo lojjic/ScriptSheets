@@ -31,17 +31,18 @@ TODO:
 	* Keep bar centered when page scrolled
 	* Make submenus adjust if they hit the window edge (like normal PopupObject)
 	* Find way to only do IE-PNG-alpha-transparency hack if system supports DirectX filter
+	* Create OSXBarConfigPanel class (inherit PopupObject) to allow user to set properties
 
 */
 
 
 function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is required; all others default to values below
 	this.element = elt;
-	this.edge = (edge && edge.match(/^(top|right|bottom|left)$/)) ? edge : "left"; //one of "top", "right", "bottom", or "left". Defaults to "left".
-	this.iconMinSize = parseInt(minSize) || 24; // smallest (initial) icon size (pixels).
-	this.iconMaxSize = parseInt(maxSize) || 48; // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
-	this.iconSpacing = parseInt(spacing) || 12; // space between icons (pixels).
-	this.scaleReach  = parseInt(reach)   || 7;  // "gradualness" of the scaling - larger number gives smoother curve.
+	this.setProperty("edge",edge); //one of "top", "right", "bottom", or "left". Defaults to "left".
+	this.setProperty("iconMinSize",minSize); // smallest (initial) icon size (pixels).
+	this.setProperty("iconMaxSize",maxSize); // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
+	this.setProperty("iconSpacing",spacing); // space between icons (pixels).
+	this.setProperty("scaleReach",reach); // "gradualness" of the scaling - larger number gives smoother curve.
 	this.create();
 	OSXBar.instances[OSXBar.instances.length] = this;
 }
@@ -65,6 +66,27 @@ OSXBar.prototype = {
 		//hookup scaling with mouse position:
 		var thisRef = this;
 		document.addEventListener("mousemove", function(evt){thisRef.onMouseMoved(evt);}, false);
+	},
+	
+	setProperty : function(name,value) { // method to set properties - set defaults in here.
+		switch(name) {
+			case "edge": 
+				this.edge = (value && value.match(/^(top|right|bottom|left)$/)) ? value : "left";
+			break;
+			case "iconMinSize":
+				this.iconMinSize = parseInt(value) || 24;
+			break;
+			case "iconMaxSize":
+				this.iconMaxSize = parseInt(value) || 48;
+			break;
+			case "iconSpacing":
+				this.iconSpacing = parseInt(value) || 12;
+			break;
+			case "scaleReach":
+				this.scaleReach = parseInt(value) || 7;
+			break;
+		}
+		if(this.icons) this.onUnscale();
 	},
 
 	onMouseMoved : function(evt) {
@@ -93,7 +115,7 @@ OSXBar.prototype = {
 		
 	onUnscale : function(evt) {
 		this.scaled = false; //flag status
-		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(null); //set all icons back to normal size and position (null event so scaling doesn't occur)
+		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(); //set all icons back to normal size and position (null event so scaling doesn't occur)
 		this.setSizeAndPosition(); //set bar to normal length and position
 	},
 	
