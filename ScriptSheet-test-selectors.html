@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>Style/ScriptSheet switching test</title>
+
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="ScriptSheet.js"></script>
+
+<style type="text/css">
+form {margin-top:5em;}
+</style>
+
+<script type="text/javascript">
+function highlight(selector) {
+	var i, elts;
+	
+	//reset all:
+	elts = document.getElementsByTagName("*");
+	for(i=0; i<elts.length; i++) elts[i].style.border = "";
+	
+	//highlight matching:
+	elts = ScriptSheet.matchSelector(selector);
+	for(i=0; i<elts.length; i++) elts[i].style.border = "2px solid red";
+}
+</script>
+
+</head>
+<body>
+
+	<div>div
+		<p>paragraph <span>span</span> <span class="classy">span with <code>class=&quot;classy&quot;</code></span> <a href="">link (<code>&lt;a&gt;</code>)</a> <a href="" title="title of link">link (<code>&lt;a&gt;</code>) with <code>title=&quot;title of link&quot;</code></a></p>
+		<p id="identifier">paragraph with <code>id=&quot;identifier&quot;</code></p>
+		<p id="identifier2">paragraph with <code>id=&quot;identifier2&quot;</code></p>
+		<div>div
+			<input type="text" class="color"> (<code>&lt;input type="text" class="color"&gt;</code>)
+		</div>
+	</div>
+	
+	<form onsubmit="highlight(document.getElementById('textField').value); return false;">
+		Enter a selector string: <input type="text" size="50" id="textField"><input type="submit" value="Highlight Matching Elements">
+	</form>
+
+</body>
+</html>

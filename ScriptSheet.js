@@ -17,10 +17,31 @@ function ScriptSheet(title, script) {
 }
 ScriptSheet.prototype = {
 	enable : function() {
-		var h; if(this.script && (h = this.script.enableScriptSheet)) h();
+		this.disable();
+		var s = this.script;
+		if(!s) return;
+		if(!s.enableScriptSheet) s.enableScriptSheet = function() {
+			this.disableScriptSheet();
+			var sel = this.scriptSheetSelector;
+			if(!sel) return;
+			var elts;
+			if(typeof sel == "function") elts = sel();
+			if(typeof sel == "string") elts = ScriptSheet.matchSelector(sel);
+			var inst = this.scriptSheetInstances;
+			for(var i=0; i<elts.length; i++) inst[inst.length] = new s(elts[i]);
+		}
+		s.enableScriptSheet();
 	},
 	disable : function() {
-		var h; if(this.script && (h = this.script.disableScriptSheet)) h();
+		var s = this.script;
+		if(!s) return;
+		var inst = this.scriptSheetInstances;
+		if(!s.disableScriptSheet) s.disableScriptSheet = function() {
+			var inst = this.scriptSheetInstances || [];
+			for(var i in inst) if(inst[i].destroy) inst[i].destroy();
+			this.scriptSheetInstances = [];
+		}
+		s.disableScriptSheet();
 	}
 };
 ScriptSheet.instances = [];
@@ -42,6 +63,79 @@ ScriptSheet.getPreferredStyle = function() {
 		if(rel.match(/\b(style|script)sheet\b/i) && ttl) return ttl;
 	}
 	return null;
+};
+ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string and return all matching elements:
+	selector = selector.replace(/\s+/g, " "); //collapse whitespaces to a single space
+	selector = selector.replace(/\s*([>+=,])\s*/g, "$1"); //strip extra whitespace around combinators
+	selector = selector.replace(/^\s*(\S*)\s*$/, "$1"); //and at start and end of string
+	if(selector.charAt(0) != "#") selector = " " + selector; //start with descendant selector, except when starts with id
+	selector = selector.replace(/[ >+]([\.\[#])/g, " *$1"); //insert universal selector where it is optionally omitted
+	//alert("-" + selector);
+	
+	var parts = selector.split(/([#\.>\+\s]|\[[^\]]*\])/);
+	
+	var i, j, p, a, b;
+	var elts = [document];
+	
+	for(p=0; p<parts.length; p++) {
+		a = [];
+		switch(parts[p].charAt(0)) {
+			case "": break; //ignore blank remnants of split
+			case "#":
+				if(elts[0]==document) { //if no previous context, do it fast:
+					a = document.getElementById(parts[++p]);
+					elts = a ? [a] : [];
+				}
+			break;
+			case ".": //class
+				p++;
+				for(i=0; i<elts.length; i++) {
+					b = elts[i].className || elts[i].getAttribute("class") || elts[i].getAttribute("className");
+					if(b && b.match(new RegExp("\\b" + parts[p] + "\\b"))) a[a.length] = elts[i];
+				}
+				elts = a;
+			break;
+			case "[": //attribute
+				b = parts[p].match(/^\[([^\]=]+)(=([^\]]*))?\]$/);
+				if(b) {
+					var attr = b[1]; var val = b[3];
+					for(i=0; i<elts.length; i++) {
+						if((!val && elts[i].hasAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
+					}
+				}
+				elts = a;
+			break;
+			case " ": //descendant
+				p++;
+				for(i=0; i<elts.length; i++) {
+					b = elts[i].getElementsByTagName(parts[p]);
+					for(j=0; j<b.length; j++) a[a.length] = b[j];
+				}
+				elts = a;
+			break;
+			case ">": //child
+				for(i=0; i<elts.length; i++) {
+					b = elts[i].childNodes;
+					for(j=0; j<b.length; j++) if(b[j].nodeType==1) a[a.length] = b[j];
+				}
+				elts = a;
+			break;
+			case "+": //nextSibling
+				for(i=0; i<elts.length; i++) {
+					b = elts[i].nextSibling;
+					while(b && b.nodeType != 1) b = b.nextSibling;
+					if(b) a[a.length] = b;
+				}
+				elts = a;
+			break;
+			default: //element:
+				for(i=0; i<elts.length; i++) {
+					if(elts[i].nodeName.toLowerCase() == parts[p]) a[a.length] = elts[i];
+				}
+				elts = a;
+		}
+	}
+	return elts;
 };
 ScriptSheet.switchTo = function(title) {
 	var i, lnk, rel, ttl, hrf, match, c;
