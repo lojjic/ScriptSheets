@@ -1,0 +1,48 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="ImageShadow.js"></script>
+<script type="text/javascript">
+	window.addEventListener("load", ImageShadow.enableScriptSheet, false);
+</script>
+
+<style type="text/css">
+	body {background-image:url(assets/background.jpg); font:12px sans-serif;}
+	h1 {font-size:1.2em;}
+	
+	#block {display:block;}
+	
+	#absolute1, #absolute2, #absLabelTL {position:absolute; top:250px; left:300px;}
+	#absLabelTL {top:225px;}
+	#absolute2 {left:500px;}
+	
+	#absolute3, #absLabelBR {position:absolute; bottom:50px; right:100px;} /*from bottom right*/
+	#absLabelBR {bottom:170px;}
+</style>
+
+</head>
+
+<body>
+
+	<h1>Test Image Shadows:</h1>
+	
+	<p>The ImageShadow script runs as a <a href="ScriptSheet.js" title="Framework for applying scripts as styles and switching between them">ScriptSheet</a>.
+		<button onclick="ImageShadow.enableScriptSheet()">Enable ScriptSheet</button>
+		<button onclick="ImageShadow.disableScriptSheet()">Disable ScriptSheet</button>
+	</p>
+		
+	<p>This image is inline. There's lots of text here so you can see what happens when the text wraps. <img src="assets/photo-thumbnail.jpg" class="shadow">
+	</p>
+	
+	<p>This image is a block: <img src="assets/photo-thumbnail.jpg" id="block" class="shadow"></p>
+	
+	<span id="absLabelTL">Absolutely positioned images:</span>
+	<img src="assets/photo-thumbnail.jpg" id="absolute1" class="shadow">
+	<img src="assets/photo-thumbnail.jpg" id="absolute2" class="shadow">
+		
+	<span id="absLabelBR">Absolutely positioned from bottom-right:</span>
+	<img src="assets/photo-thumbnail.jpg" id="absolute3" class="shadow">
+
+</body>
+</html>
