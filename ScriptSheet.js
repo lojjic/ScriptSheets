@@ -125,7 +125,8 @@ ScriptSheet.matchSelector = function(sel) {
 			p++;
 			for(i=0; i<elts.length; i++) {
 				b = elts[i].className || elts[i].getAttribute("class") || elts[i].getAttribute("className");
-				if(b && b.match(new RegExp("\\b" + parts[p] + "\\b"))) a[a.length] = elts[i];
+				if(b && b.match(parts[p])) //fast filter
+					if(b.match(new RegExp("^(.*\\s+)?" + parts[p] + "(\\s+.*)?$"))) a[a.length] = elts[i];
 			}
 		break;
 		case "[": //attribute
@@ -139,6 +140,7 @@ ScriptSheet.matchSelector = function(sel) {
 			p++;
 			for(i=0; i<elts.length; i++) {
 				b = elts[i].getElementsByTagName(parts[p]);
+				if(!b.length && elts[i]==document && document.all) b = document.all; //IE5 doesn't know d.gEBTN("*")
 				for(j=0; j<b.length; j++) a[a.length] = b[j];
 			}
 		break;
