@@ -2,7 +2,7 @@
 /*
 
 TODO:
-	* Make keyboard-navigable (insert <a>s around branch labels
+	* Make keyboard-navigable (insert <a>s around branch labels)
 
 ISSUES:
 	* If <li> IDs are different across pages, persistence will be wrong (maybe associate URIs with IDs?)
@@ -57,7 +57,7 @@ function TreeMenuNode(elt) {
 }
 TreeMenuNode.prototype = {
 	create : function() {
-		var s, v, h, i;
+		var s, v, h, i, j;
 		s = this.element.style;
 			s.position="relative"; s.display="block"; s.listStyleType="none";
 		
@@ -82,12 +82,15 @@ TreeMenuNode.prototype = {
 				s = this.collapser.style; s.position="absolute"; s.top="4px"; s.left="2px";
 			this.element.appendChild(this.collapser);
 	
+			var expand = false;
 			if(typeof Cookie == "function") {
-				var cookie = new Cookie("treeMenuOpenNodes");
-				var id = this.element.getAttribute("id");
-				if(id && cookie.getValue().match(new RegExp("^(.*,)?" + id + "(,.*)?$"))) this.expand();
-				else this.collapse();
+				var nodes = new Cookie("treeMenuOpenNodes").getValue();
+				if(typeof nodes == "object") {
+					var id = this.element.getAttribute("id");
+					for(i in nodes) if(nodes[i]==id) expand = true;
+				}
 			}
+			if(expand) this.expand();
 			else this.collapse();
 		}
 		else {
@@ -117,25 +120,29 @@ TreeMenuNode.prototype = {
 	},
 	
 	expand : function() {
+		var i, c;
 		this.collapsed = false;
 		
 		//show children:
 		var kids = this.element.childNodes;
-			for(var i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="";
+			for(i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="";
 		
 		//change icon:
-		var c = this.collapser;
+		c = this.collapser;
 			c.src = "assets/minus.gif"; c.alt = "-"; c.title="Collapse";
 		
 		//persist state:
 		var id = this.element.getAttribute("id");
 		if(id && typeof Cookie == "function") {
 			var cookie = new Cookie("treeMenuOpenNodes");
-			var cookVal = cookie.getValue();
-			if(!cookVal.match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) {
-				cookie.setValue((cookVal ? cookVal + "," : "") + id);
-				cookie.setLifespan(60*60*24*365);
+			var oldNodes = cookie.getValue();
+			var newNodes = [];
+			if(typeof oldNodes == "object" && oldNodes.constructor == Array) {
+				for(i in oldNodes) if(oldNodes[i] != id) newNodes[newNodes.length] = oldNodes[i];
+				newNodes[newNodes.length] = id;
 			}
+			cookie.setValue(newNodes);
+			cookie.setLifespan(60*60*24*365);
 		}
 	},
 	
@@ -155,8 +162,12 @@ TreeMenuNode.prototype = {
 		var id = this.element.getAttribute("id");
 		if(id && typeof Cookie == "function") {
 			var cookie = new Cookie("treeMenuOpenNodes");
-			var cookVal = cookie.getValue().replace(new RegExp("^(.*,)?" + id + "(,.*)?$"), "$1$2").replace(/\$(1|2)/g, "").replace(/,+/g, ",");
-			cookie.setValue(cookVal);
+			var oldNodes = cookie.getValue();
+			var newNodes = [];
+			if(typeof oldNodes == "object" && oldNodes.constructor == Array) {
+				for(i in oldNodes) if(oldNodes[i] != id) newNodes[newNodes.length] = oldNodes[i];
+			}
+			cookie.setValue(newNodes);
 			cookie.setLifespan(60*60*24*365);
 		}
 	},
