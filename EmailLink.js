@@ -23,7 +23,7 @@ EmailLink.prototype = {
 
 		var lnk = this.EmailLinkLink = (document.createElementNS) ? document.createElementNS("http://www.w3.org/1999/xhtml","a") : document.createElement("a");
 		lnk.setAttribute("href","mailto:"+addr);
-		lnk.appendChild(document.createTextNode(addr));
+		lnk.appendChild(document.createTextNode(elt.getAttribute("title") || addr));
 		elt.replaceChild(lnk, (this.EmailLinkTextNode = elt.firstChild));
 	},
 	destroy : function() {
