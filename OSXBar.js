@@ -267,8 +267,10 @@ OSXBarIcon.prototype = {
 	},
 	destroy : function() {
 		this.icon.parentNode.removeChild(this.icon);
+		if(this.popupLabel) this.popupLabel.destroy();
+		if(this.popupSubmenu) this.popupSubmenu.destroy();
 		for(var i=0; (cont=this.contents[i]); i++) this.element.appendChild(cont);
-		this.labelNodeParent.insertBefore(this.labelNode,this.labelNodeParent.firstChild);
+		if(!this.link) this.labelNodeParent.insertBefore(this.labelNode,this.labelNodeParent.firstChild);
 		this.labelNodeParent.style.display = this.element.style.display = "";
 	}
 };
