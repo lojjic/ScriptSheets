@@ -1,14 +1,16 @@
 .tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid; cursor:default;}
 	.tree-menu ul {margin:0; padding:0;}
-	.tree-menu li {margin:0; padding:0; padding-left:19px; line-height:16px;}
+	.tree-menu li {position:relative; display:block; list-style-type:none; line-height:16px; margin:0; padding:0; margin-left:19px; /*padding gives incorrect origin for positioned children in IE, so use margin here with equal negative margin for collapser and outlines below*/}
+		/*select branch vs. leaf nodes:*/
 		.tree-menu li.tree-menu-node-branch {list-style-image:url(assets/icon-16x16.png); } /*has submenu*/
 		.tree-menu li.tree-menu-node-leaf {} /*no submenu*/
 	.tree-menu li img {margin-right:3px; vertical-align:bottom;}
 	.tree-menu :link, .tree-menu :visited {text-decoration:none; color:inherit;}
 	.tree-menu :link:hover, .tree-menu :visited:hover {text-decoration:underline;}
 
-.tree-menu-collapser {width:10px; height:10px; overflow:hidden; text-indent:12px; background:url(assets/minus.gif) no-repeat;}
+.tree-menu-collapser {position:absolute; top:4px; left:2px; width:10px; height:10px; overflow:hidden; text-indent:12px; margin-left:-19px; background:url(assets/minus.gif) no-repeat;}
 .tree-menu-collapser.collapsed {background-image:url(assets/plus.gif)}
 
-.tree-menu-outline-horizontal {border-top:1px dotted #666;}
-.tree-menu-outline-vertical {border-left:1px dotted #666;}
+.tree-menu-outline-horizontal {position:absolute; top:8px; left:8px; width:8px; border-top:1px dotted #666; margin-left:-19px;}
+.tree-menu-outline-vertical {position:absolute; top:0; left:6px; height:100%; line-height:0; border-left:1px dotted #666; margin-left:-19px;}
+	.tree-menu-outline-vertical.last-child-outline {height:8px;}

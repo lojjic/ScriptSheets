@@ -66,18 +66,15 @@ function TreeMenuNode(elt, open) {
 TreeMenuNode.prototype = {
 	create : function() {
 		var s, v, h, i, j;
-		s = this.element.style;
-			s.position="relative"; s.display="block"; s.listStyleType="none";
 		
 		//create dotted lines:
-		v = this.outlineVert = document.createElement("div");
+		v = this.outlineVert = document.createElement("span");
 			v.className = "tree-menu-outline-vertical";
-			s = v.style; s.position="absolute"; s.top="0"; s.left="6px"; s.height="100%";
 			var isLast=true; var e=this.element; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
-			if(isLast) s.height="8px";
-		h = this.outlineHoriz = document.createElement("div");
+			if(isLast) v.className += " last-child-outline";
+			else if(v.style.setExpression) v.style.setExpression("height","this.parentNode.offsetHeight"); //hack to make IE set height to 100% of <li>
+		h = this.outlineHoriz = document.createElement("span");
 			h.className = "tree-menu-outline-horizontal";
-			s = h.style; s.position="absolute"; s.top="8px"; s.left="8px"; s.width="8px";
 		this.element.appendChild(v);
 		this.element.appendChild(h);
 		
@@ -89,7 +86,6 @@ TreeMenuNode.prototype = {
 			
 			//create plus-minus icon:
 			this.collapser = document.createElement("div");
-				s = this.collapser.style; s.position="absolute"; s.top="4px"; s.left="2px";
 				this.collapser.className="tree-menu-collapser";
 				this.collapser.appendChild(document.createTextNode(""));
 			this.element.appendChild(this.collapser);
@@ -182,8 +178,6 @@ TreeMenuNode.prototype = {
 	destroy : function() {
 		var elt = this.element;
 		elt.className = elt.className.replace(/\btree-menu-node-(branch|leaf)\b/g, "");
-		var s = elt.style;
-			s.position = s.display = s.listStyleType = s.listStyleImage = "";
 		var uls = this.element.getElementsByTagName("ul");
 			for(var i=0; i<uls.length; i++) uls[i].style.display="";
 		elt.removeChild(this.outlineVert);
