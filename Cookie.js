@@ -15,7 +15,7 @@ Cookie.prototype = {
 			if(end == -1) end = str.length;
 			var value = str.substring(start, end);
 			
-			function decodeValue(str) {  {{{{}}}}
+			function decodeValue(str) {
 				switch(str.charAt(0)) {
 					case "{": //object
 						var obj = {};
@@ -93,6 +93,7 @@ Cookie.prototype = {
 		this.bake();
 		return setTo;
 	},
+	// NOTE: make sure you set the path before other props, otherwise you'll set multiple cookies.
 	setPath : function(setTo) {
 		this.path = setTo;
 		this.bake();
