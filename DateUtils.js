@@ -5,7 +5,7 @@
 Date.prototype.toFormat = function(formStr) {
 	var out = "";
 	var parts = [];
-	for(var c=0; c<formStr.length; c++) {
+	for(var c=0; c<formStr.length; c++) { //split into parts:
 		var ch = formStr.charAt(c);
 		if(ch != formStr.charAt(c-1) || c==0) parts[parts.length] = ch;
 		else parts[parts.length - 1] += ch;
@@ -32,4 +32,51 @@ Date.prototype.toFormat = function(formStr) {
 		else out += parts[i];
 	}
 	return out;
+}
+
+
+//XXX - this is a bit ugly and inconsistent; consider rethinking it.
+Date.prototype.fromFormat = function(formStr, dateStr) {
+	var formParts = [];
+	var dateParts = [];
+	if(formStr.length != dateStr.length) return; //strings must match length
+	
+	for(var c=0; c<formStr.length; c++) {
+		var formCh = formStr.charAt(c);
+		var dateCh = dateStr.charAt(c);
+		
+		//check that date string matches format string:
+		if(formCh.match(/[YMDhms]/)) {
+			if(!dateCh.match(/\d/)) return;
+		} else if(dateCh != formCh) return;
+		
+		
+		//split into parts:
+		if(formCh != formStr.charAt(c-1) || c==0) {
+			formParts[formParts.length] = formCh;
+			dateParts[dateParts.length] = dateCh;
+		}
+		else {
+			formParts[formParts.length - 1] += formCh;
+			dateParts[dateParts.length - 1] += dateCh;
+		}
+	}
+
+	//step through characters, inserting correct values for M, D, and Y:
+	for(var i=0; i<formParts.length; i++) {
+		var first = formParts[i].charAt(0); //first character in group
+		var len = formParts[i].length;
+		if(first=="M") this.setMonth(parseFloat(dateParts[i])-1);
+		else if(first=="D") this.setDate(parseFloat(dateParts[i]));
+		else if(first=="Y") {
+			var yr = parseFloat(dateParts[i]);
+			if(len==2) yr += (yr<50)?2000:1900;
+			this.setFullYear(yr);
+		}
+		else if(first=="h") this.setHours(parseFloat(dateParts[i]));
+		else if(first=="m") this.setMinutes(parseFloat(dateParts[i]));
+		else if(first=="s") this.setSeconds(parseFloat(dateParts[i]));
+	}
+	
+	return this;
 }

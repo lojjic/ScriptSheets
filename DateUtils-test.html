@@ -4,7 +4,7 @@
 <script type="text/javascript" src="IEtoW3C.js"></script>
 <script type="text/javascript" src="DateUtils.js"></script>
 <script type="text/javascript">
-	function onFormSubmitted(evt) {
+	function onForm1Submitted(evt) {
 		evt.preventDefault(); //stop submission
 
 		var pre = document.createElement("div");
@@ -12,8 +12,17 @@
 		document.getElementById('out').appendChild(pre);
 	}
 
+	function onForm2Submitted(evt) {
+		evt.preventDefault(); //stop submission
+
+		var pre = document.createElement("div");
+		pre.appendChild(document.createTextNode(new Date().fromFormat(this.fld1.value,this.fld2.value)));
+		document.getElementById('out').appendChild(pre);
+	}
+
 	function onDocLoaded() {
-		document.getElementsByTagName("form")[0].addEventListener("submit",onFormSubmitted,false);
+		document.getElementsByTagName("form")[0].addEventListener("submit",onForm1Submitted,false);
+		document.getElementsByTagName("form")[1].addEventListener("submit",onForm2Submitted,false);
 	}
 
 	window.addEventListener("load",onDocLoaded,false);
@@ -23,12 +32,21 @@
 <body>
 
 	<form action="javascript:alert('Hi. You should not see this message.');">
-		<p>Enter a string in the field below describing the format in which you want to present today's date.
+		<p>1) Enter a string in the field below describing the format in which you want to present today's date.
 			<br>Examples: <samp>MM/DD/YYYY, YYYY-MM-DD, MM.DD.YY, hh:mm:ss</samp>
 		</p>
 		<p>
 			<input type="text" name="fld" value="">
 			<input type="submit" value="Format">
+		</p>
+	</form>
+
+	<form action="javascript:alert('Hi. You should not see this message.');">
+		<p>2) Enter a date format string (like above) and then a date in that format.</p>
+		<p>
+			Format:<input type="text" name="fld1" value="">
+			Date in that format:<input type="text" name="fld2" value="">
+			<input type="submit" value="Interpret">
 		</p>
 	</form>
 
