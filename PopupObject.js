@@ -40,8 +40,8 @@ PopupObject.prototype = {
 		this.popupNode.style.position="absolute";
 		
 		var wW,wH,cX,cY,sX,sY,pW,pH,pX,pY;
-		wW=window.innerWidth || document.body.clientWidth;
-		wH=window.innerHeight || document.body.clientHeight;
+		wW=document.body.clientWidth || window.innerWidth;
+		wH=document.body.clientHeight || window.innerHeight;
 		cX=(pos[1]) ? evt.clientX + parseInt(pos[1]) : evt.clientX;
 		cY=(pos[2]) ? evt.clientY + parseInt(pos[2]) : evt.clientY;
 		sX=window.scrollX || document.body.scrollLeft;
@@ -59,8 +59,8 @@ PopupObject.prototype = {
 		if(pos[0].indexOf("bottom")>=0) pY=pY+sY-pH;
 		else pY+=sY;
 
-		if(pX-sX+pW > wW) pX=wW+sX-pW-2;
-		if(pY-sY+pH > wH) pY=wH+sY-pH-2;
+		if(pX-sX+pW > wW) pX=wW+sX-pW-4;
+		if(pY-sY+pH > wH) pY=wH+sY-pH-4;
 		if(pX-sX < 2) pX=sX+2;
 		if(pY-sY < 2) pY=sY+2;
 
