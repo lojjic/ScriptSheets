@@ -67,49 +67,58 @@ ScriptSheet.getPreferredStyle = function() {
 
 // Take a CSS selector string and return all matching elements:
 ScriptSheet.matchSelector = function(sel) {
+	var i, j, p, a, b;
+	
 	sel = sel.replace(/\s+/g, " "); //collapse whitespaces to a single space
 	sel = sel.replace(/\s*([>\+=])\s*/g, "$1"); //strip extra whitespace around combinators 
+	sel = sel.replace(/\s*,\s*/g, ", ");
 	sel = sel.replace(/^\s*(\S*)\s*$/, "$1"); //and at start and end of string
-	if(sel.charAt(0) != "#") sel = " "+sel; //initial descendant selector unless starts with #id
+	sel = (sel.charAt(0)!="#" ? " " : "") + sel + ","; //initial descendant selector unless starts with #id, add comma on end to mark end of selector
 	sel = sel.replace(/([ >\+])([\.\[#])/g, "$1*$2"); //insert universal selector where it is optionally omitted
 	
-	var i, j, p, a, b;
-	//var parts = sel.split(/([#\. >\+]|\[[^\]]*\])/); //XXX - need to mimic this bc IE doesn't return paranthesized separators
+	//var parts = sel.split(/([#\. >\+,]|\[[^\]]*\])/); //XXX - have to mimic this bc IE doesn't return paranthesized separators
 	var parts = [];
 	while(sel.length > 0) {
 		switch(sel.charAt(0)) {
-			case "#": case ".": case " ": case ">": case "+":
+			case "#": case ".": case " ": case ">": case "+": case ",":
 				parts[parts.length] = sel.charAt(0);
 				sel = sel.substring(1);
 			break;
 			case "[":
-				i = sel.indexOf("]");
-				parts[parts.length] = sel.substring(0,i+1);
-				sel = sel.substring(i+2);
+				i = sel.indexOf("]")+1;
+				parts[parts.length] = sel.substring(0,i);
+				sel = sel.substring(i);
 			break;
 			default:
-				a = sel.match(/^([^#\. >\+\[]+)(.*)$/);
+				a = sel.match(/^([^#\. >\+\[,]+)(.*)$/);
 				parts[parts.length] = a[1];
 				sel = a[2];
 		}
 	}
+	//alert(parts);
 	
+	var allElts = [];
 	var elts = [document];
 	
 	for(p=0; p<parts.length; p++) {
 		a = [];
 		switch(parts[p].charAt(0)) {
 			case "": break; //ignore blank remnants of split
+			case ",": //feed matches onto full list, reset temp list
+				for(i in elts) {
+					allElts[allElts.length] = elts[i];
+				}
+				a = [document];
+			break;
 			case "#":
 				p++;
 				if(elts[0]==document) { //if no previous context, do it fast:
-					a = document.getElementById(parts[p]);
-					elts = a ? [a] : [];
+					b = document.getElementById(parts[p]);
+					a = b ? [b] : [];
 				} else {
 					for(i=0; i<elts.length; i++) {
 						if(elts[i].getAttribute("id") == parts[p]) a[a.length] = elts[i];
 					}
-					elts = a;
 				}
 			break;
 			case ".": //class
@@ -118,18 +127,16 @@ ScriptSheet.matchSelector = function(sel) {
 					b = elts[i].className || elts[i].getAttribute("class") || elts[i].getAttribute("className");
 					if(b && b.match(new RegExp("\\b" + parts[p] + "\\b"))) a[a.length] = elts[i];
 				}
-				elts = a;
 			break;
 			case "[": //attribute
 				b = parts[p].match(/^\[([^\]=]+)(=([^\]]*))?\]$/);
 				if(b) {
-					var attr = b[1]; var val = b[3];
-					if(val) val=val.replace(/^(['"])([^\1]*)\1$/,"$2"); //remove quotes
-					for(i=0; i<elts.length; i++) {
-						if((!val && elts[i].getAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
-					}
+				var attr = b[1]; var val = b[3];
+				if(val) val=val.replace(/^(['"])([^\1]*)\1$/,"$2"); //remove quotes
+				for(i=0; i<elts.length; i++) {
+					if((!val && elts[i].getAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
 				}
-				elts = a;
+				}
 			break;
 			case " ": //descendant
 				p++;
@@ -137,14 +144,12 @@ ScriptSheet.matchSelector = function(sel) {
 					b = elts[i].getElementsByTagName(parts[p]);
 					for(j=0; j<b.length; j++) a[a.length] = b[j];
 				}
-				elts = a;
 			break;
 			case ">": //child
 				for(i=0; i<elts.length; i++) {
 					b = elts[i].childNodes;
 					for(j=0; j<b.length; j++) if(b[j].nodeType==1) a[a.length] = b[j];
 				}
-				elts = a;
 			break;
 			case "+": //nextSibling
 				for(i=0; i<elts.length; i++) {
@@ -152,16 +157,15 @@ ScriptSheet.matchSelector = function(sel) {
 					while(b && b.nodeType != 1) b = b.nextSibling;
 					if(b) a[a.length] = b;
 				}
-				elts = a;
 			break;
 			default: //element:
 				for(i=0; i<elts.length; i++) {
 					if(parts[p] == "*" || elts[i].nodeName.toLowerCase() == parts[p]) a[a.length] = elts[i];
 				}
-				elts = a;
 		}
+		elts = a;
 	}
-	return elts;
+	return allElts;
 };
 ScriptSheet.switchTo = function(title) {
 	var i, lnk, rel, ttl, hrf, match, c;
