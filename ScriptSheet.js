@@ -164,10 +164,18 @@ ScriptSheet.matchSelector = function(sel) {
 	}
 	return allElts;
 };
+ScriptSheet.activeSheets = []; //will hold list of active sheets
 ScriptSheet.switchTo = function(title) {
 	var i, lnk, rel, ttl, hrf, match, c;
 	var lnks = document.getElementsByTagName("link")
-	var scripts = [];
+	var sheets = ScriptSheet.activeSheets;
+	
+	//disable all active sheets, in reverse order to avoid side-effects
+	while(sheets.length > 0) {
+		sheets[sheets.length-1].disable();
+		sheets.length--;
+	}
+	
 	for(i=0; (lnk=lnks[i]); i++) {
 		rel = lnk.getAttribute("rel");
 		ttl = lnk.getAttribute("title");
@@ -177,16 +185,16 @@ ScriptSheet.switchTo = function(title) {
 			else {
 				hrf = hrf.substring(hrf.indexOf("#")+1);
 				if(!lnk.scriptSheet) lnk.scriptSheet = new ScriptSheet(ttl, hrf);
-				lnk.scriptSheet.disable();
-				if(ttl == title || (!ttl && title != "[null]")) scripts[scripts.length] = lnk.scriptSheet; //add to list
+				if(ttl == title || (!ttl && title != "[null]")) sheets[sheets.length] = lnk.scriptSheet; //add to list
 			}
 		}
 	}
 	//enable all matching scripts:
-	for(i=0; i<scripts.length; i++) scripts[i].enable();
+	for(i=0; i<sheets.length; i++) sheets[i].enable();
 	//remember choice:
 	if(window.Cookie) {
 		c = new Cookie("preferredStyle");
+		c.setPath("/");
 		c.setLifespan(60*60*24*365);
 		c.setValue(title || "");
 	}
