@@ -1,10 +1,12 @@
 .tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid; cursor:default;}
 	.tree-menu ul {margin:0; padding:0;}
-	.tree-menu li {margin:0; padding:0; padding-left:16px;}
+	.tree-menu li {margin:0; padding:0; padding-left:19px;}
 		.tree-menu li.tree-menu-node-branch {list-style-image:url(assets/icon-16x16.png); } /*has submenu*/
-		.tree-menu li.tree-menu-node-leaf {padding-left:19px;} /*no submenu*/
-		.tree-menu li#item2 {list-style-image:none;}
+		.tree-menu li.tree-menu-node-leaf {} /*no submenu*/
 	.tree-menu li img {margin-right:3px; vertical-align:bottom;}
 	.tree-menu :link, .tree-menu :visited {text-decoration:none; color:inherit;}
 	.tree-menu :link:hover, .tree-menu :visited:hover {text-decoration:underline;}
+
+.tree-menu-collapser {width:10px; height:10px; overflow:hidden; text-indent:12px; background:url(assets/minus.gif) no-repeat;}
+.tree-menu-collapser.collapsed {background-image:url(assets/plus.gif)}
 

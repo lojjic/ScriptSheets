@@ -78,8 +78,10 @@ TreeMenuNode.prototype = {
 			this.element.addEventListener("click", this.clickHandler=function(evt){thisRef.onClick(evt);}, false);
 			
 			//create plus-minus icon:
-			this.collapser = document.createElement("img");
+			this.collapser = document.createElement("div");
 				s = this.collapser.style; s.position="absolute"; s.top="4px"; s.left="2px";
+				this.collapser.className="tree-menu-collapser";
+				this.collapser.appendChild(document.createTextNode(""));
 			this.element.appendChild(this.collapser);
 	
 			var expand = false;
@@ -129,7 +131,9 @@ TreeMenuNode.prototype = {
 		
 		//change icon:
 		c = this.collapser;
-			c.src = "assets/minus.gif"; c.alt = "-"; c.title="Collapse";
+			c.firstChild.nodeValue = "-"; 
+			c.title = "Collapse"; 
+			c.className = c.className.replace(/\bcollapsed\b/,"");
 		
 		//persist state:
 		var id = this.element.getAttribute("id");
@@ -156,8 +160,10 @@ TreeMenuNode.prototype = {
 		
 		//change icon:
 		var c = this.collapser;
-			c.src = "assets/plus.gif"; c.alt = "+"; c.title="Expand";
-		
+			c.firstChild.nodeValue = "+"; 
+			c.title = "Expand"; 
+			c.className += " collapsed";
+			
 		//persist state:
 		var id = this.element.getAttribute("id");
 		if(id && typeof Cookie == "function") {
