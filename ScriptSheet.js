@@ -126,7 +126,7 @@ ScriptSheet.matchSelector = function(sel) {
 					var attr = b[1]; var val = b[3];
 					if(val) val=val.replace(/^(['"])([^\1]*)\1$/,"$2"); //remove quotes
 					for(i=0; i<elts.length; i++) {
-						if((!val && elts[i].hasAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
+						if((!val && elts[i].getAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
 					}
 				}
 				elts = a;
