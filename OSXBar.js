@@ -124,17 +124,19 @@ OSXBar.prototype = {
 	
 	setSizeAndPosition : function() {
 		var isVertical = (this.edge=="left" || this.edge=="right");
+		var isTopLeft  = (this.edge=="left" || this.edge=="top");
 		
 		//find total size of all icons:
 		var iconLength = 0;
 		for(var i=0; i<this.icons.length; i++) iconLength += this.icons[i].size;
 		
 		var edgeLen = isVertical ? (window.innerHeight || document.body.clientHeight) : (window.innerWidth || document.body.clientWidth); //width or height of window
-		var scroll = isVertical ? (window.scrollY || document.body.scrollTop) : (window.scrollX || document.body.scrollLeft);
+		var scrollX = (window.scrollX || document.body.scrollLeft || 0);
+		var scrollY = (window.scrollY || document.body.scrollTop  || 0);
 		var lngth  = iconLength + this.icons.length * this.iconSpacing;
 		var girth  = this.iconMinSize + this.iconSpacing;
-		var toSide = (this.position = edgeLen / 2 - lngth / 2 + scroll) + "px";
-		var toEdge = (this.iconSpacing / 2) + "px";
+		var toSide = (this.position = edgeLen / 2 - lngth / 2 + (isVertical ? scrollY : scrollX)) + "px";
+		var toEdge = (this.iconSpacing / 2 + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
 		var l,t,r,b,h,w;
 		switch(this.edge) {
 			case "top": l=toSide; t=toEdge; h=girth; w=lngth; break;
