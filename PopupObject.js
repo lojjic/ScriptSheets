@@ -13,15 +13,17 @@ PopupObject.prototype = {
 		PopupObject.destroyType(this.popupType);
 		var thisRef = PopupObject.popupsByType[this.popupType] = this;
 
-		evt.stopPropagation(); //avoid immediate destruction
-		evt.preventDefault(); //cancels link if any
+		if(evt) {
+			evt.stopPropagation(); //avoid immediate destruction
+			evt.preventDefault(); //cancels link if any
+		}
 		document.addEventListener("mousedown",this.docMousedownHandler=function(){thisRef.destroy()},false);
 		window.addEventListener("keypress",this.docKeypressHandler=function(evt){thisRef.keypressed(evt)},false);
 
 		this.popupNode=document.createElement("div")
 		this.popupNode.className=this.popupType; //default class - can override in constructor
 		this.popupNode.addEventListener("mousedown",this.pressed,false);
-		document.getElementsByTagName("body").item(0).appendChild(this.popupNode);
+		this.parentElement().appendChild(this.popupNode);
 	},
 
 	setPosition : function(evt,posString) {
@@ -63,6 +65,10 @@ PopupObject.prototype = {
 		return parseFloat(getComputedStyle(this.popupNode,null).getPropertyValue(prop));
 	},
 
+	parentElement : function() {
+		return document.getElementsByTagName("body").item(0);
+	},
+
 	keypressed : function(evt) { //destroys popup if Esc key pressed
 		if(evt.keyCode==27) {
 			evt.stopPropagation();
@@ -77,7 +83,7 @@ PopupObject.prototype = {
 	destroy : function() {
 		var d = document;
 		var thisRef = this;
-		d.getElementsByTagName("body").item(0).removeChild(this.popupNode);
+		if(this.popupNode.parentNode) this.parentElement().removeChild(this.popupNode);
 		PopupObject.popupsByType[this.popupType]=null;
 		setTimeout(function(){
 			d.removeEventListener("mousedown",thisRef.docMousedownHandler,false);
