@@ -104,6 +104,7 @@ TreeMenuNode.prototype = {
 			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
 			elt.insertBefore(this.icon, elt.firstChild);
 		}
+		elt.style.listStyleImage = "none";
 	},
 	
 	onClick : function(evt) {
@@ -165,8 +166,9 @@ TreeMenuNode.prototype = {
 	destroy : function() {
 		var i;
 		var elt = this.element;
-		delete elt.treeMenuNode;
+		elt.treeMenuNode = null;
 		elt.className = elt.className.replace(/\btree-menu-node-(branch|leaf)\b/g, "");
+		elt.style.listStyleImage = "";
 		var uls = this.element.getElementsByTagName("ul");
 			for(i=0; i<uls.length; i++) uls[i].style.display="";
 		elt.removeChild(this.outlineVert);
