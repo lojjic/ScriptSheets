@@ -73,10 +73,11 @@ TreeMenuNode.prototype = {
 		this.element.appendChild(h);
 		
 		//create icon from list-style-image:
-		var iconSrc = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image");
-		if(iconSrc.match(/^url\(/)) {
+		var lsImg = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image");
+		this.element.style.listStyleImage = "none";
+		if(lsImg.indexOf("url(") == 0) {
 			this.icon = document.createElement("img");
-			this.icon.src = iconSrc.replace(/^url\("?([^"]*)"?\)$/,"$1");
+			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
 			this.element.insertBefore(this.icon, this.element.firstChild);
 		}
 
@@ -154,7 +155,8 @@ TreeMenuNode.prototype = {
 	
 	destroy : function() {
 		var s = this.element.style;
-			s.position = s.display = s.listStyleType = "";
+			s.position = s.display = s.listStyleType = s.listStyleImage = "";
+			
 		var uls = this.element.getElementsByTagName("ul");
 			for(var i=0; i<uls.length; i++) uls[i].style.display="";
 		this.element.removeChild(this.outlineVert);
