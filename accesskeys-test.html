@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>test page for accesskey underlining</title>
+
+	<script language="JavaScript" src="IEtoW3C.js"></script>
+	<script language="JavaScript" src="accesskeys.js"></script>
+
+	<style type="text/css">
+	em.accesskey {font-style:normal; font-weight:bold; border-bottom:1px dotted;}
+	</style>
+
+</head>
+
+<body>
+
+
+	<p>
+		Here is a <a href="" accesskey="l">link</a> and here is <a href="" accesskey="a">another</a>.
+		Here's one where the <a href="" accesskey="n">accesskey is not the first letter</a>.
+		The first occurrence of the accesskey should be <a href="" accesskey="e">the only one modified</a>, even on links with <a href="" accesskey="c"><span><em>multiple</em> child</span> nodes</a>.
+	</p>
+
+
+</body>
+</html>
+

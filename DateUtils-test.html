@@ -1,0 +1,38 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C.js"></script>
+<script type="text/javascript" src="DateUtils.js"></script>
+<script type="text/javascript">
+	function onFormSubmitted(evt) {
+		evt.preventDefault(); //stop submission
+
+		var pre = document.createElement("div");
+		pre.appendChild(document.createTextNode(new Date().toFormat(this.fld.value)));
+		document.getElementById('out').appendChild(pre);
+	}
+
+	function onDocLoaded() {
+		document.getElementsByTagName("form")[0].addEventListener("submit",onFormSubmitted,false);
+	}
+
+	window.addEventListener("load",onDocLoaded,false);
+</script>
+
+</head>
+<body>
+
+	<form action="javascript:alert('Hi. You should not see this message.');">
+		<p>Enter a string in the field below describing the format in which you want to present today's date.
+			<br>Examples: <samp>MM/DD/YYYY, YYYY-MM-DD, MM.DD.YY, hh:mm:ss</samp>
+		</p>
+		<p>
+			<input type="text" name="fld" value="">
+			<input type="submit" value="Format">
+		</p>
+	</form>
+
+	<div id="out"></div>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C.js"></script>
+<script type="text/javascript" src="menus.js"></script>
+
+<style type="text/css">
+* {font-family:sans-serif;}
+
+ul.dropdown-menu {margin:0; padding:0; position:absolute; left:300px; top:0;}
+	.dropdown-menu li {display:inline; list-style-type:none; position:relative;}
+	.dropdown-menu li a {padding:2px 10px;}
+	.dropdown-menu li li.menu-branch {background-image:url(assets/menu_arrow.gif); background-repeat:no-repeat; background-position:100% 50%;}
+	.dropdown-menu li.menu-branch a {padding:0;}
+	.dropdown-menu li.menu-branch ul {z-index:9999; position:absolute; top:1.2em; left:0; margin:0; padding:0; width:150px; background:#EEE; border:1px outset;}
+	.dropdown-menu li.menu-branch ul ul {top:3px; left:98%;}
+	.dropdown-menu li.menu-branch-collapsed ul {display:none;}
+	.dropdown-menu li li {display:block;}
+
+
+ul.tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid;}
+	.tree-menu ul {margin:0; padding:0; margin-left:0px;}
+	.tree-menu li {display:block; list-style-type:none; margin:0; padding:0; padding-left:13px;}
+	.tree-menu li.menu-branch {background-image:url(assets/minus.gif); background-repeat:no-repeat;}
+	.tree-menu li.menu-branch-collapsed {background-image:url(assets/plus.gif);}
+	.tree-menu li.menu-branch-collapsed ul {display:none;}
+</style>
+</head>
+
+<body>
+
+<ul class="dropdown-menu">
+	<li>Main Item 1
+		<ul>
+			<li><a href="">Sub Item 1 1</a></li>
+			<li><a href="">Sub Item 1 2</a></li>
+			<li>Sub Item 1 3
+				<ul>
+					<li><a href="">Sub Sub Item 1 3 1</a></li>
+					<li><a href="">Sub Sub Item 1 3 2</a></li>
+					<li><a href="">Sub Sub Item 1 3 3</a></li>
+				</ul>
+			</li>
+			<li>Sub Item 1 4
+				<ul>
+					<li><a href="">Sub Sub Item 1 4 1</a></li>
+					<li><a href="">Sub Sub Item 1 4 2</a></li>
+					<li><a href="">Sub Sub Item 1 4 3</a></li>
+				</ul>
+			</li>
+			<li><a href="">Sub Item 1 5</a></li>
+		</ul>
+	</li>
+	<li>Main Item 2
+		<ul>
+			<li><a href="">Sub Item 2 1</a></li>
+			<li><a href="">Sub Item 2 2</a></li>
+			<li><a href="">Sub Item 2 3</a></li>
+			<li><a href="">Sub Item 2 4</a></li>
+			<li><a href="">Sub Item 2 5</a></li>
+		</ul>
+	</li>
+	<li>Main Item 3
+		<ul>
+			<li><a href="">Sub Item 3 1</a></li>
+			<li><a href="">Sub Item 3 2</a></li>
+			<li><a href="">Sub Item 3 3</a></li>
+			<li><a href="">Sub Item 3 4</a></li>
+			<li><a href="">Sub Item 3 5</a></li>
+		</ul>
+	</li>
+</ul>
+
+<ul class="tree-menu">
+	<li>Main Item 1
+		<ul>
+			<li><a href="">Sub Item 1 1</a></li>
+			<li><a href="">Sub Item 1 2</a></li>
+			<li>Sub Item 1 3
+				<ul>
+					<li><a href="">Sub Sub Item 1 3 1</a></li>
+					<li><a href="">Sub Sub Item 1 3 2</a></li>
+					<li><a href="">Sub Sub Item 1 3 3</a></li>
+				</ul>
+			</li>
+			<li>Sub Item 1 4
+				<ul>
+					<li><a href="">Sub Sub Item 1 4 1</a></li>
+					<li><a href="">Sub Sub Item 1 4 2</a></li>
+					<li><a href="">Sub Sub Item 1 4 3</a></li>
+				</ul>
+			</li>
+			<li><a href="">Sub Item 1 5</a></li>
+		</ul>
+	</li>
+	<li>Main Item 2
+		<ul>
+			<li><a href="">Sub Item 2 1</a></li>
+			<li><a href="">Sub Item 2 2</a></li>
+			<li><a href="">Sub Item 2 3</a></li>
+			<li><a href="">Sub Item 2 4</a></li>
+			<li><a href="">Sub Item 2 5</a></li>
+		</ul>
+	</li>
+	<li>Main Item 3
+		<ul>
+			<li><a href="">Sub Item 3 1</a></li>
+			<li><a href="">Sub Item 3 2</a></li>
+			<li><a href="">Sub Item 3 3</a></li>
+			<li><a href="">Sub Item 3 4</a></li>
+			<li><a href="">Sub Item 3 5</a></li>
+		</ul>
+	</li>
+</ul>
+
+</body>
+</html>
+
+
+
+
+

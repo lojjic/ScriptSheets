@@ -1,0 +1,40 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C.js"></script>
+<script type="text/javascript" src="PopupObject.js"></script>
+<script type="text/javascript" src="TitleTips.js"></script>
+<style type="text/css">
+* {font-family:sans-serif;}
+.titletip-node {
+	position:absolute;
+	border:1px solid #CCC;
+	padding:.2em 1em;
+	background:#DEF;
+	font-size:smaller;
+}
+
+p {border:1px solid #CCC; padding:.5em;}
+acronym {border-bottom:1px dotted;}
+</style>
+</head>
+
+<body>
+
+<p>
+	This is a bunch of text blah blah blah.  This
+	<a href="#" title="This link goes to nowhere.">link</a>
+	should have a title-tip.  <acronym title="So Should This Acronym">SSTA</acronym>.
+</p>
+
+<p title="This entire paragraph will have a very long titletip. This is to test what will happen when there is a lot of text within a title attribute on an element.  It should wrap as necessary to show all the content without scrolling.">This entire paragraph will have a very long titletip.</p>
+
+<p>This will be a case of nested titled elements: <a href="#" title="outside element">The following words are <strong title="inside element">strongly emphasized</strong> for your convenience.</a></p>
+
+</body>
+</html>
+
+
+
+
+

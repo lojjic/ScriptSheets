@@ -1,0 +1,85 @@
+<html>
+<head>
+<script type="text/javascript" src="LoadListener.js"></script>
+<script type="text/javascript">
+var startDate = new Date();
+window.onload = function() {
+	window.status += " --- All loaded: " + (new Date() - startDate) + "ms";
+}
+function handleLoad1() {
+	window.status += " --- Handler 1: " + (new Date() - startDate) + "ms";
+	//document.write("<b>[[[ Handler #1 has fired. ]]]</b>");
+}
+function handleLoad2() {
+	window.status += " --- Handler 2: " + (new Date() - startDate) + "ms";
+	//document.write("<b>[[[ Handler #2 has fired. ]]]</b>");
+}
+function handleLoad3() {
+	window.status += " --- Handler 3: " + (new Date() - startDate) + "ms";
+	//document.write("<b>[[[ Handler #3 has fired. ]]]</b>");
+}
+function handleLinkLoad() {
+	this.href = "success.html";
+}
+
+var myLoader = new LoadListener();
+var loaderObj = myLoader.getElementById("theElement")
+	loaderObj.addHandler(handleLoad1);
+	loaderObj.addHandler(handleLoad2);
+var loaderObj = myLoader.getElementById("theElement2")
+	loaderObj.addHandler(handleLoad3);
+var loaderObj = myLoader.getElementById("theElement2")
+	loaderObj.addHandler(handleLoad3);
+
+var loaderObj = myLoader.getElementsByTagName("a");
+	loaderObj.addHandler(handleLinkLoad);
+
+</script>
+
+</head>
+<body>
+
+
+<div id="theElement">This is the element.</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div id="theElement2">This is another element.</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<div><a href="">filler</a> filler filler filler filler filler filler filler filler filler filler filler filler filler filler filler</div>
+<img src="http://www.mozilla.org/images/mozilla-banner.gif">
+<script>
+window.status += " --- HTML loaded: " + (new Date() - startDate) + "ms";
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C.js"></script>
+<script type="text/javascript" src="PopupObject.js"></script>
+<script type="text/javascript" src="PopupCalendar.js"></script>
+
+<style type="text/css">
+/*=== POPUP CALENDAR: ===*/
+
+.popup-calendar {position:absolute;left:-400px;z-index:9999;background:#D4D0C8;font-family:Verdana,Arial,sans-serif;width:160px;height:140px;border:1px outset #777;}
+.calendar-head {text-align:center;font-size:11px;height:14px;}
+.calendar-prev-arrow, .calendar-next-arrow {position:absolute;width:18px;height:14px;top:0px;border:0px;padding:0px;cursor:pointer;cursor:hand;}
+.calendar-prev-arrow {left:0px;background:url(assets/cal_arrow_left.gif) no-repeat 50% 50%;}
+.calendar-next-arrow {right:0px;background:url(assets/cal_arrow_right.gif) no-repeat 50% 50%;}
+
+.popup-calendar table {border-spacing:0px;border-collapse:separate;table-layout:fixed;width:100%;text-align:center;}
+.popup-calendar table thead tr th {height:18px;font-size:11px;font-weight:normal;color:#FFF;background:#847C69;text-align:center;}
+.calendar-date {font-size:11px;height:18px;border:1px solid #D4D0C8;cursor:default;text-align:center;} /* date cells */
+	.calendar-date.in-range {border-color:#666 transparent #FFF;}
+	.calendar-date.in-range:first-child, .calendar-date.start-range {border-left-color:#666;}
+	.calendar-date.in-range:last-child, .calendar-date.end-range {border-right-color:#FFF;}
+.calendar-date-today {background:#666;color:#FFF;} /*today's date*/
+.calendar-date-current {color:#FFF;border:1px solid #FFF;} /*current date in field*/
+.calendar-date.hover {border:1px solid #FFF;}
+
+.calendar-button {border:2px outset #FFF; padding:3px; background:#CCC;}
+
+</style>
+
+</head>
+
+<body>
+
+	<h1>Test Popup Calendar Widget:</h1>
+	<p>The field below just has <code>class="date"</code> on it. The JavaScript hooks up the calendar button automatically.</p>
+
+	<p><input type="text" size="10" maxlength="10" class="date"></p>
+
+
+
+
+</body>
+</html>
