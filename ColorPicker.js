@@ -108,6 +108,7 @@ ColorPickerSwatch.prototype = {
 		cell.title = "#" + (cell.style.backgroundColor = this.color);
 		if(this.color==this.picker.field.value) cell.className = "color-picker-selected";
 		cell.addEventListener("click", function(evt){thisRef.onClick(evt);}, false);
+		if(typeof TitleTip == "function") new TitleTip(cell);
 	},
 	onClick : function(evt) {
 		this.picker.field.value = this.color; 
