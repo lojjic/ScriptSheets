@@ -55,11 +55,31 @@ PopupObject.prototype = {
 		if(pX-sX < 2) pX=sX+2;
 		if(pY-sY < 2) pY=sY+2;
 
-		with (this.popupNode.style) {
-			left=pX+"px"; top=pY+"px";
-		}
+		var s = this.popupNode.style;
+		s.left=pX+"px"; s.top=pY+"px";
 		//window.status = pX + " x " + pY;
 	},
+
+	/* BEGIN EFFECTS (Should perhaps be in separate file?) */
+	opacity : 0,
+	fadeIn : function() {
+		if(this.opacity > 100) return;
+		this.popupNode.style.MozOpacity = this.opacity + "%";
+		this.popupNode.style.filter = "alpha(opacity=" + this.opacity + ")";
+		this.opacity += 10;
+		var thisRef = this;
+		setTimeout(function(){thisRef.fadeIn()},30);
+	},
+	clipping : 0,
+	swipeIn : function() { //bleech! works poorly.
+		// TODO: let user specify direction of swipe in parameter
+		if(this.clipping > 110) return;
+		this.popupNode.style.clip = "rect(0," + this.clipping + "px,100%,0)";
+		this.clipping += 10;
+		var thisRef = this;
+		setTimeout(function(){thisRef.swipeIn()},30);
+	},
+	/* END EFFECTS */
 
 	getLength : function(prop) {
 		return parseFloat(getComputedStyle(this.popupNode,null).getPropertyValue(prop));
@@ -81,12 +101,11 @@ PopupObject.prototype = {
 	},
 
 	destroy : function() {
-		var d = document;
 		var thisRef = this;
-		if(this.popupNode.parentNode) this.parentElement().removeChild(this.popupNode);
-		PopupObject.popupsByType[this.popupType]=null;
+		if(this.popupNode.parentNode) this.popupNode.parentNode.removeChild(this.popupNode);
+		if(typeof PopupObject == "function") PopupObject.popupsByType[this.popupType]=null;
 		setTimeout(function(){
-			d.removeEventListener("mousedown",thisRef.docMousedownHandler,false);
+			document.removeEventListener("mousedown",thisRef.docMousedownHandler,false);
 			window.removeEventListener("keypress",thisRef.docKeypressHandler,false);
 		},0);
 	}
