@@ -1,0 +1,34 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="RoundedCorners.js"></script>
+<script type="text/javascript" src="ScriptSheet.js"></script>
+<link rel="scriptsheet" type="text/javascript" href="RoundedCorners.js#RoundedCorners" title="default" />
+
+<style type="text/css">
+.rounded-corners {border:1px solid #CCC; padding:2em;}
+.rounded-corner {width:12px; height:12px; border:solid red;}
+.top-left {border-width:1px 0 0 1px;}
+.top-right {border-width:1px 1px 0 0;}
+.bottom-left {border-width:0 0 1px 1px;}
+.bottom-right {border-width:0 1px 1px 0;}
+</style>
+
+</head>
+
+<body>
+
+	<h1>Test Rounded Corners:</h1>
+	
+	<p>The RoundedCorners script runs as a <a href="ScriptSheet.js" title="Framework for applying scripts as styles and switching between them">ScriptSheet</a>.
+		<input type="button" onclick="RoundedCorners.enableScriptSheet()" value="Enable ScriptSheet">
+		<input type="button" onclick="RoundedCorners.disableScriptSheet()" value="Disable ScriptSheet">
+	</p>
+		
+	<p class="rounded-corners">
+		This paragraph should have rounded corners. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph. The rest of this text is to fill up the paragraph.
+	</p>
+	
+</body>
+</html>
