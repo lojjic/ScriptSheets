@@ -22,6 +22,7 @@ function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is req
 OSXBar.prototype = {
 	scaled : false,
 	scalingLocked : false,
+	pos : 0,
 
 	create : function() {
 		var i,j,k;
@@ -106,7 +107,7 @@ OSXBar.prototype = {
 		var scrollY = (window.scrollY || document.body.scrollTop  || 0);
 		var lngth  = iconLength + this.icons.length * this.iconSpacing;
 		var girth  = this.iconMinSize + this.iconSpacing;
-		var toSide = (this.position = edgeLen / 2 - lngth / 2 + (isVertical ? scrollY : scrollX)) + "px";
+		var toSide = (this.pos = edgeLen / 2 - lngth / 2 + (isVertical ? scrollY : scrollX)) + "px";
 		var toEdge = (this.iconSpacing / 2 + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
 		var l,t,r,b,h,w;
 		switch(this.edge) {
@@ -145,6 +146,7 @@ function OSXBarIcon(elt, bar) {
 	this.create();
 }
 OSXBarIcon.prototype = {
+	pos : 0,
 	create : function() {
 		//get label (first text node):
 		function getFirstTextNode(inNode) {
@@ -173,6 +175,7 @@ OSXBarIcon.prototype = {
 		//create icon, set initial position:
 		var liImg = getComputedStyle(this.element,null).getPropertyValue("list-style-image");
 		var icon = this.icon = document.createElement(liImg ? "img" : "span");
+			icon.className = "osx-bar-icon";
 			if(liImg && liImg != "none") {
 				icon.alt = this.label;
 				icon.src = liImg.replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
@@ -235,17 +238,17 @@ OSXBarIcon.prototype = {
 		if(evt) {
 			var scroll = isVertical ? (window.scrollY || document.body.scrollTop) : (window.scrollX || document.body.scrollLeft);
 			var mousePos = isVertical ? evt.clientY : evt.clientX;
-			var mouseDist = Math.abs(mousePos + scroll - bar.position - this.position - this.size/2) - this.size/2;
+			var mouseDist = Math.abs(mousePos + scroll - bar.pos - this.pos - this.size/2) - this.size/2;
 			if(mouseDist < 0) mouseDist = 0;
 			newSize = bar.iconMaxSize - mouseDist / bar.scaleReach;
 			if(newSize < bar.iconMinSize) newSize = bar.iconMinSize; //keep from going below minimum size
 		}
 		var prevIcon = bar.icons[this.instanceIndex-1];
-		var newPos = prevIcon ? (prevIcon.position + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
-		if(evt && this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos)) && !this.popupLabel) return; //if already in the right place, stop calculation
+		var newPos = prevIcon ? (prevIcon.pos + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
+		if(evt && this.size == (newSize = Math.round(newSize)) && this.pos == (newPos = Math.round(newPos)) && !this.popupLabel) return; //if already in the right place, stop calculation
 			
 		var fixPos = (bar.iconSpacing / 2) + "px";
-		var varPos = (this.position = newPos) + "px";
+		var varPos = (this.pos = newPos) + "px";
 		var size   = (this.size = newSize) + "px";
 		var l,t,r,b,h,w,s,p,i;
 		switch(bar.edge) {
@@ -293,7 +296,7 @@ OSXBarPopup.prototype = {
 		var isVertical = (bar.edge=="left" || bar.edge=="right");
 		var isTopLeft  = (bar.edge=="left" || bar.edge=="top");
 		var fixPos = (bar.iconMaxSize + bar.iconSpacing + distFromIcon + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
-		var varPos = (icon.position + bar.position) + "px";
+		var varPos = (icon.pos + bar.pos) + "px";
 		var l,t,r,b;
 		switch(bar.edge) {
 			case "top": l=varPos; t=fixPos; break;
