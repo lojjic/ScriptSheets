@@ -54,7 +54,9 @@ TitleTipPopup.prototype.buildTip = function(evt) {
 			window.status = lnk.href;
 			var tipHref = document.createElement("div")
 				tipHref.className = "titletip-href";
-				tipHref.appendChild(document.createTextNode(lnk.href));
+				var tipText = lnk.href.substring(0,60);
+				if(lnk.href.length > 60) tipText += "...";
+				tipHref.appendChild(document.createTextNode(tipText));
 			node.appendChild(tipHref);
 			break;
 		}
