@@ -45,7 +45,7 @@ TreeMenu.enableScriptSheet = function() {
 	TreeMenu.disableScriptSheet();
 	var uls = document.getElementsByTagName("ul");
 	for(i=0; i<uls.length; i++) {
-		if(uls[i].className.match(/\s*navigation\s*/)) new TreeMenu(uls[i]);
+		if(uls[i].className.match(/\bnavigation\b/)) new TreeMenu(uls[i]);
 	}
 };
 TreeMenu.disableScriptSheet = function() {
@@ -65,46 +65,45 @@ function TreeMenuNode(elt, open) {
 }
 TreeMenuNode.prototype = {
 	create : function() {
-		var s, v, h, i, j;
+		var v, h, i, j;
+		var elt = this.element;
 		
+		var subs = elt.getElementsByTagName("ul");
+		if(subs.length) {
+			var thisRef = this;
+			elt.className += " tree-menu-node-branch";
+			elt.addEventListener("click", this.clickHandler=function(evt){thisRef.onClick(evt);}, false);
+
+			//create plus-minus icon:
+			this.collapser = document.createElement("span");
+				this.collapser.className="tree-menu-collapser";
+				this.collapser.appendChild(document.createTextNode(""));
+			elt.insertBefore(this.collapser, elt.firstChild);
+
+			if(this.defaultOpen) this.expand();
+			else this.collapse();
+		} else {
+			elt.className += " tree-menu-node-leaf";
+		}
+
+		//create icon from list-style-image:
+		var lsImg = window.getComputedStyle(elt,null).getPropertyValue("list-style-image");
+		if(lsImg.indexOf("url(") == 0) {
+			this.icon = document.createElement("img");
+			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
+			elt.insertBefore(this.icon, elt.firstChild);
+		}
+
 		//create dotted lines:
 		v = this.outlineVert = document.createElement("span");
 			v.className = "tree-menu-outline-vertical";
-			var isLast=true; var e=this.element; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
+			var isLast=true; var e=elt; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
 			if(isLast) v.className += " last-child-outline";
 			else if(v.style.setExpression) v.style.setExpression("height","this.parentNode.offsetHeight"); //hack to make IE set height to 100% of <li>
 		h = this.outlineHoriz = document.createElement("span");
 			h.className = "tree-menu-outline-horizontal";
-		this.element.appendChild(v);
-		this.element.appendChild(h);
-		
-		var subs = this.element.getElementsByTagName("ul");
-		if(subs.length) {
-			var thisRef = this;
-			this.element.className += " tree-menu-node-branch";
-			this.element.addEventListener("click", this.clickHandler=function(evt){thisRef.onClick(evt);}, false);
-			
-			//create plus-minus icon:
-			this.collapser = document.createElement("div");
-				this.collapser.className="tree-menu-collapser";
-				this.collapser.appendChild(document.createTextNode(""));
-			this.element.appendChild(this.collapser);
-	
-			if(this.defaultOpen) this.expand();
-			else this.collapse();
-		}
-		else {
-			this.element.className += " tree-menu-node-leaf";
-		}
-		
-		//create icon from list-style-image:
-		var lsImg = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image");
-		this.element.style.listStyleImage = "none";
-		if(lsImg.indexOf("url(") == 0) {
-			this.icon = document.createElement("img");
-			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
-			this.element.insertBefore(this.icon, this.element.firstChild);
-		}
+		elt.insertBefore(v, elt.firstChild);
+		elt.insertBefore(h, elt.firstChild);
 	},
 	
 	onClick : function(evt) {
