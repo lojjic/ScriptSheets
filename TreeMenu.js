@@ -31,14 +31,16 @@ TreeMenu.prototype = {
 	}
 };
 TreeMenu.instances = [];
-TreeMenu.getOpenNodes = function() {
-	var open = {};
+TreeMenu.getOpenNodes = function() { //returns a hash with id as key and isOpen as value
+	var open = TreeMenu.openNodes;
+	if(open) return open;
+	open = {};
 	if(!window.Cookie) return open;
 	var c = new Cookie("treeMenuOpenNodes").getValue();
 	if(c && typeof c == "object" && c.constructor == Array) {
-		for(var i in c) open[c[i]] = 1; //store in hash for quick access
+		for(var i in c) open[c[i]] = true;
 	}
-	return open;
+	return TreeMenu.openNodes = open;
 };
 TreeMenu.setOpenNode = function(id, isOpen) {
 	if(!window.Cookie) return;
@@ -51,6 +53,7 @@ TreeMenu.setOpenNode = function(id, isOpen) {
 	}
 	cookie.setValue(newNodes);
 	cookie.setLifespan(60*60*24*365);
+	TreeMenu.openNodes[id] = isOpen;
 };
 TreeMenu.enableScriptSheet = function() {
 	TreeMenu.disableScriptSheet();
