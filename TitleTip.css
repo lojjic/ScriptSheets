@@ -4,4 +4,5 @@
 	padding:.2em 1em;
 	background:#DEF;
 	font-size:smaller;
+	z-index:9999;
 }
