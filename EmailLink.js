@@ -5,8 +5,8 @@
 **  This script will allow you to obfuscate email addresses
 **  in web pages so spam harvesters will not see them.  The
 **  email address is entered in plain text with abnormal
-**  characters, and the script decodes it and creates a 
-**  mailto: link.  See documentation for details.
+**  characters, and the script decodes and creates a 
+**  mailto: link from it. See EmailLink-doc.html for details.
 */
 
 function EmailLink(elt) {
@@ -18,8 +18,8 @@ EmailLink.prototype = {
 		var elt = this.element;
 		if(elt.firstChild.nodeType != 3) return; //first node must be text
 		var addr = elt.firstChild.nodeValue;
-		addr = addr.replace(/[ \[\{\(\|\/\\]at[ \]\}\)\|\/\\]/, "@");
-		addr = addr.replace(/[ \[\{\(\|\/\\](dot|period)[ \]\}\)\|\/\\]/, ".");
+		addr = addr.replace(/[ \[\{\(\|\/\\]at[ \]\}\)\|\/\\]/i, "@");
+		addr = addr.replace(/[ \[\{\(\|\/\\](dot|period)[ \]\}\)\|\/\\]/gi, ".");
 
 		var lnk = this.EmailLinkLink = (document.createElementNS) ? document.createElementNS("http://www.w3.org/1999/xhtml","a") : document.createElement("a");
 		lnk.setAttribute("href","mailto:"+addr);
