@@ -1,6 +1,6 @@
 .popup-calendar {position:absolute;left:-400px;z-index:9999;background:#D4D0C8;font-family:Verdana,Arial,sans-serif;width:160px;height:140px;border:1px outset #777;}
 .calendar-head {text-align:center;font-size:11px;height:14px;}
-.calendar-prev-arrow, .calendar-next-arrow {position:absolute;width:18px;height:14px;top:0px;border:0px;padding:0px;cursor:pointer;cursor:hand;}
+.calendar-prev-arrow, .calendar-next-arrow {position:absolute;width:18px;height:14px;overflow:hidden;text-indent:30px;top:0px;border:0px;padding:0px;cursor:pointer;cursor:hand;}
 .calendar-prev-arrow {left:0px;background:url(assets/cal_arrow_left.gif) no-repeat 50% 50%;}
 .calendar-next-arrow {right:0px;background:url(assets/cal_arrow_right.gif) no-repeat 50% 50%;}
 

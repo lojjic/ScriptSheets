@@ -10,14 +10,13 @@
 /*
 TODO:
   - Modify to use Date.toFormat() functionality to automatically adapt to format
-  - Pull CSS into this file, or some other way of easily packaging style
-  - Make prev/next month buttons have content (currently empty elements with CSS background-image)
 */
 
 function PopupCalendar(elt) {
 	this.element = elt;
 	this.create();
-	PopupCalendar.instances[PopupCalendar.instances.length] = this;
+	var i=PopupCalendar.instances;
+	i[i.length] = this;
 }
 PopupCalendar.prototype = {
 	create : function() {
@@ -58,7 +57,7 @@ PopupCalendar.disableScriptSheet = function() {
 
 // The popup widget:
 
-function PopupCalendarPopup(evt,position,tgtField,dateRange) { //CONSTRUCTOR
+function PopupCalendarPopup(evt,position,tgtField,dateRange) {
 	// Freaks out Mac IE: // if(!(this instanceof PopupCalendarPopup)) return new PopupCalendarPopup(evt,position,tgtField,dateRange);
 	
 	this.curDate = new Date;
@@ -84,15 +83,18 @@ PopupCalendarPopup.prototype.buildHead = function() {
 	this.head=d.createElement("div");
 	this.head.className="calendar-head";
 
-		this.prevArrow=d.createElement("div");
-		this.prevArrow.setAttribute("title","Previous Month");
-		this.prevArrow.className="calendar-prev-arrow";
-		this.prevArrow.addEventListener("click",function(){thisRef.changeMonth(-1)},false);
+		var tmp;
+		tmp=this.prevArrow=d.createElement("div");
+		tmp.setAttribute("title","Previous Month");
+		tmp.className="calendar-prev-arrow";
+		tmp.appendChild(d.createTextNode("<<"));
+		tmp.addEventListener("click",function(){thisRef.changeMonth(-1)},false);
 
-		this.nextArrow=d.createElement("div");
-		this.nextArrow.setAttribute("title","Next Month");
-		this.nextArrow.className="calendar-next-arrow";
-		this.nextArrow.addEventListener("click",function(){thisRef.changeMonth(1)},false);
+		tmp=this.nextArrow=d.createElement("div");
+		tmp.setAttribute("title","Next Month");
+		tmp.className="calendar-next-arrow";
+		tmp.appendChild(d.createTextNode(">>"));
+		tmp.addEventListener("click",function(){thisRef.changeMonth(1)},false);
 
 		this.monthName=d.createTextNode("...");
 
