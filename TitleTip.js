@@ -11,7 +11,8 @@
 function TitleTip(elt) {
 	this.element = elt;
 	this.create();
-	TitleTip.instances[TitleTip.instances.length] = this;
+	var i=TitleTip.instances;
+	i[i.length] = this;
 }
 TitleTip.prototype = {
 	create : function() {
@@ -55,17 +56,17 @@ TitleTipPopup.prototype.buildTip = function(evt) {
 	var elt = this.element = evt.currentTarget;
 	var ttl = this.title = elt.title;
 	elt.title = ""; //temporarily remove it to avoid normal tooltip
-	if(elt.href) window.status = elt.href;
+	var lnk=elt; while(lnk=lnk.parentNode) if(lnk.href) window.status = lnk.href; //if within a link, put href in status bar
 
 	var thisRef = this;
-	elt.addEventListener("mousemove",this.eltMousemoveHandler=function(evt){
+	elt.addEventListener("mousemove",this.mousemoveHandler=function(evt){
 		//Reduce movement to no more than once per 20ms:
 		var now = new Date();
 		if(thisRef.lastMovedTime && now - thisRef.lastMovedTime < 20) return;
 		thisRef.lastMovedTime = now;
 		thisRef.setPosition(evt); //move it
 	},false);
-	elt.addEventListener("mouseout",this.eltMouseoutHandler=function(){thisRef.destroy()},false);
+	elt.addEventListener("mouseout",this.mouseoutHandler=function(){thisRef.destroy()},false);
 
 	var node = this.popupNode;
 	node.appendChild(document.createTextNode(ttl));
@@ -80,8 +81,8 @@ TitleTipPopup.prototype.destroyBase = TitleTipPopup.prototype.destroy;
 TitleTipPopup.prototype.destroy = function() {
 	var elt = this.element;
 	window.status = "";
-	elt.removeEventListener("mousemove",this.eltMousemoveHandler,false);
-	elt.removeEventListener("mouseout",this.eltMouseoutHandler,false);
+	elt.removeEventListener("mousemove",this.mousemoveHandler,false);
+	elt.removeEventListener("mouseout",this.mouseoutHandler,false);
 	elt.title = this.title; //add attribute back in
 	//p.popupNode.style.display="none"; //prevent repaint bug in IE5
 	this.destroyBase();
