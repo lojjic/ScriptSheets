@@ -27,24 +27,26 @@ function ImageShadow(elt, opts) { // opts is hash object: {feather:N, offsetX:N,
 }
 ImageShadow.prototype = {
 	create : function() {
-		var elt = this.element;
+		var img = this.element;
+		this.shadows = [];
 		
 		//shortcut to get comp. style:
-		var cS = function(prop) {return getComputedStyle(elt, null).getPropertyValue(prop);}
+		var cS = function(prop) {return getComputedStyle(img, null).getPropertyValue(prop);}
 
-		var imgDisp = cS("display");
 		var imgPos = cS("position");
+			if(!imgPos) return; //this script is pretty useless if getComputedStyle not supported, like Opera
+		var imgDisp = cS("display");
 		var imgW = parseFloat(cS("width")) || 0;
 		var imgH = parseFloat(cS("height")) || 0;
 		var imgZ = cS("z-index");
-		if(imgZ == "auto") imgZ = elt.style.zIndex = 1;
+		if(!imgZ || imgZ == "auto") imgZ = img.style.zIndex = 1;
 		
 		var cont = this.container = document.createElement("span");
 		var c = cont.style;
 			c.position = "absolute";
 			c.zIndex = imgZ - 1;
 		
-		if(imgPos == "static") elt.style.position = "relative";
+		if(imgPos == "static") img.style.position = "relative";
 		if(imgPos == "absolute" || imgPos == "fixed") { //replaced:
 			c.left = cS("left");
 			c.top = cS("top");
@@ -55,7 +57,6 @@ ImageShadow.prototype = {
 			else c.marginTop = -imgH + "px";
 		}
 
-		this.shadows = [];
 		this.shadows[0] = document.createElement("span");
 		var fthr = this.feather;
 		var dark = this.darkness;
@@ -75,7 +76,7 @@ ImageShadow.prototype = {
 				s.filter = "alpha(opacity=" + opacity + ")"; //MSIE
 			cont.appendChild(shadow);
 		}
-		elt.parentNode.insertBefore(cont, elt.nextSibling);
+		img.parentNode.insertBefore(cont, img.nextSibling);
 		
 	},
 	destroy : function() {
