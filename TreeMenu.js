@@ -53,7 +53,7 @@ TreeMenu.setOpenNode = function(id, isOpen) {
 	cookie.setLifespan(60*60*24*365);
 	TreeMenu.openNodes[id] = isOpen;
 };
-TreeMenu.scriptSheetSelector = "ul.navigation";
+TreeMenu.scriptSheetSelector = "ul.navigation, #navigation";
 
 
 
