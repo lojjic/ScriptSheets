@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>StyleSheet switching test</title>
+<title>Style/ScriptSheet switching test</title>
 
 
 <script type="text/javascript" src="IEtoW3C-loader.js"></script>
@@ -12,34 +12,16 @@
 <script type="text/javascript" src="AccessKey.js"></script>
 
 <link rel="scriptsheet" type="text/javascript" href="OSXBar.js#OSXBar" title="Mac OS X Dock" />
+<link rel="stylesheet" type="text/css" href="OSXBar.css" title="Mac OS X Dock" />
+
 <link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu.js#TreeMenu" title="Tree Menu" />
+<link rel="alternate stylesheet" type="text/css" href="TreeMenu.css" title="Tree Menu" />
 <link rel="alternate scriptsheet" type="text/javascript" href="AccessKey.js#AccessKey" title="Tree Menu" />
+<link rel="alternate stylesheet" type="text/css" href="AccessKey.css" title="Tree Menu" />
+
 <link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu.js#TreeMenu" title="Tree Menu, no accesskeys" />
+<link rel="alternate stylesheet" type="text/css" href="TreeMenu.css" title="Tree Menu, no accesskeys" />
 
-	<style type="text/css">
-	* {font-size:12px; font-family:Arial,sans-serif;}
-	
-	
-	.osx-bar {background:#F0F0F0; border:1px solid #9F9F9F; margin:0; padding:0;}
-		.osx-bar li {list-style-image:url(assets/icon-48x48.png);}
-		.osx-bar li li {list-style-image:none;}
-	.osx-bar-popup-label {white-space:nowrap; /*apply margin to align with icon*/}
-	.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; margin:0; padding:0; padding-bottom:.1em;}
-		.osx-bar-popup-submenu-label {font-weight:bold; border-bottom:1px solid #999; margin:0; padding:.2em .5em; background:#EEE;}
-		.osx-bar-popup-submenu ul, .osx-bar-popup-submenu li {display:block; margin:0; padding:0;}
-		.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
-		.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
-
-
-	.tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid;}
-		.tree-menu ul {margin:0; padding:0; margin-left:0px;}
-		.tree-menu li {display:block; list-style-type:none; margin:0; padding:0; padding-left:16px;}
-		.tree-menu li.tree-menu-node {background-image:url(assets/minus.gif); background-repeat:no-repeat; background-position:3px 3px;}
-		.tree-menu li.tree-menu-node.tree-menu-collapsed {background-image:url(assets/plus.gif);}
-		.tree-menu li.tree-menu-node.tree-menu-collapsed ul {display:none;}
-		
-	em.accesskey {border-bottom:1px solid; font-style:inherit;}
-	</style>
 
 </head>
 <body>
@@ -52,49 +34,51 @@
 		<option value="null">No Style</option>
 		</select>
 	</p>
-	<!--
+	
 	<p>
-		<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>
-		<button onclick="alert(new Cookie('preferredStyle').getValue());">Alert Cookie Value</button>
+		<!--<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>-->
+		<button onclick="alert(unescape(document.cookie));">Alert Cookies</button>
+		<button onclick="new Cookie('preferredStyle').forget(); new Cookie('treeMenuOpenNodes').forget();">Reset Cookies</button>
 	</p>
-	-->
 	
 	<ul class="navigation">
-		<li>Menu Item 1
+		<li id="item1">Menu Item 1
 			<ul>
-				<li>Submenu
+				<li id="item1x1">Submenu
 					<ul>
 						<li><a href="" accesskey="s">Submenu 2</a></li>
 						<li><a href="" accesskey="u">Submenu 2</a></li>
 						<li><a href="" accesskey="b">Submenu 2</a></li>
 					</ul>
 				</li>
-				<li><a href="">Submenu</a></li>
+				<li>Submenu
+					<div>Misc. crap</div>
+				</li>
 				<li><a href="">Submenu</a></li>
 			</ul>
 		</li>
-		<li>Menu Item 2
+		<li id="item2">Menu Item 2
 			<ul>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 			</ul>
 		</li>
-		<li>Menu Item 3
+		<li id="item3">Menu Item 3
 			<ul>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 			</ul>
 		</li>
-		<li>Menu Item 4
+		<li id="item4">Menu Item 4
 			<ul>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>
 			</ul>
 		</li>
-		<li>Menu Item 5
+		<li id="item5">Menu Item 5
 			<ul>
 				<li><a href="">Submenu</a></li>
 				<li><a href="">Submenu</a></li>

@@ -1,0 +1,7 @@
+.titletip {
+	position:absolute;
+	border:1px solid #CCC;
+	padding:.2em 1em;
+	background:#DEF;
+	font-size:smaller;
+}
