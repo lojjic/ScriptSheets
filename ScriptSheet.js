@@ -64,15 +64,16 @@ ScriptSheet.getPreferredStyle = function() {
 	}
 	return null;
 };
-ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string and return all matching elements:
-	selector = selector.replace(/\s+/g, " "); //collapse whitespaces to a single space
-	selector = selector.replace(/\s*([>+=,])\s*/g, "$1"); //strip extra whitespace around combinators
-	selector = selector.replace(/^\s*(\S*)\s*$/, "$1"); //and at start and end of string
-	if(selector.charAt(0) != "#") selector = " " + selector; //start with descendant selector, except when starts with id
-	selector = selector.replace(/[ >+]([\.\[#])/g, " *$1"); //insert universal selector where it is optionally omitted
-	//alert("-" + selector);
+
+// Take a CSS selector string and return all matching elements:
+ScriptSheet.matchSelector = function(sel) {
+	sel = sel.replace(/\s+/g, " "); //collapse whitespaces to a single space
+	sel = sel.replace(/\s*([>\+=,])\s*/g, "$1"); //strip extra whitespace around combinators 
+	sel = sel.replace(/^\s*(\S*)\s*$/, "$1"); //and at start and end of string
+	if(sel.charAt(0) != "#") sel = " "+sel; //initial descendant selector unless starts with #id
+	sel = sel.replace(/([ >\+])([\.\[#])/g, "$1*$2"); //insert universal selector where it is optionally omitted
 	
-	var parts = selector.split(/([#\.>\+\s]|\[[^\]]*\])/);
+	var parts = sel.split(/([#\.>\+\s]|\[[^\]]*\])/); //XXX - need to hack this bc IE doesn't return paranthesized separators
 	
 	var i, j, p, a, b;
 	var elts = [document];
@@ -82,11 +83,11 @@ ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string a
 		switch(parts[p].charAt(0)) {
 			case "": break; //ignore blank remnants of split
 			case "#":
+				p++;
 				if(elts[0]==document) { //if no previous context, do it fast:
-					a = document.getElementById(parts[++p]);
+					a = document.getElementById(parts[p]);
 					elts = a ? [a] : [];
 				} else {
-					p++;
 					for(i=0; i<elts.length; i++) {
 						if(elts[i].getAttribute("id") == parts[p]) a[a.length] = elts[i];
 					}
@@ -105,6 +106,7 @@ ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string a
 				b = parts[p].match(/^\[([^\]=]+)(=([^\]]*))?\]$/);
 				if(b) {
 					var attr = b[1]; var val = b[3];
+					if(val) val=val.replace(/^(['"])([^\1]*)\1$/,"$2"); //remove quotes
 					for(i=0; i<elts.length; i++) {
 						if((!val && elts[i].hasAttribute(attr)) || (val && elts[i].getAttribute(attr) == val)) a[a.length] = elts[i];
 					}
@@ -136,7 +138,7 @@ ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string a
 			break;
 			default: //element:
 				for(i=0; i<elts.length; i++) {
-					if(elts[i].nodeName.toLowerCase() == parts[p]) a[a.length] = elts[i];
+					if(parts[p] == "*" || elts[i].nodeName.toLowerCase() == parts[p]) a[a.length] = elts[i];
 				}
 				elts = a;
 		}
