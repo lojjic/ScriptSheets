@@ -10,11 +10,12 @@
 
 function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is required; all others default to values below
 	this.element = elt;
-	this.setProperty("edge",edge); //one of "top", "right", "bottom", or "left". Defaults to "left".
-	this.setProperty("iconMinSize",minSize); // smallest (initial) icon size (pixels).
-	this.setProperty("iconMaxSize",maxSize); // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
-	this.setProperty("iconSpacing",spacing); // space between icons (pixels).
-	this.setProperty("scaleReach",reach); // "gradualness" of the scaling - larger number gives smoother curve.
+	var c; if(window.Cookie) c = new Cookie("OSXBarParams").getValue(); if(!c) c = {};
+	this.setProperty("edge",c.edge || edge); //one of "top", "right", "bottom", or "left". Defaults to "left".
+	this.setProperty("iconMinSize",c.iconMinSize || minSize); // smallest (initial) icon size (pixels).
+	this.setProperty("iconMaxSize",c.iconMaxSize || maxSize); // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
+	this.setProperty("iconSpacing",c.iconSpacing || spacing); // space between icons (pixels).
+	this.setProperty("scaleReach", c.scaleReach  || reach); // "gradualness" of the scaling - larger number gives smoother curve.
 	this.create();
 	OSXBar.instances[OSXBar.instances.length] = this;
 }
@@ -43,12 +44,20 @@ OSXBar.prototype = {
 	setProperty : function(name,value) { // method to set properties - set defaults in here.
 		switch(name) {
 			case "edge": this.edge = (value && value.match(/^(top|right|bottom|left)$/)) ? value : "left"; break;
-			case "iconMinSize": this.iconMinSize = parseInt(value) || 24; break; 
-			case "iconMaxSize": this.iconMaxSize = parseInt(value) || 48; break;
-			case "iconSpacing": this.iconSpacing = parseInt(value) || 12; break;
-			case "scaleReach":  this.scaleReach  = parseInt(value) || 7;  break;
+			case "iconMinSize": this[name] = parseInt(value) || 32; break; 
+			case "iconMaxSize": this[name] = parseInt(value) || 64; break;
+			case "iconSpacing": this[name] = parseInt(value) || 8;  break;
+			case "scaleReach":  this[name] = parseInt(value) || 4;  break;
 		}
 		if(this.icons) this.onUnscale();
+		if(window.Cookie) {
+			var c = new Cookie("OSXBarParams");
+			var v = c.getValue();
+			if(!v || typeof v != "object") v = {};
+			v[name] = this[name];
+			c.setLifespan(60*60*24*365);
+			c.setValue(v);
+		}
 	},
 
 	onMouseMoved : function(evt) {
@@ -77,7 +86,10 @@ OSXBar.prototype = {
 		
 	onUnscale : function(evt) {
 		this.scaled = false; //flag status
-		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(); //set all icons back to normal size and position (null event so scaling doesn't occur)
+		for(var i=0; i<this.icons.length; i++) {
+			this.icons[i].setSizeAndPosition(); //set all icons back to normal size and position (null event so scaling doesn't occur)
+			if(this.icons[i].popupSubmenu) this.icons[i].popupSubmenu.destroy(); //remove icon label
+		}
 		this.setSizeAndPosition(); //set bar to normal length and position
 	},
 	
@@ -113,12 +125,7 @@ OSXBar.prototype = {
 		var j, k, icon, cont;
 		this.element.className = this.element.className.replace(/\s*osx-bar\s*/g,""); //reset CSS class
 		s = this.element.style; s.position = s.left = s.top = s.right = s.bottom = s.height = s.width = ""; //reset inline styles
-		for(j=0; (icon=this.icons[j]); j++) {
-			this.element.removeChild(icon.icon);
-			for(k=0; (cont=icon.contents[k]); k++) icon.element.appendChild(cont);
-			icon.labelNodeParent.insertBefore(icon.labelNode,icon.labelNodeParent.firstChild);
-			icon.labelNodeParent.style.display = icon.element.style.display = "";
-		}
+		for(j=0; (icon=this.icons[j]); j++) icon.destroy();
 		this.icons = null;
 		document.removeEventListener("mousemove", this.onMouseMovedHandler, false);
 		window.removeEventListener("scroll", this.onScrollHandler, false);
@@ -172,12 +179,18 @@ OSXBarIcon.prototype = {
 		for(var i=0; i<kids.length; i++) this.contents[this.contents.length] = this.element.removeChild(kids[i]); //remove from DOM so they can be reused after moving
 		
 		//create icon, set initial position:
-		var icon = this.icon = document.createElement("img");
-			icon.alt = this.label;
-			icon.src = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
-			if(icon.src.match(/.png$/) && navigator.userAgent.match(/MSIE (5\.5)|[6789]/) && navigator.platform == "Win32") { //add IE alpha filter if PNG image, to enable alpha transparency:
-				icon.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + icon.src + "', sizingMethod='scale')";
-				icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif?please_support_PNG_alpha_transparency"; //they make me do hacks like this, I use their bandwidth.
+		var liImg = getComputedStyle(this.element,null).getPropertyValue("list-style-image");
+		var icon = this.icon = document.createElement(liImg ? "img" : "span");
+			if(liImg && liImg != "none") {
+				icon.alt = this.label;
+				icon.src = liImg.replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
+				if(icon.src.match(/.png$/) && navigator.userAgent.match(/MSIE (5\.5)|[6789]/) && navigator.platform == "Win32") { //add IE alpha filter if PNG image, to enable alpha transparency:
+					icon.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + icon.src + "', sizingMethod='scale')";
+					icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif?please_support_PNG_alpha_transparency"; //they make me do hacks like this, I use their bandwidth.
+				}
+			} else {
+				icon.appendChild(document.createTextNode("No Image"));
+				icon.style.border = "1px dotted";
 			}
 			this.setSizeAndPosition();
 			this.parentBar.element.appendChild(icon);
@@ -253,6 +266,12 @@ OSXBarIcon.prototype = {
 			s.height = h || "auto"; s.width = w || "auto";
 		
 		if(this.popupLabel) this.popupLabel.setPosition(); //move label with icon
+	},
+	destroy : function() {
+		this.icon.parentNode.removeChild(this.icon);
+		for(var i=0; (cont=this.contents[i]); i++) this.element.appendChild(cont);
+		this.labelNodeParent.insertBefore(this.labelNode,this.labelNodeParent.firstChild);
+		this.labelNodeParent.style.display = this.element.style.display = "";
 	}
 };
 
