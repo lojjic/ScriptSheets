@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Style/ScriptSheet switching test</title>
+<title>CSS selector matching test</title>
 
 
 <script type="text/javascript" src="IEtoW3C-loader.js"></script>
@@ -8,6 +8,8 @@
 
 <style type="text/css">
 form {margin-top:5em;}
+* {border:1px dotted #CCC; padding:4px;}
+input {border:1px solid #999; padding:2px;}
 </style>
 
 <script type="text/javascript">
@@ -16,11 +18,11 @@ function highlight(selector) {
 	
 	//reset all:
 	elts = document.getElementsByTagName("*");
-	for(i=0; i<elts.length; i++) elts[i].style.border = "";
+	for(i=0; i<elts.length; i++) if(elts[i].tagName.toLowerCase()!="input") elts[i].style.border = "1px dotted #CCC";
 	
 	//highlight matching:
 	elts = ScriptSheet.matchSelector(selector);
-	for(i=0; i<elts.length; i++) elts[i].style.border = "2px solid red";
+	for(i=0; i<elts.length; i++) if(elts[i].tagName.toLowerCase()!="input") elts[i].style.border = "2px solid red";
 }
 </script>
 
@@ -31,9 +33,7 @@ function highlight(selector) {
 		<p>paragraph <span>span</span> <span class="classy">span with <code>class=&quot;classy&quot;</code></span> <a href="">link (<code>&lt;a&gt;</code>)</a> <a href="" title="title of link">link (<code>&lt;a&gt;</code>) with <code>title=&quot;title of link&quot;</code></a></p>
 		<p id="identifier">paragraph with <code>id=&quot;identifier&quot;</code></p>
 		<p id="identifier2">paragraph with <code>id=&quot;identifier2&quot;</code></p>
-		<div>div
-			<input type="text" class="color"> (<code>&lt;input type="text" class="color"&gt;</code>)
-		</div>
+		
 	</div>
 	
 	<form onsubmit="highlight(document.getElementById('textField').value); return false;">
