@@ -20,7 +20,7 @@ PopupObject.prototype = {
 		document.addEventListener("mousedown",this.docMousedownHandler=function(){thisRef.destroy()},false);
 		window.addEventListener("keypress",this.docKeypressHandler=function(evt){thisRef.keypressed(evt)},false);
 
-		this.popupNode=document.createElement("div")
+		this.popupNode=document.createElement("div");
 		this.popupNode.className=this.popupType; //default class - can override in constructor
 		this.popupNode.addEventListener("mousedown",this.pressed,false);
 		this.parentElement().appendChild(this.popupNode);
@@ -31,15 +31,17 @@ PopupObject.prototype = {
 		var pos=posString.split(","); //relation to cursor, x offset, y offset
 		
 		this.popupNode.style.position="absolute";
-		var wW=window.innerWidth || document.body.clientWidth;
-		var wH=window.innerHeight || document.body.clientHeight;
-		var cX=(pos[1]) ? evt.clientX + parseInt(pos[1]) : evt.clientX;
-		var cY=(pos[2]) ? evt.clientY + parseInt(pos[2]) : evt.clientY;
-		var sX=window.scrollX || document.body.scrollLeft;
-		var sY=window.scrollY || document.body.scrollTop;
-		var pW=this.getLength("width") + this.getLength("padding-left") + this.getLength("padding-right") + 4;
-		var pH=this.getLength("height") + this.getLength("padding-top") + this.getLength("padding-bottom") + 4;
-		var pX=cX; var pY=cY;
+		
+		var wW,wH,cX,cY,sX,sY,pW,pH,pX,pY;
+		wW=window.innerWidth || document.body.clientWidth;
+		wH=window.innerHeight || document.body.clientHeight;
+		cX=(pos[1]) ? evt.clientX + parseInt(pos[1]) : evt.clientX;
+		cY=(pos[2]) ? evt.clientY + parseInt(pos[2]) : evt.clientY;
+		sX=window.scrollX || document.body.scrollLeft;
+		sY=window.scrollY || document.body.scrollTop;
+		pW=this.getLength("width") + this.getLength("padding-left") + this.getLength("padding-right") + 4;
+		pH=this.getLength("height") + this.getLength("padding-top") + this.getLength("padding-bottom") + 4;
+		pX=cX; pY=cY;
 
 		if(pos[0]=="centered") { //centered on screen
 			pX = wW/2 - pW/2 + (parseInt(pos[1])||0);
