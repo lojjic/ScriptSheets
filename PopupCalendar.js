@@ -1,4 +1,3 @@
-/*== Popup Calendar Widget ==*/
 
 /*To Do:
   - Modify to use Date.toFormat() functionality to automatically adapt to format
@@ -10,13 +9,12 @@
 /*=== Functions for Popup Calendar Widget ===*/
 
 function PopupCalendar(evt,position,tgtField,dateRange) { //CONSTRUCTOR
-	if(!(this instanceof PopupCalendar)) return new PopupCalendar(evt,position,tgtField,dateRange);
-
+	// Freaks out Mac IE: // if(!(this instanceof PopupCalendar)) return new PopupCalendar(evt,position,tgtField,dateRange);
+	
 	this.curDate = new Date;
 	this.actualDate = new Date;
 	this.tgtField=tgtField; //field for output
 	this.create(evt);
-	this.popupNode.className="popup-calendar";
 
 	if(dateRange && this.parseDateRange) this.parseDateRange(dateRange); //init active range of dates
 	if(tgtField && this.parseFieldValue) this.parseFieldValue(); //if value in field, init calendar to that date
@@ -26,26 +24,25 @@ function PopupCalendar(evt,position,tgtField,dateRange) { //CONSTRUCTOR
 	this.setPosition(evt,position);
 }
 
-PopupCalendar.prototype = new PopupObject(); //inherit from base PopupObject class
+PopupCalendar.prototype = new PopupObject("popup-calendar"); //inherit from base PopupObject class
 
 //extend the prototype:
 PopupCalendar.prototype.buildHead = function() {
 	var d=document;
+	var thisRef = this;
 
 	this.head=d.createElement("div");
 	this.head.className="calendar-head";
 
-		var chFunc = this.changeMonth;
-
 		this.prevArrow=d.createElement("div");
 		this.prevArrow.setAttribute("title","Previous Month");
 		this.prevArrow.className="calendar-prev-arrow";
-		this.prevArrow.addEventListener("click",function(){chFunc(-1)},false);
+		this.prevArrow.addEventListener("click",function(){thisRef.changeMonth(-1)},false);
 
 		this.nextArrow=d.createElement("div");
 		this.nextArrow.setAttribute("title","Next Month");
 		this.nextArrow.className="calendar-next-arrow";
-		this.nextArrow.addEventListener("click",function(){chFunc(1)},false);
+		this.nextArrow.addEventListener("click",function(){thisRef.changeMonth(1)},false);
 
 		this.monthName=d.createTextNode("...");
 
@@ -78,6 +75,7 @@ PopupCalendar.prototype.buildHead = function() {
 
 PopupCalendar.prototype.buildDates = function() {
 	var d=document;
+	var thisRef = this;
 	var monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
 	var curYear=this.curDate.getFullYear();
 	var curMonth=this.curDate.getMonth();
@@ -96,9 +94,9 @@ PopupCalendar.prototype.buildDates = function() {
 			cell.className="calendar-date";
 
 			if(this.curDate.getDay()==i && date <= this.daysInMonth[curMonth]) {
-				cell.addEventListener("mouseover",this.mouseOverDate,false);
-				cell.addEventListener("mouseout",this.mouseOutDate,false);
-				cell.addEventListener("click",this.chooseDate,false);
+				cell.addEventListener("mouseover",thisRef.mouseOverDate,false);
+				cell.addEventListener("mouseout",thisRef.mouseOutDate,false);
+				cell.addEventListener("click",this.dateClickHandler=function(evt){thisRef.chooseDate(evt)},false);
 				cell.dateString=this.curDate.getDateString();
 
 				if(this.compareDateRange) this.compareDateRange(cell); //check if date within specified range
@@ -185,44 +183,42 @@ PopupCalendar.prototype.compareDateRange = function(cell) {
 		if(to==cur || day==this.daysInMonth[this.curDate.getMonth()]) cell.className+=" end-range";
 	}
 	else { //if not in range, make inactive
-		cell.removeEventListener("mouseover",this.mouseOverDate,false);
-		cell.removeEventListener("mouseout",this.mouseOutDate,false);
-		cell.removeEventListener("click",this.chooseDate,false);
+		cell.removeEventListener("mouseover",this.dateOverHandler,false);
+		cell.removeEventListener("mouseout",this.dateOutHandler,false);
+		cell.removeEventListener("click",this.dateClickHandler,false);
 	}
 };
 /*===End date range methods===*/
 
 
 PopupCalendar.prototype.changeMonth = function(offset) {
-	var obj=PopupObject.currentPopup;
-	obj.destroyDates();
-	obj.curDate.setMonth(obj.curDate.getMonth() + offset);
-	obj.buildDates();
+	this.destroyDates();
+	this.curDate.setMonth(this.curDate.getMonth() + offset);
+	this.buildDates();
 };
 
-//Script the hover effect pending hierarchical CSS :hover in Moz:
-PopupCalendar.prototype.mouseOverDate = function() {
+//Script the hover effect pending hierarchical CSS :hover:
+PopupCalendar.prototype.mouseOverDate = function(evt) {
 	this.origClass=this.className;
 	this.className=this.className+" hover";
 };
-PopupCalendar.prototype.mouseOutDate = function() {
+PopupCalendar.prototype.mouseOutDate = function(evt) {
 	this.className=this.origClass;
 };
 
 PopupCalendar.prototype.chooseDate = function(evt) { //output date to field
-	var cell=this;
+	var cell=evt.currentTarget;
 	var str=cell.dateString;
-	var obj=PopupObject.currentPopup;
-	if(obj.tgtField && !obj.tgtField.disabled && !obj.tgtField.readonly) {
+	if(this.tgtField && !this.tgtField.disabled && !this.tgtField.readonly) {
 		var dateParts=[str.substring(4,6),str.substring(6,8),str.substring(0,4)];
-		obj.tgtField.value = dateParts.join("/");
+		this.tgtField.value = dateParts.join("/");
 
 		//force onchange event on field:
 		var evt = document.createEvent("HTMLEvents");
 		evt.initEvent("change",true,true);
-		obj.tgtField.dispatchEvent(evt);
+		this.tgtField.dispatchEvent(evt);
 	}
-	obj.destroy();
+	this.destroy();
 };
 
 Date.prototype.getDateString = function() {
