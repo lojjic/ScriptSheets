@@ -12,6 +12,7 @@ function onAccesskeyDocLoaded() {
 			var txt = node.nodeValue;
 			var idx = txt.toLowerCase().indexOf(key.toLowerCase());
 			if(idx >= 0) { //modify the node
+				var modKey = (navigator.userAgent.indexOf("Mac")>=0) ? "Control" : "Alt";
 				var before = txt.substring(0,idx);
 				var after = txt.substring(idx+1);
 				var pt = node.parentNode;
@@ -19,7 +20,7 @@ function onAccesskeyDocLoaded() {
 				pt.appendChild(document.createTextNode(before));
 				var em = document.createElement("em");
 					em.className="accesskey";
-					em.setAttribute("title","Shortcut key: "+key.toUpperCase());
+					em.setAttribute("title","Shortcut key: " + modKey + "+" + key.toUpperCase());
 					em.appendChild(document.createTextNode(txt.charAt(idx)));
 				pt.appendChild(em);
 				pt.appendChild(document.createTextNode(after));
