@@ -166,9 +166,12 @@ OSXBarIcon.prototype = {
 		
 		//create icon, set initial position:
 		var icon = this.icon = document.createElement("img");
-			//alert(elt.currentStyle.listStyleImage);
-			icon.src = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
 			icon.alt = this.label;
+			icon.src = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
+			if(icon.runtimeStyle && icon.src.match(/.png$/)) { //add IE alpha filter if PNG image:
+				icon.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + icon.src + "', sizingMethod='scale')";
+				icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif"; //they make me do hacks like this, I use their bandwidth.
+			}
 			this.setSizeAndPosition();
 			this.parentBar.element.appendChild(icon);
 
