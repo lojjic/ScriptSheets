@@ -132,19 +132,7 @@ OSXBar.prototype = {
 	}
 };
 OSXBar.instances = [];
-OSXBar.enableScriptSheet = function() {
-	var i, ul;
-	for(i=0; (ul = document.getElementsByTagName("ul")[i]); i++) {
-		if(ul.className.match(/\s*navigation\s*/)) new OSXBar(ul);
-	}
-}
-OSXBar.disableScriptSheet = function() {
-	var i, bar;
-	for(i=0; (bar=OSXBar.instances[i]); i++) {
-		bar.destroy();
-	}
-	OSXBar.instances = []; //clear list
-}
+OSXBar.scriptSheetSelector = "ul.navigation, #navigation";
 
 
 
