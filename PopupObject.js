@@ -59,8 +59,8 @@ PopupObject.prototype = {
 		if(pos[0].indexOf("bottom")>=0) pY=pY+sY-pH;
 		else pY+=sY;
 
-		if(pX-sX+pW > wW) pX=wW+sX-pW-4;
-		if(pY-sY+pH > wH) pY=wH+sY-pH-4;
+		if(pX-sX+pW > wW) pX=wW+sX-pW-2;
+		if(pY-sY+pH > wH) pY=wH+sY-pH-2;
 		if(pX-sX < 2) pX=sX+2;
 		if(pY-sY < 2) pY=sY+2;
 
