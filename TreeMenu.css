@@ -1,6 +1,6 @@
 .tree-menu {margin:0; padding:0; position:absolute; left:0; top:100px; width:200px; height:400px; overflow:auto; border:1px solid; cursor:default;}
 	.tree-menu ul {margin:0; padding:0;}
-	.tree-menu li {position:relative; display:block; list-style-type:none; line-height:16px; margin:0; padding:0; margin-left:19px; /*padding gives incorrect origin for positioned children in IE, so use margin here with equal negative margin for collapser and outlines below*/}
+	.tree-menu li {position:relative; display:block; list-style-type:none; list-style-image:none; line-height:16px; margin:0; padding:0; margin-left:19px; /*padding gives incorrect origin for positioned children in IE, so use margin here with equal negative margin for collapser and outlines below*/}
 		/*select branch vs. leaf nodes:*/
 		.tree-menu li.tree-menu-node-branch {list-style-image:url(assets/icon-16x16.png); } /*has submenu*/
 		.tree-menu li.tree-menu-node-leaf {} /*no submenu*/
