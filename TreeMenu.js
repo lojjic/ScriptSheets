@@ -63,11 +63,13 @@ TreeMenuNode.prototype = {
 		
 		//create dotted lines:
 		v = this.outlineVert = document.createElement("div");
-			s = v.style; s.position="absolute"; s.top="0"; s.left="6px"; s.height="100%"; s.borderLeft="1px dotted";
+			v.className = "tree-menu-outline-vertical";
+			s = v.style; s.position="absolute"; s.top="0"; s.left="6px"; s.height="100%";
 			var isLast=true; var e=this.element; while(e=e.nextSibling) if(e.nodeType==1) isLast=false; //is it the last node?
 			if(isLast) s.height="8px";
 		h = this.outlineHoriz = document.createElement("div");
-			s = h.style; s.position="absolute"; s.top="8px"; s.left="8px"; s.width="8px"; s.borderTop="1px dotted";
+			h.className = "tree-menu-outline-horizontal";
+			s = h.style; s.position="absolute"; s.top="8px"; s.left="8px"; s.width="8px";
 		this.element.appendChild(v);
 		this.element.appendChild(h);
 		
