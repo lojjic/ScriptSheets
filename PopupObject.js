@@ -1,10 +1,19 @@
 /*
-**  PopupObject script by Jason Johnston (jj@lojjic.net)
-**  Created July 2002.  Use freely, but give me credit.
+**  PopupObject script by Jason Johnston (jj@lojjic.net) created July 2002.
 **
-**  This is a base class for creating popup objects,
-**  such as popup menus, title tips, dialogs, etc.
-**  Only really useful when subclassed.
+**  This is a base class for creating popup objects, such as popup menus, 
+**  dialogs, etc. Only really useful when subclassed. For usage and other
+**  details see http://lojjic.net/script-library/PopupObject-doc.html
+**
+**  This work is licensed for use under the Creative Commons
+**  Attribution-NonCommercial-ShareAlike license. In summary, you
+**  may freely use, modify, and distribute this work as long as:
+**    - You give me (Jason Johnston) credit,
+**    - You do not use this work for commercial purposes, and
+**    - Any redistribution of this or derivative works is made
+**      available under a license identical to this one.
+**  Before using this work please read the full license at 
+**  http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode
 */
 
 
@@ -40,8 +49,8 @@ PopupObject.prototype = {
 		this.popupNode.style.position="absolute";
 		
 		var wW,wH,cX,cY,sX,sY,pW,pH,pX,pY;
-		wW=document.body.clientWidth || window.innerWidth;
-		wH=document.body.clientHeight || window.innerHeight;
+		wW=document.body.clientWidth || window.innerWidth; //try clientWidth first to account for scrollbar
+		wH=window.innerHeight || document.body.clientHeight;
 		cX=(pos[1]) ? evt.clientX + parseInt(pos[1]) : evt.clientX;
 		cY=(pos[2]) ? evt.clientY + parseInt(pos[2]) : evt.clientY;
 		sX=window.scrollX || document.body.scrollLeft;
@@ -69,7 +78,7 @@ PopupObject.prototype = {
 	},
 
 	getLength : function(prop) {
-		return parseFloat(getComputedStyle(this.popupNode,null).getPropertyValue(prop));
+		return parseFloat(document.defaultView.getComputedStyle(this.popupNode,null).getPropertyValue(prop));
 	},
 
 	parentElement : function() {
