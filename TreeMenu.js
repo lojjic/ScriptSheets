@@ -72,6 +72,30 @@ TreeMenuNode.prototype = {
 		this.element.appendChild(v);
 		this.element.appendChild(h);
 		
+		var subs = this.element.getElementsByTagName("ul");
+		if(subs.length) {
+			var thisRef = this;
+			this.element.className += " tree-menu-node-branch";
+			this.element.addEventListener("click", this.clickHandler=function(evt){thisRef.onClick(evt);}, false);
+			
+			//create plus-minus icon:
+			this.collapser = document.createElement("img");
+				s = this.collapser.style; s.position="absolute"; s.top="4px"; s.left="2px";
+			this.element.appendChild(this.collapser);
+	
+			if(typeof Cookie == "function") {
+				var cookie = new Cookie("treeMenuOpenNodes");
+				cookie.setLifespan(60*60*24*365);
+				var id = this.element.getAttribute("id");
+				if(id && cookie.getValue().match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) this.expand();
+				else this.collapse();
+			}
+			else this.collapse();
+		}
+		else {
+			this.element.className += " tree-menu-node-leaf";
+		}
+		
 		//create icon from list-style-image:
 		var lsImg = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image");
 		this.element.style.listStyleImage = "none";
@@ -81,26 +105,6 @@ TreeMenuNode.prototype = {
 			this.element.insertBefore(this.icon, this.element.firstChild);
 		}
 
-		
-		var subs = this.element.getElementsByTagName("ul");
-		if(subs.length) {
-			var thisRef = this;
-			this.element.addEventListener("click", this.clickHandler=function(evt){thisRef.onClick(evt);}, false);
-			
-			//create plus-minus icon:
-			this.collapser = document.createElement("img");
-				s = this.collapser.style; s.position="absolute"; s.top="4px"; s.left="2px";
-			this.element.appendChild(this.collapser);
-	
-			this.collapse();
-			
-			if(typeof Cookie == "function") {
-				this.cookie = new Cookie("treeMenuOpenNodes");
-				this.cookie.setLifespan(60*60*24*365);
-				var id = this.element.getAttribute("id");
-				if(id && this.cookie.getValue().match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) this.expand();
-			}
-		}
 	},
 	
 	onClick : function(evt) {
@@ -127,18 +131,23 @@ TreeMenuNode.prototype = {
 		
 		//persist state:
 		var id = this.element.getAttribute("id");
-		if(id && this.cookie) {
-			var cookVal = this.cookie.getValue();
-			if(!cookVal.match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) this.cookie.setValue((cookVal ? cookVal + "," : "") + id);
+		if(id && typeof Cookie == "function") {
+			var cookie = new Cookie("treeMenuOpenNodes");
+			var cookVal = cookie.getValue();
+			if(!cookVal.match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) {
+				cookie.setValue((cookVal ? cookVal + "," : "") + id);
+				cookie.setLifespan(60*60*24*365);
+			}
 		}
 	},
 	
 	collapse : function() {
+		var i;
 		this.collapsed = true;
 		
 		//hide children:
 		var kids = this.element.childNodes;
-			for(var i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="none";
+			for(i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="none";
 		
 		//change icon:
 		var c = this.collapser;
@@ -146,23 +155,25 @@ TreeMenuNode.prototype = {
 		
 		//persist state:
 		var id = this.element.getAttribute("id");
-		if(id && this.cookie) {
-			var cookVal = this.cookie.getValue();
-			cookVal = cookVal.replace(id,"").replace(/,+/g, ",");
-			this.cookie.setValue(cookVal.replace(id,"").replace(/,+/g, ","));
+		if(id && typeof Cookie == "function") {
+			var cookie = new Cookie("treeMenuOpenNodes");
+			var cookVal = cookie.getValue().replace(new RegExp("^(.*,)?" + id + "(,.*)?$"), "$1$2").replace(/\$(1|2)/g, "").replace(/,+/g, ",");
+			cookie.setValue(cookVal);
+			cookie.setLifespan(60*60*24*365);
 		}
 	},
 	
 	destroy : function() {
-		var s = this.element.style;
+		var elt = this.element;
+		elt.className = elt.className.replace(/\btree-menu-node-(branch|leaf)\b/g, "");
+		var s = elt.style;
 			s.position = s.display = s.listStyleType = s.listStyleImage = "";
-			
 		var uls = this.element.getElementsByTagName("ul");
 			for(var i=0; i<uls.length; i++) uls[i].style.display="";
-		this.element.removeChild(this.outlineVert);
-		this.element.removeChild(this.outlineHoriz);
-		if(this.collapser) this.element.removeChild(this.collapser);
-		if(this.icon) this.element.removeChild(this.icon);
-		this.element.removeEventListener("click", this.clickHandler, false);
+		elt.removeChild(this.outlineVert);
+		elt.removeChild(this.outlineHoriz);
+		if(this.collapser) elt.removeChild(this.collapser);
+		if(this.icon) elt.removeChild(this.icon);
+		elt.removeEventListener("click", this.clickHandler, false);
 	}
 }
