@@ -51,9 +51,8 @@ TreeMenu.disableScriptSheet = function() {
 
 
 
-function TreeMenuNode(elt,open) {
+function TreeMenuNode(elt) {
 	this.element = elt;
-	this.collapsed = !open;
 	this.create();
 }
 TreeMenuNode.prototype = {
@@ -85,9 +84,8 @@ TreeMenuNode.prototype = {
 	
 			if(typeof Cookie == "function") {
 				var cookie = new Cookie("treeMenuOpenNodes");
-				cookie.setLifespan(60*60*24*365);
 				var id = this.element.getAttribute("id");
-				if(id && cookie.getValue().match(new RegExp("^(.+,)?" + id + "(,.*)?$"))) this.expand();
+				if(id && cookie.getValue().match(new RegExp("^(.*,)?" + id + "(,.*)?$"))) this.expand();
 				else this.collapse();
 			}
 			else this.collapse();
