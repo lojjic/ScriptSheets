@@ -3,39 +3,8 @@
 **  Created July 2003.  Use freely, but give me credit.
 **
 **  This script creates a bar like the Mac OSX dock
-**  out of a nested unordered list (<ul>).  The icons,
-**  which scale when near the mouse, are determined 
-**  from the list-style-image of the top-level <li>s.
-**  Submenus and other children of the <li>s are put
-**  in a menu that pops up next to the icon.
-*/
-
-/*
-
-<ul class="OSX-bar">
-	<li id="item-one"><a href="url">Label</a></li>
-	<li id="item-two">Label
-		<ul>
-			<li>Submenu</li>
-			<li>Submenu</li>
-			<li>Submenu</li>
-		</ul>
-	</li>
-</ul>
-
-TODO:
-	* PERF: Put (small) delay on creation of icon label popup (tried, but it actually worsened performance?!)
-	* Graduate scaling over several steps for smooth effect when entering and leaving active region
-	* Create OSXBarConfigPanel class (inherit PopupObject) to allow user to set properties
-	* Use position:fixed in browsers that support it, fall back to position:absolute w/scroll calc for others
-
-BUGS:
-	* IE doesn't seem to like creating submenu if it contains a comment
-	* if submenus are too long they go past the bottom of the window
-	* If Windows system has no DirectX (like Win4Lin) the icons show up blank because we change the source to blank.gif but the filter fails to show the real image
-	* Old Gecko doesn't do window.onscroll so bar position isn't updated when scrolled (position:fixed would work, but then fails in IE)
-	* Elements added to <li> after bar is created don't get shown in submenu popup
-	
+**  out of a nested unordered list (<ul>).  For usage
+**  and other details see OSXBar-doc.html.
 */
 
 
@@ -73,21 +42,11 @@ OSXBar.prototype = {
 	
 	setProperty : function(name,value) { // method to set properties - set defaults in here.
 		switch(name) {
-			case "edge":
-				this.edge = (value && value.match(/^(top|right|bottom|left)$/)) ? value : "left";
-			break;
-			case "iconMinSize":
-				this.iconMinSize = parseInt(value) || 24;
-			break;
-			case "iconMaxSize":
-				this.iconMaxSize = parseInt(value) || 48;
-			break;
-			case "iconSpacing":
-				this.iconSpacing = parseInt(value) || 12;
-			break;
-			case "scaleReach":
-				this.scaleReach = parseInt(value) || 7;
-			break;
+			case "edge": this.edge = (value && value.match(/^(top|right|bottom|left)$/)) ? value : "left"; break;
+			case "iconMinSize": this.iconMinSize = parseInt(value) || 24; break; 
+			case "iconMaxSize": this.iconMaxSize = parseInt(value) || 48; break;
+			case "iconSpacing": this.iconSpacing = parseInt(value) || 12; break;
+			case "scaleReach":  this.scaleReach  = parseInt(value) || 7;  break;
 		}
 		if(this.icons) this.onUnscale();
 	},
@@ -305,7 +264,11 @@ OSXBarPopup.prototype.setPosition = function() {
 	var distFromIcon = 12; //distance of popup from its icon
 	var icon = this.parentIcon;
 	var bar = icon.parentBar;
-	var fixPos = (bar.iconMaxSize + bar.iconSpacing + distFromIcon) + "px";
+	var scrollX = (window.scrollX || document.body.scrollLeft || 0);
+	var scrollY = (window.scrollY || document.body.scrollTop  || 0);
+	var isVertical = (bar.edge=="left" || bar.edge=="right");
+	var isTopLeft  = (bar.edge=="left" || bar.edge=="top");
+	var fixPos = (bar.iconMaxSize + bar.iconSpacing + distFromIcon + ((isVertical ? scrollX : scrollY) * (isTopLeft ? 1 : -1))) + "px";
 	var varPos = (icon.position + bar.position) + "px";
 	var l,t,r,b;
 	switch(bar.edge) {
