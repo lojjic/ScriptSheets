@@ -25,14 +25,16 @@
 
 TODO:
 	* PERF: Put (small) delay on creation of icon label popup (tried, but it actually worsened performance?!)
-	* PERF: Find ways to prevent excessive icon position/size calculation
-		* Make icon positioning "smarter" so it doesn't have to rely on position of previous icon (?)
 	* Graduate scaling over several steps for smooth effect when entering and leaving active region
-	* Keep bar centered when page scrolled
-	* Make submenus adjust if they hit the window edge (like normal PopupObject)
-	* Find way to only do IE-PNG-alpha-transparency hack if system supports DirectX filter
 	* Create OSXBarConfigPanel class (inherit PopupObject) to allow user to set properties
+	* Use position:fixed in browsers that support it, fall back to position:absolute w/scroll calc for others
 
+BUGS:
+	* IE doesn't seem to like creating submenu if it contains a comment
+	* if submenus are too long they go past the bottom of the window
+	* If Windows system has no DirectX (like Win4Lin) the icons show up blank because we change the source to blank.gif but the filter fails to show the real image
+	* Old Gecko doesn't do window.onscroll so bar position isn't updated when scrolled (position:fixed would work, but then fails in IE)
+	
 */
 
 
@@ -66,11 +68,12 @@ OSXBar.prototype = {
 		//hookup scaling with mouse position:
 		var thisRef = this;
 		document.addEventListener("mousemove", function(evt){thisRef.onMouseMoved(evt);}, false);
+		window.addEventListener("scroll", function(evt){thisRef.setSizeAndPosition();}, false);
 	},
 	
 	setProperty : function(name,value) { // method to set properties - set defaults in here.
 		switch(name) {
-			case "edge": 
+			case "edge":
 				this.edge = (value && value.match(/^(top|right|bottom|left)$/)) ? value : "left";
 			break;
 			case "iconMinSize":
@@ -127,10 +130,10 @@ OSXBar.prototype = {
 		for(var i=0; i<this.icons.length; i++) iconLength += this.icons[i].size;
 		
 		var edgeLen = isVertical ? (window.innerHeight || document.body.clientHeight) : (window.innerWidth || document.body.clientWidth); //width or height of window
-		//var scroll = window.scrollY || document.body.scrollTop;
+		var scroll = isVertical ? (window.scrollY || document.body.scrollTop) : (window.scrollX || document.body.scrollLeft);
 		var lngth  = iconLength + this.icons.length * this.iconSpacing;
 		var girth  = this.iconMinSize + this.iconSpacing;
-		var toSide = (this.position = edgeLen / 2 - lngth / 2 /* + scroll*/) + "px";
+		var toSide = (this.position = edgeLen / 2 - lngth / 2 + scroll) + "px";
 		var toEdge = (this.iconSpacing / 2) + "px";
 		var l,t,r,b,h,w;
 		switch(this.edge) {
@@ -239,9 +242,9 @@ OSXBarIcon.prototype = {
 		//calculate icon size:
 		var newSize = bar.iconMinSize;
 		if(evt) {
-			//var scroll = window.scrollY || document.body.scrollTop;
+			var scroll = isVertical ? (window.scrollY || document.body.scrollTop) : (window.scrollX || document.body.scrollLeft);
 			var mousePos = isVertical ? evt.clientY : evt.clientX;
-			var mouseDist = Math.abs(mousePos /*+ scroll*/ - bar.position - this.position - this.size/2) - this.size/2;
+			var mouseDist = Math.abs(mousePos + scroll - bar.position - this.position - this.size/2) - this.size/2;
 			if(mouseDist < 0) mouseDist = 0;
 			newSize = bar.iconMaxSize - mouseDist / bar.scaleReach;
 			if(newSize < bar.iconMinSize) newSize = bar.iconMinSize; //keep from going below minimum size
