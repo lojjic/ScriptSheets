@@ -31,6 +31,7 @@ TODO:
 	* Allow on-the-fly changing of bar.edge property
 	* Keep bar centered when page scrolled
 	* Make submenus adjust if they hit the window edge (like normal PopupObject)
+	* Find way to only do IE-PNG-alpha-transparency hack if system supports DirectX filter
 
 */
 
@@ -168,9 +169,9 @@ OSXBarIcon.prototype = {
 		var icon = this.icon = document.createElement("img");
 			icon.alt = this.label;
 			icon.src = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
-			if(icon.runtimeStyle && icon.src.match(/.png$/)) { //add IE alpha filter if PNG image:
+			if(icon.src.match(/.png$/) && navigator.userAgent.match(/MSIE (5\.5)|[6789]/) && navigator.platform == "Win32") { //add IE alpha filter if PNG image, to enable alpha transparency:
 				icon.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + icon.src + "', sizingMethod='scale')";
-				icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif"; //they make me do hacks like this, I use their bandwidth.
+				icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif?please_support_PNG_alpha_transparency"; //they make me do hacks like this, I use their bandwidth.
 			}
 			this.setSizeAndPosition();
 			this.parentBar.element.appendChild(icon);
@@ -186,14 +187,13 @@ OSXBarIcon.prototype = {
 
 	onMouseOver : function(evt) { 
 		//label pops up on hover:
-		if(!this.parentBar.scalingLocked && (!this.popupSubmenu || !this.popupSubmenu.popupNode.parentNode)) 
-			this.popupLabel = new OSXBarPopupLabel(this);
+		if(!this.parentBar.scalingLocked && !this.popupSubmenu) this.popupLabel = new OSXBarPopupLabel(this);
 		if(this.link) window.status = this.link; //if link, put address in status bar
 	},
 
 	onMouseOut : function(evt) {
 		if(this.popupLabel) this.popupLabel.destroy(); //remove icon label
-		this.popupLabel = null; //remove ref to avoid position updating of destroyed object
+		this.popupLabel = null;
 		window.status = ""; //remove link from status bar
 	},
 
@@ -313,6 +313,7 @@ OSXBarPopupSubmenu.prototype.addContent = function() {
 OSXBarPopupSubmenu.prototype.destroyBase = OSXBarPopupSubmenu.prototype.destroy;
 OSXBarPopupSubmenu.prototype.destroy = function() {
 	this.destroyBase();
+	this.parentIcon.popupSubmenu = null;
 	this.parentIcon.parentBar.scalingLocked = false;
 }
 
