@@ -85,6 +85,12 @@ ScriptSheet.matchSelector = function(selector) { // Take a CSS selector string a
 				if(elts[0]==document) { //if no previous context, do it fast:
 					a = document.getElementById(parts[++p]);
 					elts = a ? [a] : [];
+				} else {
+					p++;
+					for(i=0; i<elts.length; i++) {
+						if(elts[i].getAttribute("id") == parts[p]) a[a.length] = elts[i];
+					}
+					elts = a;
 				}
 			break;
 			case ".": //class
