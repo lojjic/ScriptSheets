@@ -20,29 +20,31 @@ ScriptSheet.prototype = {
 		this.disable();
 		var s = this.script;
 		if(!s) return;
-		if(!s.enableScriptSheet) s.enableScriptSheet = function() {
-			this.disableScriptSheet();
-			var sel = this.scriptSheetSelector;
-			if(!sel) return;
-			var elts;
-			if(typeof sel == "function") elts = sel();
-			if(typeof sel == "string") elts = ScriptSheet.matchSelector(sel);
-			var inst = this.scriptSheetInstances;
-			for(var i=0; i<elts.length; i++) inst[inst.length] = new s(elts[i]);
-		}
+		if(!s.enableScriptSheet) s.enableScriptSheet = ScriptSheet.enableScriptSheetDefault;
 		s.enableScriptSheet();
 	},
 	disable : function() {
 		var s = this.script;
 		if(!s) return;
 		var inst = this.scriptSheetInstances;
-		if(!s.disableScriptSheet) s.disableScriptSheet = function() {
-			var inst = this.scriptSheetInstances || [];
-			for(var i in inst) if(inst[i].destroy) inst[i].destroy();
-			this.scriptSheetInstances = [];
-		}
+		if(!s.disableScriptSheet) s.disableScriptSheet = ScriptSheet.disableScriptSheetDefault;
 		s.disableScriptSheet();
 	}
+};
+ScriptSheet.enableScriptSheetDefault = function() {
+	this.disableScriptSheet();
+	var sel = this.scriptSheetSelector;
+	if(!sel) return;
+	var elts;
+	if(typeof sel == "function") elts = sel();
+	if(typeof sel == "string") elts = ScriptSheet.matchSelector(sel);
+	var inst = this.scriptSheetInstances;
+	for(var i=0; i<elts.length; i++) inst[inst.length] = new this(elts[i]);
+};
+ScriptSheet.disableScriptSheetDefault = function() {
+	var inst = this.scriptSheetInstances || [];
+	for(var i in inst) if(inst[i].destroy) inst[i].destroy();
+	this.scriptSheetInstances = [];
 };
 ScriptSheet.instances = [];
 ScriptSheet.getPreferredStyle = function() {
