@@ -60,14 +60,14 @@ ColorPicker.disableScriptSheet = function() {
 function ColorPickerPopup(evt,position,tgtField) {
 	// Freaks out Mac IE: // if(!(this instanceof ColorPickerPopup)) return new ColorPickerPopup(evt,position,tgtField);	
 	this.field = tgtField; //field for output
-	this.create(evt);	
+	this.create(evt);
 	this.buildSwatches();
 	this.setPosition(evt,position);
 }
 ColorPickerPopup.prototype = new PopupObject("color-picker"); //inherit from base PopupObject class
 //extend the prototype:
 ColorPickerPopup.prototype.buildSwatches = function() {
-	var i, j, k, table, row, cell;
+	var i, j, k, table, tbody, row;
 	var columns = 18;
 	
 	//Build list of colors:
@@ -83,14 +83,16 @@ ColorPickerPopup.prototype.buildSwatches = function() {
 	
 	//Build color table:
 	table = document.createElement("table");
+	tbody = document.createElement("tbody");
 	for(i=0; i<colors.length; i+=columns) {
 		row = document.createElement("tr");
 		for(j=i; j<i+columns; j++) {
 			var swatch = new ColorPickerSwatch(colors[j],this);
 			swatch.appendTo(row);
 		}
-		table.appendChild(row);
+		tbody.appendChild(row);
 	}
+	table.appendChild(tbody);
 	this.popupNode.appendChild(table);
 };
 
