@@ -20,8 +20,15 @@ TreeMenu.prototype = {
 		var i, li;
 		this.element.className += " tree-menu";
 		this.menuNodes = [];
+		var open = {};
+		if(typeof Cookie == "function") {
+			var nodes = new Cookie("treeMenuOpenNodes").getValue();
+			if(nodes && typeof nodes == "object" && nodes.constructor == Array) {
+				for(i in nodes) open[nodes[i]] = 1; //store in hash for quick access
+			}
+		}
 		for(i=0; (li=this.element.getElementsByTagName("li")[i]); i++) {
-			if(li.getElementsByTagName("ul")) this.menuNodes[this.menuNodes.length] = new TreeMenuNode(li);
+			this.menuNodes[this.menuNodes.length] = new TreeMenuNode(li, open[li.id]);
 		}
 	},
 	
@@ -51,8 +58,9 @@ TreeMenu.disableScriptSheet = function() {
 
 
 
-function TreeMenuNode(elt) {
+function TreeMenuNode(elt, open) {
 	this.element = elt;
+	this.defaultOpen = open;
 	this.create();
 }
 TreeMenuNode.prototype = {
@@ -65,7 +73,7 @@ TreeMenuNode.prototype = {
 		v = this.outlineVert = document.createElement("div");
 			v.className = "tree-menu-outline-vertical";
 			s = v.style; s.position="absolute"; s.top="0"; s.left="6px"; s.height="100%";
-			var isLast=true; var e=this.element; while(e=e.nextSibling) if(e.nodeType==1) isLast=false; //is it the last node?
+			var isLast=true; var e=this.element; while(e=e.nextSibling) if(e.nodeType==1) {isLast=false; break;} //is it the last node?
 			if(isLast) s.height="8px";
 		h = this.outlineHoriz = document.createElement("div");
 			h.className = "tree-menu-outline-horizontal";
@@ -86,15 +94,7 @@ TreeMenuNode.prototype = {
 				this.collapser.appendChild(document.createTextNode(""));
 			this.element.appendChild(this.collapser);
 	
-			var expand = false;
-			if(typeof Cookie == "function") {
-				var nodes = new Cookie("treeMenuOpenNodes").getValue();
-				if(typeof nodes == "object") {
-					var id = this.element.getAttribute("id");
-					for(i in nodes) if(nodes[i]==id) expand = true;
-				}
-			}
-			if(expand) this.expand();
+			if(this.defaultOpen) this.expand();
 			else this.collapse();
 		}
 		else {
@@ -109,7 +109,6 @@ TreeMenuNode.prototype = {
 			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
 			this.element.insertBefore(this.icon, this.element.firstChild);
 		}
-
 	},
 	
 	onClick : function(evt) {
@@ -153,30 +152,30 @@ TreeMenuNode.prototype = {
 	},
 	
 	collapse : function() {
-		var i;
+		var i, c;
 		this.collapsed = true;
 		
 		//hide children:
 		var kids = this.element.childNodes;
 			for(i=0; i<kids.length; i++) if(kids[i].nodeType==1 && kids[i].tagName.toLowerCase()=="ul") kids[i].style.display="none";
-		
+
 		//change icon:
-		var c = this.collapser;
-			c.firstChild.nodeValue = "+"; 
-			c.title = "Expand"; 
-			c.className += " collapsed";
-			
+		c = this.collapser;
+		c.firstChild.nodeValue = "+"; 
+		c.title = "Expand"; 
+		c.className += " collapsed";
+
 		//persist state:
 		var id = this.element.getAttribute("id");
 		if(id && typeof Cookie == "function") {
-			var cookie = new Cookie("treeMenuOpenNodes");
-			var oldNodes = cookie.getValue();
+			c = new Cookie("treeMenuOpenNodes");
+			var oldNodes = c.getValue();
 			var newNodes = [];
 			if(typeof oldNodes == "object" && oldNodes.constructor == Array) {
 				for(i in oldNodes) if(oldNodes[i] != id) newNodes[newNodes.length] = oldNodes[i];
 			}
-			cookie.setValue(newNodes);
-			cookie.setLifespan(60*60*24*365);
+			c.setValue(newNodes);
+			c.setLifespan(60*60*24*365);
 		}
 	},
 	
