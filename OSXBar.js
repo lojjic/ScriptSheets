@@ -1,10 +1,19 @@
 /*
-**  OSXBar script by Jason Johnston (jj@lojjic.net)
-**  Created July 2003.  Use freely, but give me credit.
+**  OSXBar script by Jason Johnston (jj@lojjic.net) created July 2003.
 **
-**  This script creates a bar like the Mac OSX dock
-**  out of a nested unordered list (<ul>).  For usage
-**  and other details see OSXBar-doc.html.
+**  This script creates a bar like the Mac OS X dock out of a 
+**  nested unordered list (<ul>). For usage and other details see 
+**  http://lojjic.net/script-library/OSXBar-doc.html
+**
+**  This work is licensed for use under the Creative Commons
+**  Attribution-NonCommercial-ShareAlike license. In summary, you
+**  may freely use, modify, and distribute this work as long as:
+**    - You give me (Jason Johnston) credit,
+**    - You do not use this work for commercial purposes, and
+**    - Any redistribution of this or derivative works is made
+**      available under a license identical to this one.
+**  Before using this work please read the full license at 
+**  http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode
 */
 
 
