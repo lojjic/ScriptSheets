@@ -2,8 +2,6 @@
 == TODO List for the Script Library: ==
 =======================================
 
-* Create module that allows usage of "script styles" like stylesheets, and switching between them
-	* Will involve adding the capability for each module to remove everything it's done
 
 * When/if it is standardized, create XBL versions of each.  This will facilitate the above, and allow hooking-up of elements if they are created after the initial module instantiation.
 
@@ -14,10 +12,9 @@
 
 
 
-
-
-
 ==== DONE: ====
 
 * Create minimal loader for IEtoW3C.js so compliant browsers don't have to load it
 * Create cookie-handling class
+* Create module that allows usage of "script styles" like stylesheets, and switching between them
+	- Will involve adding the capability for each module to remove everything it's done
