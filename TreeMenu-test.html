@@ -13,16 +13,23 @@
 <link rel="stylesheet" type="text/css" href="TreeMenu.css" />
 <style type="text/css">
 .debug * {border:1px dotted red;}
+.tree-menu {top:200px;}
 </style>
 
 </head>
 <body>
 	
+	<h1>Test Tree Menu</h1>
+
 	<p>
-		<!--<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>-->
-		<button onclick="alert(unescape(document.cookie));">Alert Cookies</button>
-		<button onclick="new Cookie('preferredStyle').forget(); new Cookie('treeMenuOpenNodes').forget();">Reset Cookies</button>
-		<button onclick="if(document.body.className.match('debug')) document.body.className = document.body.className.replace('debug',''); else document.body.className += ' debug';">Outline Elements</button>
+		The TreeMenu script runs as a <a href="ScriptSheet.js" title="Framework for applying scripts as styles and switching between them">ScriptSheet</a>.
+		<input type="button" onclick="TreeMenu.disableScriptSheet()" value="Disable ScriptSheet"> 
+		<input type="button" onclick="TreeMenu.enableScriptSheet()" value="Enable ScriptSheet">
+	
+		<!--<input type="button" onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);" value="Set Phony Cookie">-->
+		<input type="button" onclick="alert(unescape(document.cookie));" value="Alert Cookies">
+		<input type="button" onclick="new Cookie('preferredStyle').forget(); new Cookie('treeMenuOpenNodes').forget();" value="Reset Cookies">
+		<input type="button" onclick="if(document.body.className.match('debug')) document.body.className = document.body.className.replace('debug',''); else document.body.className += ' debug';" value="Outline Elements">
 	</p>
 	
 	<ul class="navigation">
