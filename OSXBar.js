@@ -34,6 +34,7 @@ BUGS:
 	* if submenus are too long they go past the bottom of the window
 	* If Windows system has no DirectX (like Win4Lin) the icons show up blank because we change the source to blank.gif but the filter fails to show the real image
 	* Old Gecko doesn't do window.onscroll so bar position isn't updated when scrolled (position:fixed would work, but then fails in IE)
+	* Elements added to <li> after bar is created don't get shown in submenu popup
 	
 */
 
@@ -55,20 +56,19 @@ OSXBar.prototype = {
 	create : function() {
 		var i,j,k;
 		var elt = this.element;
-		this.icons = [];
+		elt.className += " osx-bar";
 
-		 //make <li>s into icons:
+		//make <li>s into icons:
+		this.icons = [];
 		var items = elt.childNodes;
 		for(i=0; i<items.length; i++) if(items[i].nodeType == 1 && items[i].tagName.toLowerCase() == "li") new OSXBarIcon(items[i], this);
 
-		// set bar style and position:
-		elt.className = "osx-bar";
 		this.setSizeAndPosition();
 		
 		//hookup scaling with mouse position:
 		var thisRef = this;
-		document.addEventListener("mousemove", function(evt){thisRef.onMouseMoved(evt);}, false);
-		window.addEventListener("scroll", function(evt){thisRef.setSizeAndPosition();}, false);
+		document.addEventListener("mousemove", this.onMouseMovedHandler=function(evt){thisRef.onMouseMoved(evt);}, false);
+		window.addEventListener("scroll", this.onScrollHandler=function(evt){thisRef.setSizeAndPosition();}, false);
 	},
 	
 	setProperty : function(name,value) { // method to set properties - set defaults in here.
@@ -146,9 +146,37 @@ OSXBar.prototype = {
 			s.position = "absolute";
 			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
 			s.height = h + "px"; s.width = w + "px";
+	},
+	
+	destroy : function() {
+		var j, k, icon, cont;
+		this.element.className = this.element.className.replace(/\s*osx-bar\s*/g,""); //reset CSS class
+		s = this.element.style; s.position = s.left = s.top = s.right = s.bottom = s.height = s.width = ""; //reset inline styles
+		for(j=0; (icon=this.icons[j]); j++) {
+			this.element.removeChild(icon.icon);
+			for(k=0; (cont=icon.contents[k]); k++) icon.element.appendChild(cont);
+			icon.labelNodeParent.insertBefore(icon.labelNode,icon.labelNodeParent.firstChild);
+			icon.labelNodeParent.style.display = icon.element.style.display = "";
+		}
+		this.icons = null;
+		document.removeEventListener("mousemove", this.onMouseMovedHandler, false);
+		window.removeEventListener("scroll", this.onScrollHandler, false);
 	}
 };
 OSXBar.instances = [];
+OSXBar.enableScriptSheet = function() {
+	var i, ul;
+	for(i=0; (ul = document.getElementsByTagName("ul")[i]); i++) {
+		if(ul.className.match(/\s*navigation\s*/)) new OSXBar(ul);
+	}
+}
+OSXBar.disableScriptSheet = function() {
+	var i, bar;
+	for(i=0; (bar=OSXBar.instances[i]); i++) {
+		bar.destroy();
+	}
+	OSXBar.instances = []; //clear list
+}
 
 
 
@@ -161,26 +189,21 @@ function OSXBarIcon(elt, bar) {
 	this.create();
 }
 OSXBarIcon.prototype = {
-	focused : false,
-
 	create : function() {
 		//get label (first text node):
 		function getFirstTextNode(inNode) {
 			if(!inNode) return false; //exit if node not defined
 			if(inNode.nodeType == 3) return inNode; //text node! - return the text node
-			if(inNode.nodeType == 1) { //element - recurse into children, then following siblings
-				var outNode;
-				if(outNode = getFirstTextNode(inNode.firstChild)) return outNode;
-				if(outNode = getFirstTextNode(inNode.nextSibling)) return outNode;
-				return false;
-			}
+			if(inNode.nodeType == 1) //element - recurse into children, then following siblings
+				return getFirstTextNode(inNode.firstChild) || getFirstTextNode(inNode.nextSibling) || false;
 			return false;
 		}
-		var labelNode = getFirstTextNode(this.element);
-		this.label = labelNode.nodeValue.replace(/^\s*(.*)\s*$/,"$1"); //strip leading and trailing space
-		if(labelNode.parentNode.tagName.toLowerCase() == "a") this.link = labelNode.parentNode.href; //remember label link
-		if(this.link) labelNode.parentNode.parentNode.removeChild(labelNode.parentNode);
-		else labelNode.parentNode.removeChild(labelNode);
+		this.labelNode = getFirstTextNode(this.element);
+		this.labelNodeParent = this.labelNode.parentNode;
+		this.label = this.labelNode.nodeValue.replace(/^\s*(.*)\s*$/,"$1"); //strip leading and trailing space
+		if(this.labelNodeParent.tagName.toLowerCase() == "a") this.link = this.labelNodeParent.href; //remember label link
+		if(this.link) this.labelNodeParent.style.display="none";
+		else this.labelNodeParent.removeChild(this.labelNode);
 		
 		//get popup content (everything that's left):
 		this.contents = [];
@@ -337,16 +360,4 @@ OSXBarPopupSubmenu.prototype.destroy = function() {
 	this.destroyBase();
 	this.parentIcon.popupSubmenu = null;
 	this.parentIcon.parentBar.scalingLocked = false;
-}
-
-
-
-
-// Hookup on page load (automatically hooks up any <ul>s with class="osx-bar" with default parameters):
-function onOSXBarLoaded(evt) {
-	var ULs = document.getElementsByTagName("ul");
-	for(var i=0; i<ULs.length; i++) {
-		if(ULs[i].className.match(/^(.*\s+)?osx-bar(\s+.*)?$/)) new OSXBar(ULs[i]);
-	}
-}
-window.addEventListener("load",onOSXBarLoaded,false);
+};

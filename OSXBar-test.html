@@ -4,6 +4,9 @@
 	<script type="text/javascript" src="IEtoW3C-loader.js"></script>
 	<script type="text/javascript" src="PopupObject.js"></script><!-- submenu popup based on this class -->
 	<script type="text/javascript" src="OSXBar.js"></script>
+	<script type="text/javascript">
+		window.addEventListener("load",OSXBar.enableScriptSheet,false);
+	</script>
 	
 	<style type="text/css">
 	* {font-size:12px; font-family:Arial,sans-serif;}
@@ -18,11 +21,12 @@
 		.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
 		.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
 	</style>
+	
 
 </head>
 <body>
 
-	<ul class="osx-bar">
+	<ul class="navigation">
 		<li><a href="http://lojjic.net">Label 1</a></li><!-- linked label -->
 		<li>Label 2 <!-- text label with child menu -->
 			<ul>
