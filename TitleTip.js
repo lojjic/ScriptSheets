@@ -16,7 +16,7 @@ function TitleTip(elt) {
 }
 TitleTip.prototype = {
 	create : function() {
-		this.element.addEventListener("mouseover", this.mouseOverHandler = function(evt){new TitleTipPopup(evt);}, false);
+		this.element.addEventListener("mouseover", this.mouseOverHandler=function(evt){new TitleTipPopup(evt);}, false);
 	},
 	destroy : function() {
 		this.element.removeEventListener("mouseover", this.mouseOverHandler, false);
@@ -26,15 +26,13 @@ TitleTip.instances = [];
 TitleTip.enableScriptSheet = function() {
 	TitleTip.disableScriptSheet();
 	var elts = document.all || document.getElementsByTagName("*");
-	for(var i=0; i<elts.length; i++) {
-		if(elts[i].getAttribute("title")) new TitleTip(elts[i]);
-	}
+	var i, elt;
+	for(i=0; (elt=elts[i]); i++) 
+		if(elt.getAttribute("title")) new TitleTip(elt);
 };
 TitleTip.disableScriptSheet = function() {
 	var i, inst;
-	for(i=0; (inst=TitleTip.instances[i]); i++) {
-		inst.destroy();
-	}
+	for(i=0; (inst=TitleTip.instances[i]); i++) inst.destroy();
 	TitleTip.instances = [];
 }
 
@@ -44,7 +42,6 @@ TitleTip.disableScriptSheet = function() {
 
 
 function TitleTipPopup(evt) {
-	// Freaks out Mac IE: // if(!(this instanceof TitleTip)) return new TitleTip(evt);
 	this.create(evt);
 	this.buildTip(evt);
 	this.setPosition(evt);
@@ -55,35 +52,28 @@ TitleTipPopup.prototype = new PopupObject("titletip"); //inherit from base Popup
 TitleTipPopup.prototype.buildTip = function(evt) {
 	var elt = this.element = evt.currentTarget;
 	var ttl = this.title = elt.title;
-	elt.title = ""; //temporarily remove it to avoid normal tooltip
+	elt.title = ""; //temp. remove title to prevent browser tooltip
 	var lnk=elt; while(lnk=lnk.parentNode) if(lnk.href) window.status = lnk.href; //if within a link, put href in status bar
 
 	var thisRef = this;
-	elt.addEventListener("mousemove",this.mousemoveHandler=function(evt){
-		//Reduce movement to no more than once per 20ms:
-		var now = new Date();
-		if(thisRef.lastMovedTime && now - thisRef.lastMovedTime < 20) return;
-		thisRef.lastMovedTime = now;
-		thisRef.setPosition(evt); //move it
-	},false);
+	elt.addEventListener("mousemove",this.mousemoveHandler=function(evt){thisRef.setPosition(evt);},false);
 	elt.addEventListener("mouseout",this.mouseoutHandler=function(){thisRef.destroy()},false);
 
 	var node = this.popupNode;
 	node.appendChild(document.createTextNode(ttl));
 }
-TitleTipPopup.prototype.setPositionBase = TitleTipPopup.prototype.setPosition;
+TitleTipPopup.prototype._tmpSetPos = TitleTipPopup.prototype.setPosition;
 TitleTipPopup.prototype.setPosition = function(evt) {
-	this.setPositionBase(evt,"topleft,16,16");
+	this._tmpSetPos(evt,"topleft,16,16");
 }
 
-TitleTipPopup.prototype.pressed = function(){return;}; //clicking on titletip destroys it
+TitleTipPopup.prototype.pressed = function(){return;}; //clicking on tip destroys it
 TitleTipPopup.prototype.destroyBase = TitleTipPopup.prototype.destroy;
 TitleTipPopup.prototype.destroy = function() {
 	var elt = this.element;
 	window.status = "";
 	elt.removeEventListener("mousemove",this.mousemoveHandler,false);
 	elt.removeEventListener("mouseout",this.mouseoutHandler,false);
-	elt.title = this.title; //add attribute back in
-	//p.popupNode.style.display="none"; //prevent repaint bug in IE5
+	elt.title = this.title; //add back in
 	this.destroyBase();
 }

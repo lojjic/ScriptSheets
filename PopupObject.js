@@ -9,7 +9,6 @@
 
 
 function PopupObject(type) {
-	// Freaks out Mac IE: // if(!(this instanceof PopupObject)) return new PopupObject();
 	this.popupType = type || "popup-object";
 }
 
@@ -67,29 +66,7 @@ PopupObject.prototype = {
 
 		var s = this.popupNode.style;
 		s.left=pX+"px"; s.top=pY+"px";
-		//window.status = pX + " x " + pY;
 	},
-
-	/* BEGIN EFFECTS (Should perhaps be in separate file?) */
-	opacity : 0,
-	fadeIn : function() {
-		if(this.opacity > 100) return;
-		this.popupNode.style.MozOpacity = this.opacity + "%";
-		this.popupNode.style.filter = "alpha(opacity=" + this.opacity + ")";
-		this.opacity += 10;
-		var thisRef = this;
-		setTimeout(function(){thisRef.fadeIn()},30);
-	},
-	clipping : 0,
-	swipeIn : function() { //bleech! works poorly.
-		// TODO: let user specify direction of swipe in parameter
-		if(this.clipping > 110) return;
-		this.popupNode.style.clip = "rect(0," + this.clipping + "px,100%,0)";
-		this.clipping += 10;
-		var thisRef = this;
-		setTimeout(function(){thisRef.swipeIn()},30);
-	},
-	/* END EFFECTS */
 
 	getLength : function(prop) {
 		return parseFloat(getComputedStyle(this.popupNode,null).getPropertyValue(prop));
