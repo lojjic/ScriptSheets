@@ -52,7 +52,7 @@ ScriptSheet.switchTo = function(title) {
 		ttl = lnk.getAttribute("title");
 		hrf = lnk.getAttribute("href");
 		if(rel && (match=rel.match(/^\s*((alternat(e|ive))\s+)?(script|style)sheet\s*$/i)) && hrf) {
-			if(match[4]=="style") lnk.disabled = !(ttl == title || !ttl); //handle stylesheets
+			if(match[4]=="style") lnk.disabled = !(ttl == title || (!ttl && title != "[null]")); //handle stylesheets
 			else {
 				hrf = hrf.substring(hrf.indexOf("#")+1);
 				if(!lnk.scriptSheet) lnk.scriptSheet = new ScriptSheet(ttl, hrf);
