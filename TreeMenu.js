@@ -49,6 +49,7 @@ TreeMenu.setOpenNode = function(id, isOpen) {
 		for(i in oldNodes) if(oldNodes[i] != id) newNodes[newNodes.length] = oldNodes[i];
 		if(isOpen) newNodes[newNodes.length] = id;
 	}
+	cookie.setPath("/");
 	cookie.setValue(newNodes);
 	cookie.setLifespan(60*60*24*365);
 	TreeMenu.openNodes[id] = isOpen;
@@ -98,7 +99,7 @@ TreeMenuNode.prototype = {
 		}
 
 		//create icon from list-style-image:
-		var lsImg = window.getComputedStyle(elt,null).getPropertyValue("list-style-image");
+		var lsImg = document.defaultView.getComputedStyle(elt,null).getPropertyValue("list-style-image");
 		if(lsImg && lsImg.indexOf("url(") == 0) {
 			this.icon = document.createElement("img");
 			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
