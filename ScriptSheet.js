@@ -73,3 +73,49 @@ ScriptSheet.onLoad = function() {
 	ScriptSheet.switchTo(pref);
 }
 window.addEventListener("load",ScriptSheet.onLoad,false);
+
+
+
+function StyleChooser() {
+	this.create();
+	var i = StyleChooser.instances;
+	i[this.index = i.length] = this;
+}
+StyleChooser.prototype = {
+	create : function() {
+		var sel, i, lnk, rel, ttl, opt;
+		sel = this.chooser = document.createElement("select");
+		var styles = {};
+		for(i=0; (lnk=document.getElementsByTagName("link")[i]); i++) {
+			rel = lnk.getAttribute("rel");
+			ttl = lnk.getAttribute("title");
+			if(rel && rel.match(/\b(script|style)sheet\b/i) && ttl) styles[ttl] = ttl;
+		}
+		styles["No Style"] = ""; //add null style
+		var pref = ScriptSheet.getPreferredStyle();
+		for(i in styles) {
+			opt = document.createElement("option");
+			opt.appendChild(document.createTextNode(i));
+			opt.setAttribute("value",styles[i]);
+			if(styles[i]==pref) opt.selected=true;
+			sel.appendChild(opt);
+		}
+		sel.addEventListener("change", function(evt){StyleChooser.switchTo(this.value);}, false);
+	},
+	appendTo : function(elt) {
+		elt.appendChild(this.chooser);
+	},
+	insertBefore : function(node) {
+		node.parentNode.insertBefore(this.chooser, node);
+	}
+};
+StyleChooser.instances = [];
+StyleChooser.switchTo = function(title) {
+	var i, j, a, b;
+	//update all StyleChoosers:
+	for(i=0; (a=StyleChooser.instances[i]); i++)
+		for(j=0; (b=a.chooser.options[j]); j++)
+			if(b.value == title) a.chooser.selectedIndex = j;
+	//switch the style:
+	ScriptSheet.switchTo(title);
+};
