@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Sort columns by clicking on column headers</title>
+<title>StyleSheet switching test</title>
 
 
 <script type="text/javascript" src="IEtoW3C-loader.js"></script>
@@ -9,9 +9,12 @@
 <script type="text/javascript" src="PopupObject.js"></script>
 <script type="text/javascript" src="OSXBar.js"></script>
 <script type="text/javascript" src="TreeMenu.js"></script>
+<script type="text/javascript" src="AccessKey.js"></script>
 
-<link rel="scriptsheet" type="text/javascript" href="OSXBar" title="Mac OS X Dock" />
-<link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu" title="Tree Menu" />
+<link rel="scriptsheet" type="text/javascript" href="OSXBar.js#OSXBar" title="Mac OS X Dock" />
+<link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu.js#TreeMenu" title="Tree Menu" />
+<link rel="alternate scriptsheet" type="text/javascript" href="AccessKey.js#AccessKey" title="Tree Menu" />
+<link rel="alternate scriptsheet" type="text/javascript" href="TreeMenu.js#TreeMenu" title="Tree Menu, no accesskeys" />
 
 	<style type="text/css">
 	* {font-size:12px; font-family:Arial,sans-serif;}
@@ -34,25 +37,36 @@
 		.tree-menu li.tree-menu-node {background-image:url(assets/minus.gif); background-repeat:no-repeat; background-position:3px 3px;}
 		.tree-menu li.tree-menu-node.tree-menu-collapsed {background-image:url(assets/plus.gif);}
 		.tree-menu li.tree-menu-node.tree-menu-collapsed ul {display:none;}
+		
+	em.accesskey {border-bottom:1px solid; font-style:inherit;}
 	</style>
 
 </head>
 <body>
 
-	<select onchange="ScriptSheet.switchTo(this.value);">
+	<p>
+		<select onchange="ScriptSheet.switchTo(this.value);">
 		<option value="Mac OS X Dock">Mac OS X Dock</option>
 		<option value="Tree Menu">Tree Menu</option>
+		<option value="Tree Menu, no accesskeys">Tree Menu, no accesskeys</option>
 		<option value="null">No Style</option>
-	</select>
+		</select>
+	</p>
+	<!--
+	<p>
+		<button onclick="var c = new Cookie('preferredStyle'); c.setValue('gobsmacked'); c.setLifespan(60*60*24*365);">Set Phony Cookie</button>
+		<button onclick="alert(new Cookie('preferredStyle').getValue());">Alert Cookie Value</button>
+	</p>
+	-->
 	
 	<ul class="navigation">
 		<li>Menu Item 1
 			<ul>
 				<li>Submenu
 					<ul>
-						<li><a href="">Submenu 2</a></li>
-						<li><a href="">Submenu 2</a></li>
-						<li><a href="">Submenu 2</a></li>
+						<li><a href="" accesskey="s">Submenu 2</a></li>
+						<li><a href="" accesskey="u">Submenu 2</a></li>
+						<li><a href="" accesskey="b">Submenu 2</a></li>
 					</ul>
 				</li>
 				<li><a href="">Submenu</a></li>
@@ -88,6 +102,8 @@
 			</ul>
 		</li>
 	</ul>
+	
+	
 	
 
 
