@@ -28,7 +28,6 @@ TODO:
 	* PERF: Find ways to prevent excessive icon position/size calculation
 		* Make icon positioning "smarter" so it doesn't have to rely on position of previous icon (?)
 	* Graduate scaling over several steps for smooth effect when entering and leaving active region
-	* Allow on-the-fly changing of bar.edge property
 	* Keep bar centered when page scrolled
 	* Make submenus adjust if they hit the window edge (like normal PopupObject)
 	* Find way to only do IE-PNG-alpha-transparency hack if system supports DirectX filter
@@ -55,11 +54,9 @@ OSXBar.prototype = {
 		var elt = this.element;
 		this.icons = [];
 
-		// hookup the icons:
+		 //make <li>s into icons:
 		var items = elt.childNodes;
-		for(i=0; i<items.length; i++) { //make <li>s into icons:
-			if(items[i].nodeType == 1 && items[i].tagName.toLowerCase() == "li") new OSXBarIcon(items[i], this); 
-		}
+		for(i=0; i<items.length; i++) if(items[i].nodeType == 1 && items[i].tagName.toLowerCase() == "li") new OSXBarIcon(items[i], this);
 
 		// set bar style and position:
 		elt.className = "osx-bar";
@@ -229,7 +226,7 @@ OSXBarIcon.prototype = {
 		}
 		var prevIcon = bar.icons[this.instanceIndex-1];
 		var newPos = prevIcon ? (prevIcon.position + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
-		if(this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos)) && !this.popupLabel) return; //if already in the right place, stop calculation
+		if(evt && this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos)) && !this.popupLabel) return; //if already in the right place, stop calculation
 			
 		var fixPos = (bar.iconSpacing / 2) + "px";
 		var varPos = (this.position = newPos) + "px";

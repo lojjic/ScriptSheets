@@ -18,14 +18,7 @@
 		.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
 		.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
 	</style>
-	
-	<script type="text/javascript">
-	window.addEventListener("load",function(){
-		new OSXBar(document.getElementById("bottom-bar"),"bottom");
-		new OSXBar(document.getElementById("right-bar"),"right",16,48,4,4);
-		new OSXBar(document.getElementById("top-bar"),"top",24,96,32,4);
-	},false);
-	</script>
+
 </head>
 <body>
 
@@ -58,63 +51,6 @@
 		<li><a href="#">Label 8</a></li>
 	</ul>
 	
-	<ul id="bottom-bar">
-		<li><a href="#">Label 1</a></li>
-		<li>Label 2
-			<ul>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-			</ul>
-		</li>
-		<li><a href="#">Label 3</a></li>
-		<li><a href="#">Label 4</a></li>
-		<li><a href="#">Label 5</a></li>
-		<li><a href="#">Label 6</a></li>
-		<li><a href="#">Label 7</a></li>
-		<li><a href="#">Label 8</a></li>
-		<li><a href="#">Label 9</a></li>
-		<li><a href="#">Label 10</a></li>
-		<li><a href="#">Label 11</a></li>
-		<li><a href="#">Label 12</a></li>
-		<li><a href="#">Label 13</a></li>
-		<li><a href="#">Label 14</a></li>
-		<li><a href="#">Label 15</a></li>
-	</ul>
-
-	<ul id="right-bar">
-		<li><a href="#">Label 1</a></li>
-		<li>Label 2
-			<ul>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-			</ul>
-		</li>
-		<li><a href="#">Label 3</a></li>
-		<li><a href="#">Label 4</a></li>
-		<li><a href="#">Label 5</a></li>
-		<li><a href="#">Label 6</a></li>
-		<li><a href="#">Label 7</a></li>
-		<li><a href="#">Label 8</a></li>
-		<li><a href="#">Label 9</a></li>
-		<li><a href="#">Label 10</a></li>
-	</ul>
-
-	<ul id="top-bar">
-		<li><a href="#">Label 1</a></li>
-		<li>Label 2
-			<ul>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-				<li><a href="">Submenu</a></li>
-			</ul>
-		</li>
-		<li><a href="#">Label 3</a></li>
-		<li><a href="#">Label 4</a></li>
-		<li><a href="#">Label 5</a></li>
-	</ul>
-
 		
 	
 	<form id="updateForm" onsubmit="updateOSXBarParams(); return false;">
@@ -129,7 +65,7 @@
 					return parseInt(document.getElementById(id).value);
 				}
 				for(var i=0; i<bars.length; i++) {
-					//bars[i].edge=document.getElementById("edge").value;
+					bars[i].edge=document.getElementById("edge").value;
 					bars[i].iconMaxSize=v("maxsize");
 					bars[i].iconMinSize=v("minsize");
 					bars[i].iconSpacing=v("spacing");
@@ -139,11 +75,10 @@
 			}
 		</script>
 		<table>
-		<!--
 		<tr>
 			<th>Edge of Window:</th>
 			<td>
-				<select id="edge">
+				<select id="edge" onchange="updateOSXBarParams()">
 				<option>left</option>
 				<option>bottom</option>
 				<option>right</option>
@@ -151,26 +86,21 @@
 				</select>
 			</td>
 		</tr>
-		-->
 		<tr>
 			<th>Minimum Icon Size:</th>
-			<td><input type="text" size="3" id="minsize" value="32"> pixels</td>
+			<td><input type="text" size="3" id="minsize" value="32" onchange="updateOSXBarParams()"> pixels</td>
 		</tr>
 		<tr>
 			<th>Maximum Icon Size:</th>
-			<td><input type="text" size="3" id="maxsize" value="48"> pixels</td>
+			<td><input type="text" size="3" id="maxsize" value="48" onchange="updateOSXBarParams()"> pixels</td>
 		</tr>
 		<tr>
 			<th>Icon Spacing:</th>
-			<td><input type="text" size="3" id="spacing" value="8"> pixels</td>
+			<td><input type="text" size="3" id="spacing" value="8" onchange="updateOSXBarParams()"> pixels</td>
 		</tr>
 		<tr>
 			<th>Scaling Curve Smoothness:</th>
-			<td><input type="text" size="3" id="smoothness" value="6"> (bigger number is smoother curve)</td>
-		</tr>
-		<tr>
-			<th></th>
-			<td><input type="submit" value="Update"></td>
+			<td><input type="text" size="3" id="smoothness" value="6" onchange="updateOSXBarParams()"> (bigger number is smoother curve)</td>
 		</tr>
 		</table>
 	</div>
