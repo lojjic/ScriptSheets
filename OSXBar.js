@@ -10,12 +10,11 @@
 
 function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is required; all others default to values below
 	this.element = elt;
-	var c; if(window.Cookie) c = new Cookie("OSXBarParams").getValue(); if(!c) c = {};
-	this.setProperty("edge",c.edge || edge); //one of "top", "right", "bottom", or "left". Defaults to "left".
-	this.setProperty("iconMinSize",c.iconMinSize || minSize); // smallest (initial) icon size (pixels).
-	this.setProperty("iconMaxSize",c.iconMaxSize || maxSize); // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
-	this.setProperty("iconSpacing",c.iconSpacing || spacing); // space between icons (pixels).
-	this.setProperty("scaleReach", c.scaleReach  || reach); // "gradualness" of the scaling - larger number gives smoother curve.
+	this.setProperty("edge", edge); //one of "top", "right", "bottom", or "left". Defaults to "left".
+	this.setProperty("iconMinSize", minSize); // smallest (initial) icon size (pixels).
+	this.setProperty("iconMaxSize", maxSize); // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
+	this.setProperty("iconSpacing", spacing); // space between icons (pixels).
+	this.setProperty("scaleReach", reach); // "gradualness" of the scaling - larger number gives smoother curve.
 	this.create();
 	OSXBar.instances[OSXBar.instances.length] = this;
 }
@@ -51,14 +50,6 @@ OSXBar.prototype = {
 			case "scaleReach":  this[name] = parseInt(value) || 4;  break;
 		}
 		if(this.icons) this.onUnscale();
-		if(window.Cookie) {
-			var c = new Cookie("OSXBarParams");
-			var v = c.getValue();
-			if(!v || typeof v != "object") v = {};
-			v[name] = this[name];
-			c.setLifespan(60*60*24*365);
-			c.setValue(v);
-		}
 	},
 
 	onMouseMoved : function(evt) {
@@ -173,18 +164,18 @@ OSXBarIcon.prototype = {
 		this.popupSubmenu = new OSXBarSubmenu(this);
 
 		//create icon, set initial position:
-		var liImg = getComputedStyle(this.element,null).getPropertyValue("list-style-image");
+		var liImg = document.defaultView.getComputedStyle(this.element,null).getPropertyValue("list-style-image") || OSXBar.defaultIcon;
 		var icon = this.icon = document.createElement(liImg ? "img" : "span");
+			icon.alt = this.label;
 			icon.className = "osx-bar-icon";
 			if(liImg && liImg != "none") {
-				icon.alt = this.label;
 				icon.src = liImg.replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
-				if(icon.src.match(/.png$/) && navigator.userAgent.match(/MSIE (5\.5)|[6789]/) && navigator.platform == "Win32") { //add IE alpha filter if PNG image, to enable alpha transparency:
+				if(icon.src.match(/.png$/) && icon.runtimeStyle && navigator.userAgent.match(/MSIE (5\.5|[6789])/) && navigator.platform == "Win32") { //add IE alpha filter if PNG image, to enable alpha transparency:
 					icon.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + icon.src + "', sizingMethod='scale')";
-					icon.src = "http://microsoft.com/homepage/gif/1ptrans.gif?please_support_PNG_alpha_transparency"; //they make me do hacks like this, I use their bandwidth.
+					icon.src = "http://www.microsoft.com/homepage/gif/1ptrans.gif?please_support_PNG_alpha_transparency"; //they make me do hacks like this, I use their bandwidth.
 				}
 			} else {
-				icon.appendChild(document.createTextNode("No Image"));
+				icon.appendChild(document.createTextNode(this.label));
 				icon.style.border = "1px dotted";
 			}
 			this.setSizeAndPosition();
@@ -202,7 +193,7 @@ OSXBarIcon.prototype = {
 	onMouseOver : function(evt) { 
 		//label pops up on hover:
 		if(!this.parentBar.scalingLocked) this.popupLabel.show();
-		if(this.link) window.status = this.link; //if link, put address in status bar
+		window.status = this.link || "Show Menu for " + this.label;
 	},
 
 	onMouseOut : function(evt) {
@@ -252,19 +243,20 @@ OSXBarIcon.prototype = {
 		var size   = (this.size = newSize) + "px";
 		var l,t,r,b,h,w,s,p,i;
 		switch(bar.edge) {
-			case "top": l=varPos; t=fixPos; w=size; break;
-			case "right": t=varPos; r=fixPos; h=size; break;
-			case "bottom": l=varPos; b=fixPos; w=size; break;
-			default: t=varPos; l=fixPos; h=size; break;
+			case "top": l=varPos; t=fixPos; break;
+			case "right": t=varPos; r=fixPos; break;
+			case "bottom": l=varPos; b=fixPos; break;
+			default: t=varPos; l=fixPos; break;
 		}
 		s = this.icon.style;
 			s.position = "absolute";
 			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
-			s.height = h || "auto"; s.width = w || "auto";
+			s.height = s.width = size;
 		
 		if(!this.popupLabel.hidden) this.popupLabel.setPosition(); //move label with icon
 		if(!this.popupSubmenu.hidden) this.popupSubmenu.setPosition(); //move submenu with icon
 	},
+	
 	destroy : function() {
 		this.icon.parentNode.removeChild(this.icon);
 		if(this.popupLabel) this.popupLabel.destroy();
@@ -362,5 +354,22 @@ OSXBarSubmenu.prototype.addContent = function() {
 	
 	// add <li> children to the popup:	
 	var contents = this.parentIcon.contents;
-	for(var i=0; i<contents.length; i++) this.popupNode.appendChild(contents[i]);
+	for(var i=0; i<contents.length; i++) {
+		this.popupNode.appendChild(contents[i]);
+		/*
+		//create icon from list-style-image:
+		var lis = contents[i].getElementsByTagName("li");
+		for(var j=0; j<lis.length; j++) {
+			var lnk = lis[j].firstChild;
+			var li = (lnk.nodeName.toLowerCase()=="a") ? lnk : lis[j];
+			var lsImg = window.getComputedStyle(lis[j],null).getPropertyValue("list-style-image");
+			if(lsImg && lsImg.indexOf("url(") == 0) {
+				lis[j].icon = document.createElement("img");
+				lis[j].icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
+				li.insertBefore(lis[j].icon, li.firstChild);
+			}
+			li.style.listStyleImage = "none";
+		}
+		*/
+	}
 };
