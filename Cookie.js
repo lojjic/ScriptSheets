@@ -50,7 +50,7 @@ Cookie.prototype = {
 						return unescape(str.slice(1,-1));
 					default: //number
 						var num = Number(str);
-						return (num == "NaN") ? str : num;
+						return (isNaN(num)) ? str : num;
 				}
 			}
 			return decodeValue(unescape(value));
