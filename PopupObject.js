@@ -1,4 +1,12 @@
-/*=== Base Class for Popup Widgets ===*/
+/*
+**  PopupObject script by Jason Johnston (jj@lojjic.net)
+**  Created July 2002.  Use freely, but give me credit.
+**
+**  This is a base class for creating popup objects,
+**  such as popup menus, title tips, dialogs, etc.
+**  Only really useful when subclassed.
+*/
+
 
 function PopupObject(type) {
 	// Freaks out Mac IE: // if(!(this instanceof PopupObject)) return new PopupObject();

@@ -1,12 +1,18 @@
+/*
+**  PopupCalendar script by Jason Johnston (jj@lojjic.net)
+**  Created July 2002.  Use freely, but give me credit.
+**
+**  Use this script to create a popup calendar widget
+**  for picking a date. If a text field is specified, the
+**  chosen date will be put in that field.
+*/
 
-/*To Do:
+/*
+TODO:
   - Modify to use Date.toFormat() functionality to automatically adapt to format
   - Pull CSS into this file, or some other way of easily packaging style
   - Make prev/next month buttons have content (currently empty elements with CSS background-image)
-
-
-
-/*=== Functions for Popup Calendar Widget ===*/
+*/
 
 function PopupCalendar(evt,position,tgtField,dateRange) { //CONSTRUCTOR
 	// Freaks out Mac IE: // if(!(this instanceof PopupCalendar)) return new PopupCalendar(evt,position,tgtField,dateRange);

@@ -1,6 +1,12 @@
-/*===============
+/*
+**  Window script by Jason Johnston (jj@lojjic.net)
+**  Created April 2003.  Use freely, but give me credit.
+**
+**  Use this script to create a draggable, resizable
+**  "window" from any node.
+*/
 
-Window.js: Creates a draggable, resizable "window" from any node.
+/*===============
 
 ==Usage:==
 new Window(contentElement, titleElement, width, height, xPosition, yPosition, zIndex);

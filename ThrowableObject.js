@@ -1,3 +1,12 @@
+/*
+**  ThrowableObject script by Jason Johnston (jj@lojjic.net)
+**  Created July 2002.  Use freely, but give me credit.
+**
+**  This script makes a specified element into an object which
+**  can be dragged and "thrown" by the mouse like a ball, 
+**  bouncing off the sides of the window like walls.
+*/
+
 
 function MouseTracker() {
 	this._init();
