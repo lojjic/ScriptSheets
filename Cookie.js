@@ -22,12 +22,65 @@ Cookie.prototype = {
 			var end = str.indexOf(";", start);
 			if(end == -1) end = str.length;
 			var value = str.substring(start, end);
-			return unescape(value);
+			
+			function decodeValue(str) {  {{{{}}}}
+				switch(str.charAt(0)) {
+					case "{": //object
+						var obj = {};
+						if(str.indexOf(":") != -1) {
+							var props = str.slice(1,-1).split(",");
+							for(var i=0; i<props.length; i++) {
+								var keyVal = props[i].split(":");
+								obj[keyVal[0]] = decodeValue(unescape(keyVal[1]));
+							}
+						}
+						return obj;
+					case "[": //array
+						var arr = [];
+						var members = str.slice(1,-1).split(",");
+						for(var i=0; i<members.length; i++) {
+							arr[arr.length] = decodeValue(unescape(members[i]));
+						}
+						return arr;
+					case "t": //boolean
+						return true;
+					case "f":
+						return false;
+					case "'": //string
+						return unescape(str.slice(1,-1));
+					default: //number
+						var num = Number(str);
+						return (num == "NaN") ? str : num;
+				}
+			}
+			return decodeValue(unescape(value));
 		}
 		return "";
 	},
 	setValue : function(setTo) {
-		this.value = setTo;
+		function encodeData(data) {
+			switch(typeof data) {
+				case "object":
+					var strVal = "";
+					var idx = 0;
+					var isArray = (data.constructor == Array);
+					strVal += isArray ? "[" : "{";
+					for(var prop in data) {
+						if(idx++) strVal += ","; //if not first, add comma
+						if(!isArray) strVal += escape(prop) + ":";
+						strVal += escape(encodeData(data[prop]));
+					}
+					strVal += isArray ? "]" : "}";
+					return strVal;
+				case "string":
+					return "'" + escape(data) + "'";
+				case "number":
+					return data;
+				case "boolean":
+					return (data ? "true" : "false");
+			}
+		}
+		this.value = encodeData(setTo);
 		this.bake();
 		return setTo;
 	},
