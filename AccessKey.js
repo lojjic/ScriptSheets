@@ -46,7 +46,7 @@ AccessKey.prototype = {
 		var par = wrap.parentNode;
 		par.removeChild(bef);
 		par.removeChild(aft);
-		par.replaceChild(document.createTextNode(bef.nodeValue + this.key + aft.nodeValue), wrap);
+		par.replaceChild(document.createTextNode(bef.nodeValue + wrap.firstChild.nodeValue + aft.nodeValue), wrap);
 	}
 };
 AccessKey.instances = [];
