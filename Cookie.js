@@ -10,6 +10,7 @@ function Cookie(name) {
 }
 Cookie.prototype = {
 	getValue : function() {
+		if(this.value) return this.value;
 		var str = document.cookie;
 		var pos = str.indexOf(this.name + "=");
 		if(pos != -1) {
@@ -24,11 +25,13 @@ Cookie.prototype = {
 	setValue : function(setTo) {
 		this.value = setTo;
 		this.bake();
+		return setTo;
 	},
 	setExpires : function(setTo) {
 		if (typeof setTo == "Date") setTo = setTo.toUTCString(); //allow Date objects
 		this.expires = setTo;
 		this.bake();
+		return setTo;
 	},
 	setLifespan : function(seconds) { // get/set minutes to expiration
 		var expDate = new Date();
@@ -38,21 +41,26 @@ Cookie.prototype = {
 	setDomain : function(setTo) {
 		this.domain = setTo;
 		this.bake();
+		return setTo;
 	},
 	setPath : function(setTo) {
 		this.path = setTo;
 		this.bake();
+		return setTo;
 	},
 	setSecure : function(setTo) {
 		this.secure = setTo;
 		this.bake();
+		return setTo;
 	},
 	forget : function() {
 		this.setLifespan(-1);
 	},
 	
 	bake : function() { //assembles and commits the cookie string. The user need not call this if one of the above methods is used.
-		var str = this.name + "=" + escape(this.value || this.getValue());
+		var val = this.value || this.getValue();
+		if(!val) return; //silently fail if no value set
+		var str = this.name + "=" + escape(val);
 		if(this.expires) str += "; expires=" + this.expires;
 		if(this.domain)  str += "; domain=" + this.domain;
 		if(this.path)    str += "; path=" + this.path;
