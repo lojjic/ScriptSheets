@@ -14,16 +14,19 @@
 
 <body>
 
+	<h1>Test Visible Accesskeys:</h1>
+	
+	<p>The AccessKey script runs as a <a href="ScriptSheet.js" title="Framework for applying scripts as styles and switching between them">ScriptSheet</a>.
+		<input type="button" onclick="AccessKey.disableScriptSheet()" value="Disable ScriptSheet"> 
+		<input type="button" onclick="AccessKey.enableScriptSheet()" value="Enable ScriptSheet">
+	</p>
+	<hr>
 	<p>
 		Here is a <a href="" accesskey="l">link</a> and here is <a href="" accesskey="a">another</a>.
 		Here's one where the <a href="" accesskey="n">accesskey is not the first letter</a>.
 		The first occurrence of the accesskey should be <a href="" accesskey="e">the only one modified</a>, even on links with <a href="" accesskey="c"><span><em>multiple</em> child</span> nodes</a>.
 	</p>
 	
-	<p>
-		<button onclick="AccessKey.enableScriptSheet()">Enable</button>
-		<button onclick="AccessKey.disableScriptSheet()">Disable</button>
-	</p>
 
 </body>
 </html>

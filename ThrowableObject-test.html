@@ -17,13 +17,13 @@
 		document.body.appendChild(elt);
 		new ThrowableObject(elt,plane);
 	}
-
 	</script>
 
 </head>
 <body>
 
-<form onsubmit="createThrowableObject(
+<form onsubmit="event.preventDefault();
+				createThrowableObject(
 					this.txtWidth.value,
 					this.txtHeight.value,
 					this.txtPlane.value,
@@ -31,7 +31,6 @@
 					this.txtTextColor.value,
 					this.txtText.value
 				);
-				event.preventDefault();
 				">
 	<table>
 	<tbody>

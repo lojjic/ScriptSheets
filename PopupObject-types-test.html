@@ -14,8 +14,9 @@ function PopupTypeOne(evt) {
 PopupTypeOne.prototype = new PopupObject("popup-type-one");
 PopupTypeOne.prototype.buildContents = function() {
 	for(var i=0; i<4; i++) {
-		var btn = document.createElement("button");
-		btn.appendChild(document.createTextNode("Popup Type Two"));
+		var btn = document.createElement("input");
+		btn.type = "button";
+		btn.value = "Popup Type Two";
 		btn.addEventListener("click",function(evt){new PopupTypeTwo(evt);},false);
 		this.popupNode.appendChild(btn);
 	}
@@ -60,14 +61,14 @@ button {display:block;}
 	</ol>
 	<p>Below are multiple popup node triggers; you should be able to have one of each type open at once.</p>
 
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
-	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
+	<input type="button" onclick="new PopupTypeOne(event);" value="Popup Type One">
 
 </body>
 </html>
