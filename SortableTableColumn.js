@@ -116,7 +116,9 @@ SortableTableColumn.prototype = {
 	
 	},
 	destroy : function() {
-		this.element.removeEventListener("click", this.clickHandler, false);
+		var elt = this.element;
+		elt.removeEventListener("click", this.clickHandler, false);
+		elt.className = elt.className.replace(/^(?:.*\s)?sortable-table-column-sorted-(up|down)(?:\s.*)?$/g, " ");
 	}
 };
 SortableTableColumn.instances = [];
