@@ -90,7 +90,7 @@ OSXBar.prototype = {
 		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(evt); //set all icons to scaled size and position
 		this.setSizeAndPosition(); //set expanded bar height and position
 	},
-	
+		
 	onUnscale : function(evt) {
 		this.scaled = false; //flag status
 		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(null); //set all icons back to normal size and position (null event so scaling doesn't occur)
@@ -210,9 +210,9 @@ OSXBarIcon.prototype = {
 		var newSize = bar.iconMinSize;
 		if(evt) {
 			var mousePos = isVertical ? evt.clientY : evt.clientX;
-			var mouseDist = mousePos - bar.position - this.position - this.size/2;
-			newSize = bar.iconMaxSize - Math.abs(mouseDist) / bar.scaleReach;
-			if(Math.abs(mouseDist) < bar.iconMaxSize/2) newSize = bar.iconMaxSize; //snap to max size if mouse over icon (best image quality)
+			var mouseDist = Math.abs(mousePos - bar.position - this.position - this.size/2) - this.size/2;
+			if(mouseDist < 0) mouseDist = 0;
+			newSize = bar.iconMaxSize - mouseDist / bar.scaleReach;
 			if(newSize < bar.iconMinSize) newSize = bar.iconMinSize; //keep from going below minimum size
 		}
 		var prevIcon = bar.icons[this.instanceIndex-1];
