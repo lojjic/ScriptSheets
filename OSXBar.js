@@ -159,6 +159,11 @@ OSXBarIcon.prototype = {
 		if(this.link) labelNode.parentNode.parentNode.removeChild(labelNode.parentNode);
 		else labelNode.parentNode.removeChild(labelNode);
 		
+		//get popup content (everything that's left):
+		this.contents = [];
+		var kids = this.element.childNodes;
+		for(var i=0; i<kids.length; i++) this.contents[this.contents.length] = this.element.removeChild(kids[i]); //remove from DOM so they can be reused after moving
+		
 		//create icon, set initial position:
 		var icon = this.icon = document.createElement("img");
 			//alert(elt.currentStyle.listStyleImage);
@@ -179,7 +184,7 @@ OSXBarIcon.prototype = {
 	onMouseOver : function(evt) { 
 		//label pops up on hover:
 		if(!this.parentBar.scalingLocked && (!this.popupSubmenu || !this.popupSubmenu.popupNode.parentNode)) 
-			this.popupLabel = new OSXBarPopupLabel(this.element, this);
+			this.popupLabel = new OSXBarPopupLabel(this);
 		if(this.link) window.status = this.link; //if link, put address in status bar
 	},
 
@@ -202,7 +207,7 @@ OSXBarIcon.prototype = {
 
 		// if submenu, create popup:
 		// XXX - only if has child nodes...
-		this.popupSubmenu = new OSXBarPopupSubmenu(this.element, this);
+		this.popupSubmenu = new OSXBarPopupSubmenu(this);
 	},
 	
 	setSizeAndPosition : function(evt) {
@@ -221,7 +226,7 @@ OSXBarIcon.prototype = {
 		}
 		var prevIcon = bar.icons[this.instanceIndex-1];
 		var newPos = prevIcon ? (prevIcon.position + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
-		if(this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos))) return; //if already in the right place, stop calculation
+		if(this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos)) && !this.popupLabel) return; //if already in the right place, stop calculation
 			
 		var fixPos = (bar.iconSpacing / 2) + "px";
 		var varPos = (this.position = newPos) + "px";
@@ -238,7 +243,7 @@ OSXBarIcon.prototype = {
 			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
 			s.height = h || "auto"; s.width = w || "auto";
 		
-		if(this.popupLabel) this.popupLabel.setPosition();
+		if(this.popupLabel) this.popupLabel.setPosition(); //move label with icon
 	}
 };
 
@@ -266,8 +271,7 @@ OSXBarPopup.prototype.setPosition = function() {
 
 
 
-function OSXBarPopupLabel(elt, icon) {
-	this.element = elt;
+function OSXBarPopupLabel(icon) {
 	this.parentIcon = icon;
 	this.create();
 	this.addContent();
@@ -281,8 +285,7 @@ OSXBarPopupLabel.prototype.addContent = function() {
 
 
 
-function OSXBarPopupSubmenu(elt, icon) {
-	this.element = elt;
+function OSXBarPopupSubmenu(icon) {
 	this.parentIcon = icon;
 	this.create();
 	this.addContent();
@@ -298,9 +301,9 @@ OSXBarPopupSubmenu.prototype.addContent = function() {
 		label.appendChild(document.createTextNode(this.parentIcon.label));
 	this.popupNode.appendChild(label);
 	
-	// add <li> children to the popup:
-	var kids = this.element.childNodes;
-	for(var i=0; i<kids.length; i++) this.popupNode.appendChild(kids[i].cloneNode(true));
+	// add <li> children to the popup:	
+	var contents = this.parentIcon.contents
+	for(var i=0; i<contents.length; i++) this.popupNode.appendChild(contents[i]);
 	
 	this.parentIcon.parentBar.scalingLocked = true; // keep icons scaled when popup open
 };
