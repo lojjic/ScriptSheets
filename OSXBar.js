@@ -25,9 +25,10 @@ TODO:
 		* DONE - Icons already at correct size and position don't need to be re-set
 		* DONE - Cache numeric position/size values instead of having to parseFloat() style strings all the time
 		* Make icon positioning "smarter" so it doesn't have to rely on position of previous icon (?)
-	* Handle label/popup widths/heights better (make them adjust to size of contents if possible)
+	* Handle label/popup widths/heights better (make them varust to size of contents if possible)
 	* DONE - Make icon max/min size, spacing, and reach parameters to the constructor
 	* Graduate scaling over several steps for smooth effect when entering and leaving active region
+	* Allow on-the-fly changing of bar.edge property
 
 */
 
@@ -38,7 +39,7 @@ function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is req
 	this.iconMinSize = parseInt(minSize) || 24; // smallest (initial) icon size (pixels).
 	this.iconMaxSize = parseInt(maxSize) || 48; // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
 	this.iconSpacing = parseInt(spacing) || 12; // space between icons (pixels).
-	this.scaleReach  = parseInt(reach)   || 7;  // "gradualness" of the scaling - larger number gives smoother curve. Set to 0 for no scaling.
+	this.scaleReach  = parseInt(reach)   || 7;  // "gradualness" of the scaling - larger number gives smoother curve.
 	this.create();
 }
 OSXBar.prototype = {
@@ -66,19 +67,19 @@ OSXBar.prototype = {
 	},
 
 	onMouseMoved : function(evt) {
-		if(this.scalingLocked) return;
+		if(this.scalingLocked) return; //Do nothing if submenu open
 	
 		//reduce scaling to larger time intervals (makes animation smoother with fast mouse movement, no frame skipping);
 		var now = new Date();
 		if(this.lastScaledTime && now - this.lastScaledTime < 100) return;
 		this.lastScaledTime = now;
 
-		var isVertical = this.isVertical();
-		var isTopLeft = (this.edge=="top" || this.edge=="left");
-		var mousePos = isVertical ? evt.clientX : evt.clientY;
+		var isVertical = (this.edge=="left" || this.edge=="right");
+		var isTopLeft  = (this.edge=="top" || this.edge=="left");
+		var mousePos   = isVertical ? evt.clientX : evt.clientY;
 		var windowSize = isVertical ? (window.innerWidth || document.body.clientWidth) : (window.innerHeight || document.body.clientHeight); 
-		if((isTopLeft ? 0 : windowSize - (this.iconMinSize + this.iconSpacing) * 2) < mousePos && 
-				mousePos < (isTopLeft ? (this.iconMinSize + this.iconSpacing) * 2 : windowSize)) 
+		if(mousePos > (isTopLeft ? this.iconSpacing/2 : windowSize - this.iconMaxSize - this.iconSpacing) && 
+		   mousePos < (isTopLeft ? this.iconMaxSize + this.iconSpacing : windowSize - this.iconSpacing/2)) 
 			this.onScale(evt);
 		else if(this.scaled) this.onUnscale(evt);
 	},
@@ -95,21 +96,19 @@ OSXBar.prototype = {
 		this.setSizeAndPosition(); //set bar to normal length and position
 	},
 	
-	isVertical : function() { // returns whether bar is vertically-oriented.  Value is cached for performance.
-		return this._cachedIsVertical || (this._cachedIsVertical = (this.edge=="left" || this.edge=="right"));
-	},
-
 	setSizeAndPosition : function() {
-		var iconLength = 0; //keep track of icon heights
-		var iconSizeProp = this.isVertical() ? "height" : "width";
+		var isVertical = (this.edge=="left" || this.edge=="right");
+		
+		//find total size of all icons:
+		var iconLength = 0;
 		for(var i=0; i<this.icons.length; i++) iconLength += this.icons[i].size;
 		
-		var edgeLength = this.isVertical() ? (window.innerHeight || document.body.clientHeight) : (window.innerWidth || document.body.clientWidth); //width or height of window
-		var lngth = iconLength + this.icons.length * this.iconSpacing;
-		var girth = this.iconMinSize + this.iconSpacing;
-		var toSide = (this.position = edgeLength / 2 - lngth / 2) + "px";
+		var edgeLen = isVertical ? (window.innerHeight || document.body.clientHeight) : (window.innerWidth || document.body.clientWidth); //width or height of window
+		var lngth  = iconLength + this.icons.length * this.iconSpacing;
+		var girth  = this.iconMinSize + this.iconSpacing;
+		var toSide = (this.position = edgeLen / 2 - lngth / 2) + "px";
 		var toEdge = (this.iconSpacing / 2) + "px";
-		var l, t, r, b, h, w;
+		var l,t,r,b,h,w;
 		switch(this.edge) {
 			case "top": l=toSide; t=toEdge; h=girth; w=lngth; break;
 			case "right": t=toSide; r=toEdge; h=lngth; w=girth; break;
@@ -128,11 +127,9 @@ OSXBar.prototype = {
 
 
 function OSXBarIcon(elt, bar) {
-	bar.icons[this.instanceIndex = bar.icons.length] = this;
-	
+	bar.icons[this.instanceIndex = bar.icons.length] = this;	
 	this.element = elt; //original <li>
-	this.parentBar = bar; //parent OSXBar
-	
+	this.parentBar = bar; //parent OSXBar	
 	this.create();
 }
 OSXBarIcon.prototype = {
@@ -205,17 +202,13 @@ OSXBarIcon.prototype = {
 	
 	setSizeAndPosition : function(evt) {
 		var bar = this.parentBar;
-		var edge = bar.edge;
-		var isVertical = bar.isVertical();
-		var fixPosProp = edge; //property name matches name of edge
-		var adjPosProp = isVertical ? "top" : "left";
-		var mousePosProp = isVertical ? "clientY" : "clientX";
-		var sizeProp = isVertical ? "height" : "width";
+		var isVertical = (bar.edge=="left" || bar.edge=="right");
 	
 		//calculate icon size:
 		var newSize = bar.iconMinSize;
 		if(evt) {
-			var mouseDist = evt[mousePosProp] - bar.position - this.position - this.size/2;
+			var mousePos = isVertical ? evt.clientY : evt.clientX;
+			var mouseDist = mousePos - bar.position - this.position - this.size/2;
 			newSize = bar.iconMaxSize - Math.abs(mouseDist) / bar.scaleReach;
 			if(Math.abs(mouseDist) < bar.iconMaxSize/2) newSize = bar.iconMaxSize; //snap to max size if mouse over icon (best image quality)
 			if(newSize < bar.iconMinSize) newSize = bar.iconMinSize; //keep from going below minimum size
@@ -224,13 +217,20 @@ OSXBarIcon.prototype = {
 		var newPos = prevIcon ? (prevIcon.position + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
 		if(this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos))) return; //if already in the right place, stop calculation
 			
-		//set icon position and size:
+		var fixPos = (bar.iconSpacing / 2) + "px";
+		var varPos = (this.position = newPos) + "px";
+		var size   = (this.size = newSize) + "px";
+		var l,t,r,b,h,w;
+		switch(bar.edge) {
+			case "top": l=varPos; t=fixPos; w=size; break;
+			case "right": t=varPos; r=fixPos; h=size; break;
+			case "bottom": l=varPos; b=fixPos; w=size; break;
+			default: t=varPos; l=fixPos; h=size; break;
+		}
 		var s = this.icon.style;
-		s.position = "absolute";
-		s.height = s.width = s.left = s.top = s.right = s.bottom = "auto"; //default all
-		s[sizeProp] = (this.size = newSize) + "px";
-		s[fixPosProp] = bar.iconSpacing / 2 + "px";
-		s[adjPosProp] = (this.position = newPos) + "px";
+			s.position = "absolute";
+			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
+			s.height = h || "auto"; s.width = w || "auto";
 		
 		if(this.popupLabel) this.popupLabel.setPosition();	
 		if(this.popupSubmenu) this.popupSubmenu.setPosition();
@@ -245,14 +245,20 @@ OSXBarPopup.prototype.parentElement = function() {
 	return this.parentIcon.parentBar.element; //append to bar instead of body
 };
 OSXBarPopup.prototype.setPosition = function() {
-	var bar = this.parentIcon.parentBar;
-	var fixPosProp = bar.edge; //property matches name of edge
-	var adjPosProp = bar.isVertical() ? "top" : "left";
-	var dist = bar.iconMaxSize + bar.iconSpacing;
+	var icon = this.parentIcon;
+	var bar = icon.parentBar;
+	var fixPos = (bar.iconMaxSize + bar.iconSpacing) + "px";
+	var varPos = this.parentIcon.position + "px";
+	var l,t,r,b;
+	switch(bar.edge) {
+		case "top": l=varPos; t=fixPos; break;
+		case "right": t=varPos; r=fixPos; break;
+		case "bottom": l=varPos; b=fixPos; break;
+		default: t=varPos; l=fixPos; break;
+	}
 	var s = this.popupNode.style;
 		s.position = "absolute";
-		s[fixPosProp] = dist + "px";
-		s[adjPosProp] = this.parentIcon.position + "px";
+		s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
 };
 
 
