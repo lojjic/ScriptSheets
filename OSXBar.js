@@ -14,7 +14,7 @@
 
 * outer <ul> is container strip - it expands height to fit scaled images
 * each <li> uses list-style-image:url() as its icon
-* first child of <li> pops up next to icon when hovered
+* text label of <li> pops up next to icon when hovered
 * all other children of <li> pop out into panel next to icon when clicked.
 
 This would be much easier with the XHTML2-proposed <nl> structure.
@@ -27,17 +27,18 @@ TODO:
 		* Make icon positioning "smarter" so it doesn't have to rely on position of previous icon (?)
 	* Handle label/popup widths/heights better (make them adjust to size of contents if possible)
 	* DONE - Make icon max/min size, spacing, and reach parameters to the constructor
+	* Graduate scaling over several steps for smooth effect when entering and leaving active region
 
 */
 
 
-function OSXBar(elt, edge, minSize, maxSize, spacing, reach) {
+function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is required; all others default to values below
 	this.element = elt;
-	this.edge = edge || "left"; //one of "top", "right", "bottom", or "left". Defaults to "left".
-	this.iconMinSize = minSize || 24; // smallest (initial) icon size (pixels).
-	this.iconMaxSize = maxSize || 48; // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
-	this.iconSpacing = spacing || 12; // space between icons (pixels).
-	this.scaleReach  = reach   || 7;  // "gradualness" of the scaling - larger number gives smoother curve. Set to 0 for no scaling.
+	this.edge = (edge && edge.match(/^(top|right|bottom|left)$/)) ? edge : "left"; //one of "top", "right", "bottom", or "left". Defaults to "left".
+	this.iconMinSize = parseInt(minSize) || 24; // smallest (initial) icon size (pixels).
+	this.iconMaxSize = parseInt(maxSize) || 48; // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
+	this.iconSpacing = parseInt(spacing) || 12; // space between icons (pixels).
+	this.scaleReach  = parseInt(reach)   || 7;  // "gradualness" of the scaling - larger number gives smoother curve. Set to 0 for no scaling.
 	this.create();
 }
 OSXBar.prototype = {
@@ -82,13 +83,13 @@ OSXBar.prototype = {
 		else if(this.scaled) this.onUnscale(evt);
 	},
 	
-	onScale : function(evt) { // XXX - will eventually want this to move smoothly (several steps)
+	onScale : function(evt) {
 		this.scaled = true; //flag status
 		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(evt); //set all icons to scaled size and position
 		this.setSizeAndPosition(); //set expanded bar height and position
 	},
 	
-	onUnscale : function(evt) { // XXX - will eventually want this to move smoothly (several steps)
+	onUnscale : function(evt) {
 		this.scaled = false; //flag status
 		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(null); //set all icons back to normal size and position (null event so scaling doesn't occur)
 		this.setSizeAndPosition(); //set bar to normal length and position
@@ -206,7 +207,7 @@ OSXBarIcon.prototype = {
 		var bar = this.parentBar;
 		var edge = bar.edge;
 		var isVertical = bar.isVertical();
-		var fixPosProp = edge; //property matches name of edge
+		var fixPosProp = edge; //property name matches name of edge
 		var adjPosProp = isVertical ? "top" : "left";
 		var mousePosProp = isVertical ? "clientY" : "clientX";
 		var sizeProp = isVertical ? "height" : "width";
@@ -245,7 +246,7 @@ OSXBarPopup.prototype.parentElement = function() {
 };
 OSXBarPopup.prototype.setPosition = function() {
 	var bar = this.parentIcon.parentBar;
-	var fixPosProp = bar.edge;; //property matches name of edge
+	var fixPosProp = bar.edge; //property matches name of edge
 	var adjPosProp = bar.isVertical() ? "top" : "left";
 	var dist = bar.iconMaxSize + bar.iconSpacing;
 	var s = this.popupNode.style;
