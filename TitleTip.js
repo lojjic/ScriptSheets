@@ -15,8 +15,6 @@ function TitleTip(evt) {
 	this.create(evt);
 	this.buildTip(evt);
 	this.setPosition(evt);
-	//this.fadeIn(); //remove this function call if you don't want fading.
-	//this.swipeIn(); //remove this function call if you don't want swiping in.
 }
 
 TitleTip.prototype = new PopupObject("titletip"); //inherit from base PopupObject class
