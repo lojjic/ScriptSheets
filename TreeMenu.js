@@ -114,7 +114,7 @@ TreeMenuNode.prototype = {
 
 		//create icon from list-style-image:
 		var lsImg = window.getComputedStyle(elt,null).getPropertyValue("list-style-image");
-		if(lsImg.indexOf("url(") == 0) {
+		if(lsImg && lsImg.indexOf("url(") == 0) {
 			this.icon = document.createElement("img");
 			this.icon.src = lsImg.replace(/^url\("?([^"]*)"?\)$/,"$1");
 			elt.insertBefore(this.icon, elt.firstChild);
@@ -125,7 +125,7 @@ TreeMenuNode.prototype = {
 		//check that it's not a submenu that got clicked:
 		var it = evt.currentTarget;
 		var tmp = evt.target;
-		while(tmp.nodeName.toLowerCase() != "ul" && tmp != evt.currentTarget) tmp=tmp.parentNode;
+		while(tmp && tmp.nodeName.toLowerCase() != "ul" && tmp != evt.currentTarget) tmp=tmp.parentNode;
 		if(tmp != it) return;
 
 		if(this.collapsed) this.expand();
