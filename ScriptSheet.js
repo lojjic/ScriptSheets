@@ -68,14 +68,32 @@ ScriptSheet.getPreferredStyle = function() {
 // Take a CSS selector string and return all matching elements:
 ScriptSheet.matchSelector = function(sel) {
 	sel = sel.replace(/\s+/g, " "); //collapse whitespaces to a single space
-	sel = sel.replace(/\s*([>\+=,])\s*/g, "$1"); //strip extra whitespace around combinators 
+	sel = sel.replace(/\s*([>\+=])\s*/g, "$1"); //strip extra whitespace around combinators 
 	sel = sel.replace(/^\s*(\S*)\s*$/, "$1"); //and at start and end of string
 	if(sel.charAt(0) != "#") sel = " "+sel; //initial descendant selector unless starts with #id
 	sel = sel.replace(/([ >\+])([\.\[#])/g, "$1*$2"); //insert universal selector where it is optionally omitted
 	
-	var parts = sel.split(/([#\.>\+\s]|\[[^\]]*\])/); //XXX - need to hack this bc IE doesn't return paranthesized separators
-	
 	var i, j, p, a, b;
+	//var parts = sel.split(/([#\. >\+]|\[[^\]]*\])/); //XXX - need to mimic this bc IE doesn't return paranthesized separators
+	var parts = [];
+	while(sel.length > 0) {
+		switch(sel.charAt(0)) {
+			case "#": case ".": case " ": case ">": case "+":
+				parts[parts.length] = sel.charAt(0);
+				sel = sel.substring(1);
+			break;
+			case "[":
+				i = sel.indexOf("]");
+				parts[parts.length] = sel.substring(0,i+1);
+				sel = sel.substring(i+2);
+			break;
+			default:
+				a = sel.match(/^([^#\. >\+\[]+)(.*)$/);
+				parts[parts.length] = a[1];
+				sel = a[2];
+		}
+	}
+	
 	var elts = [document];
 	
 	for(p=0; p<parts.length; p++) {
