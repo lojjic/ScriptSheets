@@ -1,9 +1,8 @@
 
-
 /*
 
 <ul class="OSX-bar">
-	<li id="item-one">Label</li>
+	<li id="item-one"><a href="url">Label</a></li>
 	<li id="item-two">Label
 		<ul>
 			<li>Submenu</li>
@@ -18,85 +17,108 @@
 * first child of <li> pops up next to icon when hovered
 * all other children of <li> pop out into panel next to icon when clicked.
 
+This would be much easier with the XHTML2-proposed <nl> structure.
+
+TODO:
+	* PERF: Put (small) delay on creation of icon label popup (tried, but it actually worsened performance?!)
+	* PERF: Find ways to prevent excessive icon position/size calculation
+		* DONE - Icons already at correct size and position don't need to be re-set
+		* DONE - Cache numeric position/size values instead of having to parseFloat() style strings all the time
+		* Make icon positioning "smarter" so it doesn't have to rely on position of previous icon (?)
+	* Handle label/popup widths/heights better (make them adjust to size of contents if possible)
+	* DONE - Make icon max/min size, spacing, and reach parameters to the constructor
+
 */
 
-var iconMinSize = 24;
-var iconMaxSize = 48;
-var iconSpacing = 12;
 
-function OSXBar(elt) {
-	this.create(elt);
+function OSXBar(elt, edge, minSize, maxSize, spacing, reach) {
+	this.element = elt;
+	this.edge = edge || "left"; //one of "top", "right", "bottom", or "left". Defaults to "left".
+	this.iconMinSize = minSize || 24; // smallest (initial) icon size (pixels).
+	this.iconMaxSize = maxSize || 48; // largest size when scaled (pixels). For best quality, this should be the natural height of the icon image.
+	this.iconSpacing = spacing || 12; // space between icons (pixels).
+	this.scaleReach  = reach   || 7;  // "gradualness" of the scaling - larger number gives smoother curve. Set to 0 for no scaling.
+	this.create();
 }
 OSXBar.prototype = {
-	expanded : false,
+	scaled : false,
+	scalingLocked : false,
 
-	create : function(elt) {
+	create : function() {
 		var i,j,k;
+		var elt = this.element;
 		this.icons = [];
-		this.element = elt;
 
 		// hookup the icons:
 		var items = elt.childNodes;
-		for(i=0; i<items.length; i++) { 
-			if(items[i].nodeType == 1 && items[i].tagName.toLowerCase() == "li") {
-				this.icons[this.icons.length] = new OSXBarIcon(items[i], this); //make <li>s into icons
-			}
+		for(i=0; i<items.length; i++) { //make <li>s into icons:
+			if(items[i].nodeType == 1 && items[i].tagName.toLowerCase() == "li") new OSXBarIcon(items[i], this); 
 		}
 
-		//hookup initial bar position, style:
-		with(elt.style) {
-			position = "absolute";
-			left = (iconSpacing / 2) + "px";
-			top = ((window.innerHeight || document.body.clientHeight) / 2 - this.icons.length * (iconMinSize + iconSpacing) / 2) + "px";
-			height = (this.icons.length * (iconMinSize + iconSpacing)) + "px";
-			width = (iconMinSize + iconSpacing) + "px";
-			background = "#EEE";
-			border = "1px solid #999";
-			margin = "0"; padding = "0";
-		}
-
+		//set bar position, style:
+		elt.className = "osx-bar";
+		this.setSizeAndPosition();
+		
 		//hookup scaling with mouse position:
 		var thisRef = this;
 		document.addEventListener("mousemove", function(evt){thisRef.onMouseMoved(evt);}, false);
 	},
-	
+
 	onMouseMoved : function(evt) {
-		//reduce scaling to larger time intervals (makes smoother with fast mouse movement);
+		if(this.scalingLocked) return;
+	
+		//reduce scaling to larger time intervals (makes animation smoother with fast mouse movement, no frame skipping);
 		var now = new Date();
 		if(this.lastScaledTime && now - this.lastScaledTime < 100) return;
 		this.lastScaledTime = now;
+
+		var isVertical = this.isVertical();
+		var isTopLeft = (this.edge=="top" || this.edge=="left");
+		var mousePos = isVertical ? evt.clientX : evt.clientY;
+		var windowSize = isVertical ? (window.innerWidth || document.body.clientWidth) : (window.innerHeight || document.body.clientHeight); 
+		if((isTopLeft ? 0 : windowSize - (this.iconMinSize + this.iconSpacing) * 2) < mousePos && 
+				mousePos < (isTopLeft ? (this.iconMinSize + this.iconSpacing) * 2 : windowSize)) 
+			this.onScale(evt);
+		else if(this.scaled) this.onUnscale(evt);
+	},
+	
+	onScale : function(evt) { // XXX - will eventually want this to move smoothly (several steps)
+		this.scaled = true; //flag status
+		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(evt); //set all icons to scaled size and position
+		this.setSizeAndPosition(); //set expanded bar height and position
+	},
+	
+	onUnscale : function(evt) { // XXX - will eventually want this to move smoothly (several steps)
+		this.scaled = false; //flag status
+		for(var i=0; i<this.icons.length; i++) this.icons[i].setSizeAndPosition(null); //set all icons back to normal size and position (null event so scaling doesn't occur)
+		this.setSizeAndPosition(); //set bar to normal length and position
+	},
+	
+	isVertical : function() { // returns whether bar is vertically-oriented.  Value is cached for performance.
+		return this._cachedIsVertical || (this._cachedIsVertical = (this.edge=="left" || this.edge=="right"));
+	},
+
+	setSizeAndPosition : function() {
+		var iconLength = 0; //keep track of icon heights
+		var iconSizeProp = this.isVertical() ? "height" : "width";
+		for(var i=0; i<this.icons.length; i++) iconLength += this.icons[i].size;
 		
-		if(evt.clientX > (iconMinSize + iconSpacing) * 2) this.onMouseOutsideRegion(evt);
-		else this.onMouseInsideRegion(evt);
-	},
-	
-	onMouseInsideRegion : function(evt) {
-		// XXX - will eventually want this to move smoothly (several steps)
-		//set all icons to scaled size and position:
-		var iconHeight = 0; //keep track of icon heights
-		for(var i=0; i<this.icons.length; i++) {
-			 this.icons[i].onScale(evt);
-			 iconHeight += parseFloat(this.icons[i].icon.style.height);
+		var edgeLength = this.isVertical() ? (window.innerHeight || document.body.clientHeight) : (window.innerWidth || document.body.clientWidth); //width or height of window
+		var lngth = iconLength + this.icons.length * this.iconSpacing;
+		var girth = this.iconMinSize + this.iconSpacing;
+		var toSide = (this.position = edgeLength / 2 - lngth / 2) + "px";
+		var toEdge = (this.iconSpacing / 2) + "px";
+		var l, t, r, b, h, w;
+		switch(this.edge) {
+			case "top": l=toSide; t=toEdge; h=girth; w=lngth; break;
+			case "right": t=toSide; r=toEdge; h=lngth; w=girth; break;
+			case "bottom": l=toSide; b=toEdge; h=girth; w=lngth; break;
+			default: t=toSide; l=toEdge; h=lngth; w=girth; break;
 		}
-		//set expanded bar height and position:
-		with(this.element.style) {			
-			height = (iconHeight + this.icons.length * iconSpacing) + "px";
-			top = ((window.innerHeight || document.body.clientHeight) / 2 - parseFloat(this.element.style.height)/2) + "px";
-		}
-		this.expanded = true;
-	},
-	
-	onMouseOutsideRegion : function(evt) {
-		if(!this.expanded) return; //only once when exiting region
-		// XXX - will eventually want this to move smoothly (several steps)
-		//set all icons back to normal size and position:
-		for(var i=0; i<this.icons.length; i++) this.icons[i].onUnscale(evt);
-		//set back to normal bar height and position:
-		with(this.element.style) {
-			height = (this.icons.length * (iconMinSize + iconSpacing)) + "px";
-			top = ((window.innerHeight || document.body.clientHeight) / 2 - this.icons.length * (iconMinSize + iconSpacing) / 2) + "px";
-		}
-		this.expanded = false;
+		var s = this.element.style;
+			s.position = "absolute";
+			s.left = l || "auto"; s.top = t || "auto"; s.right = r || "auto"; s.bottom = b || "auto";
+			s.height = h + "px"; s.width = w + "px";
 	}
 };
 
@@ -105,18 +127,20 @@ OSXBar.prototype = {
 
 
 function OSXBarIcon(elt, bar) {
-	this.instanceIndex = OSXBarIcon.instances.length;
-	OSXBarIcon.instances[this.instanceIndex] = this;
-	this.parentBar = bar;
-	this.create(elt);
+	bar.icons[this.instanceIndex = bar.icons.length] = this;
+	
+	this.element = elt; //original <li>
+	this.parentBar = bar; //parent OSXBar
+	
+	this.create();
 }
 OSXBarIcon.prototype = {
-	create : function(elt) {
-		this.element = elt; //original <li>
-		
+	focused : false,
+
+	create : function() {
 		//hide original <li>:
-		elt.style.display = "none";
-		
+		this.element.style.display = "none";
+
 		//get label (first text node):
 		function getFirstTextNode(inNode) {
 			if(!inNode) return false; //exit if node not defined
@@ -129,75 +153,161 @@ OSXBarIcon.prototype = {
 			}
 			return false;
 		}
-		this.label = getFirstTextNode(this.element).nodeValue.replace(/^\s*(.*)\s*$/,"$1"); //strip leading and trailing space
+		var labelNode = getFirstTextNode(this.element);
+		this.label = labelNode.nodeValue.replace(/^\s*(.*)\s*$/,"$1"); //strip leading and trailing space
+		if(labelNode.parentNode.tagName.toLowerCase() == "a") this.link = labelNode.parentNode.href; //remember label link
+		if(this.link) labelNode.parentNode.parentNode.removeChild(labelNode.parentNode);
+		else labelNode.parentNode.removeChild(labelNode);
 		
 		//create icon, set initial position:
 		var icon = this.icon = document.createElement("img");
 			//alert(elt.currentStyle.listStyleImage);
-			icon.src = window.getComputedStyle(elt,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1");
+			icon.src = window.getComputedStyle(this.element,null).getPropertyValue("list-style-image").replace(/^url\("?([^"]*)"?\)$/,"$1"); //get path out of "url(path)" string
 			icon.alt = this.label;
-			with (icon.style) {
-				position = "absolute";
-				left = (iconSpacing / 2) + "px";
-			}
-			this.onUnscale();
+			this.setSizeAndPosition();
 			this.parentBar.element.appendChild(icon);
-		
+
 		var thisRef = this;
 		icon.addEventListener("mouseover", function(evt){thisRef.onMouseOver(evt);}, false);
 		icon.addEventListener("mouseout", function(evt){thisRef.onMouseOut(evt);}, false);
+		icon.addEventListener("click", function(evt){thisRef.onPoke(evt);}, false);
+	},
 
-		//children pop up on click:
+	onMouseOver : function(evt) { 
+		//label pops up on hover:
+		if(!this.parentBar.scalingLocked && (!this.popupSubmenu || !this.popupSubmenu.popupNode.parentNode)) 
+			this.popupLabel = new OSXBarPopupLabel(this.element, this);
+		if(this.link) window.status = this.link; //if link, put address in status bar
 	},
-		
-	onMouseOver : function(evt) { //label pops up on hover:
-		var labelNode = this.labelNode = document.createElement("div");
-			labelNode.appendChild(document.createTextNode(this.label));
-			with(labelNode.style) {
-				position = "absolute";
-				top = (parseFloat(this.icon.style.top) + parseFloat(this.icon.style.height)/3) + "px";
-				left = (iconMaxSize + iconSpacing) + "px";
-				// whiteSpace = "nowrap"; //should be in CSS
-			}
-		this.parentBar.element.appendChild(labelNode);
-	},
-	
+
 	onMouseOut : function(evt) {
-		if(this.labelNode) //this.parentBar.element.removeChild(this.labelNode); //remove icon label
-			this.labelNode.parentNode.removeChild(this.labelNode);
+		if(this.popupLabel) this.popupLabel.destroy(); //remove icon label
+		this.popupLabel = null; //remove ref to avoid position updating of destroyed object
+		window.status = ""; //remove link from status bar
 	},
+
+	onPoke : function(evt) {
+		// unlock scaling if locked:
+		this.parentBar.scalingLocked = false;
+		this.parentBar.onScale(evt); //force scaling to new position
 	
-	onScale : function(evt) {	
-		//set icon size:
-		var mouseDist = evt.clientY - parseFloat(this.parentBar.element.style.top) - parseFloat(this.icon.style.top) - parseFloat(this.icon.style.height)/2;
-		var newHeight = iconMaxSize - Math.abs(mouseDist)/4;
-		if(newHeight < iconMinSize) newHeight = iconMinSize; //keep from going below minimum size
-		this.icon.style.height = newHeight + "px";
-		
-		//set icon position:
-		var iconAbove = OSXBarIcon.instances[this.instanceIndex-1];
-		this.icon.style.top = ((iconAbove ? parseFloat(iconAbove.icon.style.top) + parseFloat(iconAbove.icon.style.height) + iconSpacing : iconSpacing / 2) ) + "px";
-	},
-	
-	onUnscale : function(evt) {
-		with(this.icon.style) {
-			top = ((iconMinSize + iconSpacing) * this.instanceIndex + iconSpacing/2) + "px";
-			height = iconMinSize + "px";
-			width = "auto"; //I assume the icon will be roughly square.	
+		// if link, go there:
+		if(this.link) {
+			location.href = this.link;
+			return;
 		}
+
+		// if submenu, create popup:
+		// XXX - only if has child nodes...
+		this.popupSubmenu = new OSXBarPopupSubmenu(this.element, this);
+	},
+	
+	setSizeAndPosition : function(evt) {
+		var bar = this.parentBar;
+		var edge = bar.edge;
+		var isVertical = bar.isVertical();
+		var fixPosProp = edge; //property matches name of edge
+		var adjPosProp = isVertical ? "top" : "left";
+		var mousePosProp = isVertical ? "clientY" : "clientX";
+		var sizeProp = isVertical ? "height" : "width";
+	
+		//calculate icon size:
+		var newSize = bar.iconMinSize;
+		if(evt) {
+			var mouseDist = evt[mousePosProp] - bar.position - this.position - this.size/2;
+			newSize = bar.iconMaxSize - Math.abs(mouseDist) / bar.scaleReach;
+			if(Math.abs(mouseDist) < bar.iconMaxSize/2) newSize = bar.iconMaxSize; //snap to max size if mouse over icon (best image quality)
+			if(newSize < bar.iconMinSize) newSize = bar.iconMinSize; //keep from going below minimum size
+		}
+		var prevIcon = bar.icons[this.instanceIndex-1];
+		var newPos = prevIcon ? (prevIcon.position + prevIcon.size + bar.iconSpacing) : (bar.iconSpacing / 2);
+		if(this.size == (newSize = Math.round(newSize)) && this.position == (newPos = Math.round(newPos))) return; //if already in the right place, stop calculation
+			
+		//set icon position and size:
+		var s = this.icon.style;
+		s.position = "absolute";
+		s.height = s.width = s.left = s.top = s.right = s.bottom = "auto"; //default all
+		s[sizeProp] = (this.size = newSize) + "px";
+		s[fixPosProp] = bar.iconSpacing / 2 + "px";
+		s[adjPosProp] = (this.position = newPos) + "px";
+		
+		if(this.popupLabel) this.popupLabel.setPosition();	
+		if(this.popupSubmenu) this.popupSubmenu.setPosition();
 	}
 };
-OSXBarIcon.instances = [];
+
+
+
+function OSXBarPopup() {} //used as base class for OSXBarPopupLabel and OSXBarPopupSubmenu
+OSXBarPopup.prototype = new PopupObject("osx-bar-popup");
+OSXBarPopup.prototype.parentElement = function() {
+	return this.parentIcon.parentBar.element; //append to bar instead of body
+};
+OSXBarPopup.prototype.setPosition = function() {
+	var bar = this.parentIcon.parentBar;
+	var fixPosProp = bar.edge;; //property matches name of edge
+	var adjPosProp = bar.isVertical() ? "top" : "left";
+	var dist = bar.iconMaxSize + bar.iconSpacing;
+	var s = this.popupNode.style;
+		s.position = "absolute";
+		s[fixPosProp] = dist + "px";
+		s[adjPosProp] = this.parentIcon.position + "px";
+};
+
+
+
+function OSXBarPopupLabel(elt, icon) {
+	this.element = elt;
+	this.parentIcon = icon;
+	this.create();
+	this.addContent();
+	this.setPosition();
+}
+OSXBarPopupLabel.prototype = new OSXBarPopup();
+OSXBarPopupLabel.prototype.addContent = function() {
+	this.popupNode.className = "osx-bar-popup-label";
+	this.popupNode.appendChild(document.createTextNode(this.parentIcon.label)); // add label as content
+};
+
+
+
+function OSXBarPopupSubmenu(elt, icon) {
+	this.element = elt;
+	this.parentIcon = icon;
+	this.create();
+	this.addContent();
+	this.setPosition();
+}
+OSXBarPopupSubmenu.prototype = new OSXBarPopup();
+OSXBarPopupSubmenu.prototype.addContent = function() {
+	this.popupNode.className = "osx-bar-popup-submenu";
+
+	// add popup label:
+	var label = document.createElement("div");
+		label.className = "osx-bar-popup-submenu-label";
+		label.appendChild(document.createTextNode(this.parentIcon.label));
+	this.popupNode.appendChild(label);
+	
+	// add <li> children to the popup:
+	var kids = this.element.childNodes;
+	for(var i=0; i<kids.length; i++) this.popupNode.appendChild(kids[i].cloneNode(true));
+	
+	this.parentIcon.parentBar.scalingLocked = true; // keep icons scaled when popup open
+};
+OSXBarPopupSubmenu.prototype.destroyBase = OSXBarPopupSubmenu.prototype.destroy;
+OSXBarPopupSubmenu.prototype.destroy = function() {
+	this.destroyBase();
+	this.parentIcon.parentBar.scalingLocked = false;
+}
 
 
 
 
-
+// Hookup on page load (automatically hooks up any <ul>s with class="osx-bar" with default parameters):
 function onOSXBarLoaded(evt) {
 	var ULs = document.getElementsByTagName("ul");
 	for(var i=0; i<ULs.length; i++) {
-		if(ULs[i].className.match("OSX-bar")) new OSXBar(ULs[i]);
+		if(ULs[i].className.match(/^(.*\s+)?osx-bar(\s+.*)?$/)) new OSXBar(ULs[i]);
 	}
 }
-
 window.addEventListener("load",onOSXBarLoaded,false);
