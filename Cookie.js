@@ -1,6 +1,10 @@
 /*
 var cookie = new Cookie("cookieName");
 	var val = cookie.value("setToValue");
+	
+TODO:
+	* Allow data structure: {key:val,key:[val1,val2]} and transparent in/out
+
 */
 
 

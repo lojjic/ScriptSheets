@@ -14,8 +14,52 @@ TODO:
   - Make prev/next month buttons have content (currently empty elements with CSS background-image)
 */
 
-function PopupCalendar(evt,position,tgtField,dateRange) { //CONSTRUCTOR
-	// Freaks out Mac IE: // if(!(this instanceof PopupCalendar)) return new PopupCalendar(evt,position,tgtField,dateRange);
+function PopupCalendar(elt) {
+	this.element = elt;
+	this.create();
+	PopupCalendar.instances[PopupCalendar.instances.length] = this;
+}
+PopupCalendar.prototype = {
+	create : function() {
+		var fld = this.element;
+		//create icon:
+		var btn = this.button = document.createElement("img");
+		btn.src = "assets/calendar.gif";
+		btn.className = "calendar-button";
+		fld.parentNode.insertBefore(btn, fld.nextSibling);
+		btn.addEventListener("click", function(evt) {
+			new PopupCalendarPopup(evt,"topleft",this.previousSibling,null);
+		}, false);
+	},
+	destroy : function() {
+		this.button.parentNode.removeChild(this.button);
+	}
+};
+PopupCalendar.instances = [];
+PopupCalendar.enableScriptSheet = function() {
+	PopupCalendar.disableScriptSheet(); //prevent double-enabling
+	var flds = document.getElementsByTagName("input");
+	for(var i=0; i<flds.length; i++) {
+		if(flds[i].type=="text" && flds[i].className.match(/^(.*\s)?date(\s.*)?$/)) {
+			new PopupCalendar(flds[i]);
+		}
+	}
+};
+PopupCalendar.disableScriptSheet = function() {
+	var i, inst;
+	for(i=0; (inst=PopupCalendar.instances[i]); i++) {
+		inst.destroy();
+	}
+	PopupCalendar.instances = [];
+};
+
+
+
+
+// The popup widget:
+
+function PopupCalendarPopup(evt,position,tgtField,dateRange) { //CONSTRUCTOR
+	// Freaks out Mac IE: // if(!(this instanceof PopupCalendarPopup)) return new PopupCalendarPopup(evt,position,tgtField,dateRange);
 	
 	this.curDate = new Date;
 	this.actualDate = new Date;
@@ -30,10 +74,10 @@ function PopupCalendar(evt,position,tgtField,dateRange) { //CONSTRUCTOR
 	this.setPosition(evt,position);
 }
 
-PopupCalendar.prototype = new PopupObject("popup-calendar"); //inherit from base PopupObject class
+PopupCalendarPopup.prototype = new PopupObject("popup-calendar"); //inherit from base PopupObject class
 
 //extend the prototype:
-PopupCalendar.prototype.buildHead = function() {
+PopupCalendarPopup.prototype.buildHead = function() {
 	var d=document;
 	var thisRef = this;
 
@@ -79,7 +123,7 @@ PopupCalendar.prototype.buildHead = function() {
 };
 
 
-PopupCalendar.prototype.buildDates = function() {
+PopupCalendarPopup.prototype.buildDates = function() {
 	var d=document;
 	var thisRef = this;
 	var monthNames=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -127,13 +171,13 @@ PopupCalendar.prototype.buildDates = function() {
 	this.curDate.setYear(curYear);
 };
 
-PopupCalendar.prototype.destroyDates = function() {
+PopupCalendarPopup.prototype.destroyDates = function() {
 	while(this.tbody.firstChild) this.tbody.removeChild(this.tbody.firstChild);
 };
 
 
 /*===Remove following 2 methods if don't need to init to field value===*/
-PopupCalendar.prototype.parseFieldValue = function() {
+PopupCalendarPopup.prototype.parseFieldValue = function() {
 	if(!this.tgtField) return; //only run if field associated
 	var fieldVal = this.tgtField.value;
 	var parts = fieldVal.split("/");
@@ -150,7 +194,7 @@ PopupCalendar.prototype.parseFieldValue = function() {
 
 	this.fieldDateString = "" + year + parts[0] + parts[1];
 };
-PopupCalendar.prototype.compareFieldDate = function(cell) {
+PopupCalendarPopup.prototype.compareFieldDate = function(cell) {
 	if(!this.fieldDateString) return;
 	if(this.fieldDateString == cell.dateString) {
 		cell.className+=" calendar-date-current";
@@ -160,7 +204,7 @@ PopupCalendar.prototype.compareFieldDate = function(cell) {
 
 
 /*===Remove following 2 methods if don't need date ranges===*/
-PopupCalendar.prototype.parseDateRange = function(str) {
+PopupCalendarPopup.prototype.parseDateRange = function(str) {
 	var strs=str.split("-");
 	if(strs.length!=2) return;
 	this.dateRangeFrom=strs[0];
@@ -176,7 +220,7 @@ PopupCalendar.prototype.parseDateRange = function(str) {
 	this.curDate.setYear(parseFloat(initDate.substring(0,4)));
 	this.curDate.setMonth(parseFloat(initDate.substring(4,6))-1);
 };
-PopupCalendar.prototype.compareDateRange = function(cell) {
+PopupCalendarPopup.prototype.compareDateRange = function(cell) {
 	if(!this.dateRangeFrom || !this.dateRangeTo) return;
 	var cur = cell.dateString;
 	var from = this.dateRangeFrom;
@@ -197,22 +241,22 @@ PopupCalendar.prototype.compareDateRange = function(cell) {
 /*===End date range methods===*/
 
 
-PopupCalendar.prototype.changeMonth = function(offset) {
+PopupCalendarPopup.prototype.changeMonth = function(offset) {
 	this.destroyDates();
 	this.curDate.setMonth(this.curDate.getMonth() + offset);
 	this.buildDates();
 };
 
 //Script the hover effect pending hierarchical CSS :hover:
-PopupCalendar.prototype.mouseOverDate = function(evt) {
+PopupCalendarPopup.prototype.mouseOverDate = function(evt) {
 	this.origClass=this.className;
 	this.className=this.className+" hover";
 };
-PopupCalendar.prototype.mouseOutDate = function(evt) {
+PopupCalendarPopup.prototype.mouseOutDate = function(evt) {
 	this.className=this.origClass;
 };
 
-PopupCalendar.prototype.chooseDate = function(evt) { //output date to field
+PopupCalendarPopup.prototype.chooseDate = function(evt) { //output date to field
 	var cell=evt.currentTarget;
 	var str=cell.dateString;
 	if(this.tgtField && !this.tgtField.disabled && !this.tgtField.readonly) {
@@ -235,27 +279,3 @@ Date.prototype.getDateString = function() {
 	if(day<10) day="0"+day;
 	return ("" + year + month + day);
 }
-
-
-
-
-
-
-function onPopupCalendarDocLoaded() {
-	//put calendar icons on each date field:
-	var flds = document.getElementsByTagName("input");
-	for(i=0; i<flds.length; i++) {
-		var fld = flds[i];
-		if(fld.className.indexOf("date")!=-1) {
-			//create icon:
-			var img = document.createElement("img");
-			img.src = "assets/calendar.gif";
-			img.className = "calendar-button";
-			fld.parentNode.insertBefore(img,fld.nextSibling);
-			img.addEventListener("click", function(evt) {
-				new PopupCalendar(evt,"topleft",this.previousSibling,null);
-			},false);
-		}
-	}
-}
-if(window.addEventListener) window.addEventListener("load",onPopupCalendarDocLoaded,false);

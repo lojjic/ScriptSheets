@@ -12,23 +12,61 @@ TODO:
 
 */
 
-function ColorPicker(evt,position,tgtField) { //CONSTRUCTOR
-	// Freaks out Mac IE: // if(!(this instanceof ColorPicker)) return new ColorPicker(evt,position,tgtField,dateRange);
-	
-	this.field = tgtField; //field for output
-	
-	this.create(evt);
-	
-	this.buildSwatches();
 
+function ColorPicker(elt) {
+	this.element = elt;
+	this.create();
+	ColorPicker.instances[ColorPicker.instances.length] = this;
+}
+ColorPicker.prototype = {
+	create : function() {
+		var fld = this.element;
+		//create icon:
+		var btn = this.button = document.createElement("img");
+		btn.src = "assets/colorpicker.png";
+		btn.className = "color-picker-button";
+		fld.parentNode.insertBefore(btn, fld.nextSibling);
+		btn.addEventListener("click", function(evt) {
+			new ColorPickerPopup(evt,"topleft",this.previousSibling);
+		}, false);
+	},
+	destroy : function() {
+		this.button.parentNode.removeChild(this.button);
+	}
+};
+ColorPicker.instances = [];
+ColorPicker.enableScriptSheet = function() {
+	ColorPicker.disableScriptSheet(); //prevent double-enabling
+	var flds = document.getElementsByTagName("input");
+	for(var i=0; i<flds.length; i++) {
+		if(flds[i].type=="text" && flds[i].className.match(/^(.*\s)?color(\s.*)?$/)) {
+			new ColorPicker(flds[i]);
+		}
+	}
+};
+ColorPicker.disableScriptSheet = function() {
+	var i, inst;
+	for(i=0; (inst=ColorPicker.instances[i]); i++) {
+		inst.destroy();
+	}
+	ColorPicker.instances = [];
+};
+
+
+
+
+
+// The Popup Widget:
+function ColorPickerPopup(evt,position,tgtField) {
+	// Freaks out Mac IE: // if(!(this instanceof ColorPickerPopup)) return new ColorPickerPopup(evt,position,tgtField);	
+	this.field = tgtField; //field for output
+	this.create(evt);	
+	this.buildSwatches();
 	this.setPosition(evt,position);
 }
-
-ColorPicker.prototype = new PopupObject("color-picker"); //inherit from base PopupObject class
-
+ColorPickerPopup.prototype = new PopupObject("color-picker"); //inherit from base PopupObject class
 //extend the prototype:
-
-ColorPicker.prototype.buildSwatches = function() {
+ColorPickerPopup.prototype.buildSwatches = function() {
 	var i, j, k;
 	var columns = 18;
 	var hex = ["0","3","6","9","C","F"];
@@ -57,28 +95,3 @@ ColorPicker.prototype.buildSwatches = function() {
 	}
 	this.popupNode.appendChild(table);
 };
-
-
-
-
-
-
-
-function onColorPickerDocLoaded() {
-	//put button on each color field:
-	var flds = document.getElementsByTagName("input");
-	for(i=0; i<flds.length; i++) {
-		var fld = flds[i];
-		if(fld.className.match(/^(.*\s)?color(\s.*)?$/)) {
-			//create icon:
-			var img = document.createElement("img");
-			img.src = "assets/colorpicker.png";
-			img.className = "color-picker-button";
-			fld.parentNode.insertBefore(img,fld.nextSibling);
-			img.addEventListener("click", function(evt) {
-				new ColorPicker(evt,"topleft",this.previousSibling,null);
-			},false);
-		}
-	}
-}
-if(window.addEventListener) window.addEventListener("load",onColorPickerDocLoaded,false);

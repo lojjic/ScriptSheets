@@ -4,6 +4,9 @@
 <script type="text/javascript" src="IEtoW3C-loader.js"></script>
 <script type="text/javascript" src="PopupObject.js"></script>
 <script type="text/javascript" src="ColorPicker.js"></script>
+<script type="text/javascript">
+	window.addEventListener("load", ColorPicker.enableScriptSheet, false);
+</script>
 
 <link rel="stylesheet" type="text/css" href="ColorPicker.css" />
 
@@ -12,7 +15,12 @@
 <body>
 
 	<h1>Test Color Picker Widget:</h1>
-	<p>The field below just has <code>class="color"</code> on it. The script hooks up the popup button automatically.</p>
+	<p>
+		The ColorPicker script runs as a <a href="ScriptSheet.js" title="Framework for applying scripts as styles and switching between them">ScriptSheet</a>.
+		<button onclick="ColorPicker.disableScriptSheet()">Disable ScriptSheet</button> 
+		<button onclick="ColorPicker.enableScriptSheet()">Enable ScriptSheet</button>
+	</p>
+	<p>The field below just has <code>class="color"</code> on it. The script hooks up the eyedropper button automatically.</p>
 
 	<p><input type="text" size="6" maxlength="6" class="color"></p>
 

@@ -8,18 +8,50 @@
 */
 
 
+function TitleTip(elt) {
+	this.element = elt;
+	this.create();
+	TitleTip.instances[TitleTip.instances.length] = this;
+}
+TitleTip.prototype = {
+	create : function() {
+		this.element.addEventListener("mouseover", this.mouseOverHandler = function(evt){new TitleTipPopup(evt);}, false);
+	},
+	destroy : function() {
+		this.element.removeEventListener("mouseover", this.mouseOverHandler, false);
+	}
+};
+TitleTip.instances = [];
+TitleTip.enableScriptSheet = function() {
+	TitleTip.disableScriptSheet();
+	var elts = document.all || document.getElementsByTagName("*");
+	for(var i=0; i<elts.length; i++) {
+		if(elts[i].getAttribute("title")) new TitleTip(elts[i]);
+	}
+};
+TitleTip.disableScriptSheet = function() {
+	var i, inst;
+	for(i=0; (inst=TitleTip.instances[i]); i++) {
+		inst.destroy();
+	}
+	TitleTip.instances = [];
+}
 
 
-function TitleTip(evt) {
+
+
+
+
+function TitleTipPopup(evt) {
 	// Freaks out Mac IE: // if(!(this instanceof TitleTip)) return new TitleTip(evt);
 	this.create(evt);
 	this.buildTip(evt);
 	this.setPosition(evt);
 }
 
-TitleTip.prototype = new PopupObject("titletip"); //inherit from base PopupObject class
+TitleTipPopup.prototype = new PopupObject("titletip"); //inherit from base PopupObject class
 
-TitleTip.prototype.buildTip = function(evt) {
+TitleTipPopup.prototype.buildTip = function(evt) {
 	var elt = this.element = evt.currentTarget;
 	var ttl = this.title = elt.title;
 	elt.title = ""; //temporarily remove it to avoid normal tooltip
@@ -38,14 +70,14 @@ TitleTip.prototype.buildTip = function(evt) {
 	var node = this.popupNode;
 	node.appendChild(document.createTextNode(ttl));
 }
-TitleTip.prototype.setPositionBase = TitleTip.prototype.setPosition;
-TitleTip.prototype.setPosition = function(evt) {
+TitleTipPopup.prototype.setPositionBase = TitleTipPopup.prototype.setPosition;
+TitleTipPopup.prototype.setPosition = function(evt) {
 	this.setPositionBase(evt,"topleft,16,16");
 }
 
-TitleTip.prototype.pressed = function(){return;}; //clicking on titletip destroys it
-TitleTip.prototype.destroyBase = TitleTip.prototype.destroy;
-TitleTip.prototype.destroy = function() {
+TitleTipPopup.prototype.pressed = function(){return;}; //clicking on titletip destroys it
+TitleTipPopup.prototype.destroyBase = TitleTipPopup.prototype.destroy;
+TitleTipPopup.prototype.destroy = function() {
 	var elt = this.element;
 	window.status = "";
 	elt.removeEventListener("mousemove",this.eltMousemoveHandler,false);
@@ -54,14 +86,3 @@ TitleTip.prototype.destroy = function() {
 	//p.popupNode.style.display="none"; //prevent repaint bug in IE5
 	this.destroyBase();
 }
-
-
-
-function onTitleTipsDocLoaded(evt) {
-	var allElts = document.all || document.getElementsByTagName("*");
-	for(var i=0; i<allElts.length; i++) {
-		var elt = allElts[i];
-		if(elt.getAttribute("title")) elt.addEventListener("mouseover",function(evt){new TitleTip(evt)},false);
-	}
-}
-if(window.addEventListener) window.addEventListener("load",onTitleTipsDocLoaded,false);

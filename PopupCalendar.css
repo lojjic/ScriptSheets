@@ -14,4 +14,4 @@
 .calendar-date-current {color:#FFF;border:1px solid #FFF;} /*current date in field*/
 .calendar-date.hover {border:1px solid #FFF;}
 
-.calendar-button {border:2px outset #FFF; padding:3px; background:#CCC;}
+.calendar-button {border:2px outset #FFF; padding:3px; background:#CCC; vertical-align:bottom;}
