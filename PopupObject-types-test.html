@@ -1,0 +1,84 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C.js"></script>
+<script type="text/javascript" src="PopupObject.js"></script>
+<script type="text/javascript" src="TitleTips.js"></script>
+<script type="text/javascript">
+
+function PopupTypeOne(evt) {
+	this.create(evt);
+	this.buildContents();
+	this.setPosition(evt);
+}
+PopupTypeOne.prototype = new PopupObject("popup-type-one");
+PopupTypeOne.prototype.buildContents = function() {
+	for(var i=0; i<4; i++) {
+		var btn = document.createElement("button");
+		btn.appendChild(document.createTextNode("Popup Type Two"));
+		btn.addEventListener("click",function(evt){new PopupTypeTwo(evt);},false);
+		this.popupNode.appendChild(btn);
+	}
+}
+
+function PopupTypeTwo(evt) {
+	this.create(evt);
+	this.buildContents();
+	this.setPosition(evt);
+}
+PopupTypeTwo.prototype = new PopupObject("popup-type-two");
+PopupTypeTwo.prototype.buildContents = function() {
+	var txt = document.createElement("span");
+	txt.setAttribute("title","Booyah!")
+	txt.addEventListener("mouseover",function(evt){new TitleTip(evt)},false);
+	txt.appendChild(document.createTextNode("Title Tip Text Here!"));
+	this.popupNode.appendChild(txt);
+}
+
+
+</script>
+
+<style type="text/css">
+* {font-family:sans-serif;}
+
+.popup-type-one {border:1px solid; background:#EEE; padding:3em;}
+.popup-type-two {border:1px solid; background:#CCC; padding:3em;}
+
+button {display:block;}
+
+.titletip {
+	position:absolute;
+	border:1px solid #CCC;
+	padding:.2em 1em;
+	background:#DEF;
+	font-size:smaller;
+}
+</style>
+</head>
+
+<body>
+
+	<h1>Test multiple popup types</h1>
+	<p>When creating a <code>PopupObject</code>, the first and only argument passed is a string indicating what <em>popup type</em> the popup should be.  This does two things:</p>
+	<ol>
+		<li>Specifies the CSS class name of the popup node for styling (the default is "popup-object").</li>
+		<li>Allows you to have more than one popup open at a time.  Each popup type can have one member at a time; when creating a new popup any existing popup of that type (and only of that type) will first be destroyed.</li>
+	</ol>
+	<p>Below are multiple popup node triggers; you should be able to have one of each type open at once.</p>
+
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+	<button onclick="new PopupTypeOne(event);">Popup Type One</button>
+
+</body>
+</html>
+
+
+
+
+
