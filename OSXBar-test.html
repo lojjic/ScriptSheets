@@ -7,23 +7,13 @@
 	
 	<style type="text/css">
 	* {font-size:12px; font-family:Arial,sans-serif;}
-	/*
-	#item-1 {list-style-image:url(assets/icon.gif);}
-	#item-2 {list-style-image:url(assets/icon.gif);}
-	#item-3 {list-style-image:url(assets/icon.gif);}
-	#item-4 {list-style-image:url(assets/icon.gif);}
-	#item-5 {list-style-image:url(assets/icon.gif);}
-	#item-6 {list-style-image:url(assets/icon.gif);}
-	#item-7 {list-style-image:url(assets/icon.gif);}
-	#item-8 {list-style-image:url(assets/icon.gif);}
-	*/
 	li {list-style-image:url(assets/icon.gif);}
 	li li {list-style-image:none;}
 	
 	.osx-bar {background:#F0F0F0; border:1px solid #9F9F9F; margin:0; padding:0;}
-	.osx-bar-popup-label {white-space:nowrap; width:200px; margin-top:1em;}
-	.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; border-top:0; width:100px; margin-left:1em; margin-top:1em; padding:0; padding-bottom:.1em;}
-		.osx-bar-popup-submenu-label {font-weight:bold; border:1px solid #999; border-right:0; margin:0 0 .1em -1em; padding:.2em .5em .2em 1.5em; background:#EEE;}
+	.osx-bar-popup-label {white-space:nowrap; /*apply margin to align with icon*/}
+	.osx-bar-popup-submenu {background:#FEFEFE; border:1px solid #999; width:100px; margin:0; padding:0; padding-bottom:.1em;}
+		.osx-bar-popup-submenu-label {font-weight:bold; border-bottom:1px solid #999; margin:0; padding:.2em .5em; background:#EEE;}
 		.osx-bar-popup-submenu ul, .osx-bar-popup-submenu li {display:block; margin:0; padding:0;}
 		.osx-bar-popup-submenu :link, .osx-bar-popup-submenu :visited {display:block; padding:.2em .5em; color:#000; text-decoration:none;}
 		.osx-bar-popup-submenu :link:hover, .osx-bar-popup-submenu :visited:hover {background:#EEE;}
@@ -70,7 +60,13 @@
 
 	<ul id="bottom-bar">
 		<li><a href="#">Label 1</a></li>
-		<li><a href="#">Label 2</a></li>
+		<li>Label 2
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
 		<li><a href="#">Label 3</a></li>
 		<li><a href="#">Label 4</a></li>
 		<li><a href="#">Label 5</a></li>
@@ -88,7 +84,13 @@
 
 	<ul id="right-bar">
 		<li><a href="#">Label 1</a></li>
-		<li><a href="#">Label 2</a></li>
+		<li>Label 2
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
 		<li><a href="#">Label 3</a></li>
 		<li><a href="#">Label 4</a></li>
 		<li><a href="#">Label 5</a></li>
@@ -101,7 +103,13 @@
 
 	<ul id="top-bar">
 		<li><a href="#">Label 1</a></li>
-		<li><a href="#">Label 2</a></li>
+		<li>Label 2
+			<ul>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+				<li><a href="">Submenu</a></li>
+			</ul>
+		</li>
 		<li><a href="#">Label 3</a></li>
 		<li><a href="#">Label 4</a></li>
 		<li><a href="#">Label 5</a></li>
