@@ -22,8 +22,6 @@ function ImageShadow(elt, opts) { // opts is hash object: {feather:N, offsetX:N,
 	this.offsetY = parseInt(opts.offsetY) || 8;
 	this.darkness = parseInt(opts.darkness) || 50;
 	this.create();
-	var i = ImageShadow.instances;
-	i[i.length] = this;
 }
 ImageShadow.prototype = {
 	create : function() {
@@ -86,16 +84,4 @@ ImageShadow.prototype = {
 		s.zIndex = s.position = "";
 	}
 };
-ImageShadow.instances = [];
-ImageShadow.enableScriptSheet = function() {
-	ImageShadow.disableScriptSheet();
-	var imgs = document.getElementsByTagName("img");
-	for(var i=0; i<imgs.length; i++) {
-		if(imgs[i].className.match(/\bshadow\b/)) new ImageShadow(imgs[i], {/*defaults*/});
-	}
-};
-ImageShadow.disableScriptSheet = function() {
-	var i, inst;
-	for(i=0; (inst=ImageShadow.instances[i]); i++) inst.destroy();
-	ImageShadow.instances = [];
-};
+ImageShadow.scriptSheetSelector = "img.shadow";

@@ -16,7 +16,6 @@ TODO:
 function ColorPicker(elt) {
 	this.element = elt;
 	this.create();
-	ColorPicker.instances[ColorPicker.instances.length] = this;
 }
 ColorPicker.prototype = {
 	create : function() {
@@ -34,23 +33,7 @@ ColorPicker.prototype = {
 		this.button.parentNode.removeChild(this.button);
 	}
 };
-ColorPicker.instances = [];
-ColorPicker.enableScriptSheet = function() {
-	ColorPicker.disableScriptSheet(); //prevent double-enabling
-	var flds = document.getElementsByTagName("input");
-	for(var i=0; i<flds.length; i++) {
-		if(flds[i].type=="text" && flds[i].className.match(/\bcolor\b/)) {
-			new ColorPicker(flds[i]);
-		}
-	}
-};
-ColorPicker.disableScriptSheet = function() {
-	var i, inst;
-	for(i=0; (inst=ColorPicker.instances[i]); i++) {
-		inst.destroy();
-	}
-	ColorPicker.instances = [];
-};
+ColorPicker.scriptSheetSelector = "input[type=text].color";
 
 
 

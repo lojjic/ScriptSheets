@@ -13,16 +13,15 @@ ISSUES:
 function TreeMenu(elt) {
 	this.element = elt;
 	this.create();
-	TreeMenu.instances[TreeMenu.instances.length] = this;
 }
 TreeMenu.prototype = {
 	create : function() {
 		var i, li;
 		this.element.className += " tree-menu";
 		this.nodes = [];
-		for(i=0; (li=this.element.childNodes[i]); i++) {
-			if(li.nodeType==1) this.nodes[this.nodes.length] = new TreeMenuNode(li, TreeMenu.getOpenNodes()[li.id]);
-		}
+		for(i=0; (li=this.element.childNodes[i]); i++)
+			if(li.nodeType==1) 
+				this.nodes[this.nodes.length] = new TreeMenuNode(li, TreeMenu.getOpenNodes()[li.id]);
 	},
 	destroy : function() {
 		var i, node;
@@ -30,7 +29,6 @@ TreeMenu.prototype = {
 		this.element.className = this.element.className.replace("tree-menu","");
 	}
 };
-TreeMenu.instances = [];
 TreeMenu.getOpenNodes = function() { //returns a hash with id as key and isOpen as value
 	var open = TreeMenu.openNodes;
 	if(open) return open;
@@ -55,20 +53,7 @@ TreeMenu.setOpenNode = function(id, isOpen) {
 	cookie.setLifespan(60*60*24*365);
 	TreeMenu.openNodes[id] = isOpen;
 };
-TreeMenu.enableScriptSheet = function() {
-	TreeMenu.disableScriptSheet();
-	var uls = document.getElementsByTagName("ul");
-	for(i=0; i<uls.length; i++) {
-		if(uls[i].className.match(/\bnavigation\b/)) new TreeMenu(uls[i]);
-	}
-};
-TreeMenu.disableScriptSheet = function() {
-	var i, menu;
-	for(i=0; (menu=TreeMenu.instances[i]); i++) {
-		menu.destroy();
-	}
-	TreeMenu.instances = [];
-};
+TreeMenu.scriptSheetSelector = "ul.navigation";
 
 
 

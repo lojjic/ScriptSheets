@@ -6,7 +6,6 @@ TODO:
 function SortableTableColumn(elt) { //elt is <th> within <thead>
 	this.element = elt;
 	this.create();
-	SortableTableColumn.instances[SortableTableColumn.instances.length] = this;
 }
 SortableTableColumn.prototype = {
 	create : function() {
@@ -121,24 +120,8 @@ SortableTableColumn.prototype = {
 		elt.className = elt.className.replace(/\bsortable-table-column-sorted-(up|down)\b/g, " ");
 	}
 };
-SortableTableColumn.instances = [];
 SortableTableColumn._cancelEvent = function(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
 }
-SortableTableColumn.enableScriptSheet = function() {
-	SortableTableColumn.disableScriptSheet();
-	var hdrs = document.getElementsByTagName("th");
-	for(var h=0;h<hdrs.length;h++) {
-		if(hdrs[h].className.match(/\bsortable\b/)) {
-			new SortableTableColumn(hdrs[h]);
-		}
-	}
-};
-SortableTableColumn.disableScriptSheet = function() {
-	var i, inst;
-	for(i=0; (inst=SortableTableColumn.instances[i]); i++) {
-		inst.destroy();
-	}
-	SortableTableColumn.instances = [];
-};
+SortableTableColumn.scriptSheetSelector = "th.sortable";

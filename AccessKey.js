@@ -1,13 +1,15 @@
+/*
+**  AccessKey script by Jason Johnston (jj@lojjic.net)
+**  Created January 2003.  Use freely, but give me credit.
+**
+**  This script will place <em class="accesskey"></em> 
+**  around the first occurrence of a link's accesskey.
+*/
 
-// Include this script to automatically place <em class="accesskey"></em> 
-// around the (first occurrence of the) appropriate letter on links with accesskeys.
 
-
-function AccessKey(elt,key) {
+function AccessKey(elt) {
 	this.element = elt;
-	this.key = key;
 	this.create();
-	AccessKey.instances[AccessKey.instances.length] = this;
 }
 AccessKey.prototype = {
 	create : function() {
@@ -37,7 +39,7 @@ AccessKey.prototype = {
 			}
 			return false;
 		}
-		checkNode(this.element,this.key);
+		checkNode(this.element, this.element.getAttribute("accesskey"));
 	},
 	destroy : function() {
 		var wrap = this.keyWrapper;
@@ -49,17 +51,4 @@ AccessKey.prototype = {
 		par.replaceChild(document.createTextNode(bef.nodeValue + wrap.firstChild.nodeValue + aft.nodeValue), wrap);
 	}
 };
-AccessKey.instances = [];
-AccessKey.enableScriptSheet = function() {
-	AccessKey.disableScriptSheet();
-	var lnks = document.getElementsByTagName("a");
-	for(var i=0; i<lnks.length; i++) {
-		var key = lnks[i].getAttribute("accesskey");
-		if(key) new AccessKey(lnks[i],key);
-	}
-};
-AccessKey.disableScriptSheet = function() {
-	var i, obj;
-	for(i=0; (obj=AccessKey.instances[i]); i++) obj.destroy();
-	AccessKey.instances = [];
-};
+AccessKey.scriptSheetSelector = "a[accesskey]";

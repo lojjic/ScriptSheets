@@ -15,8 +15,6 @@ TODO:
 function PopupCalendar(elt) {
 	this.element = elt;
 	this.create();
-	var i=PopupCalendar.instances;
-	i[i.length] = this;
 }
 PopupCalendar.prototype = {
 	create : function() {
@@ -34,23 +32,7 @@ PopupCalendar.prototype = {
 		this.button.parentNode.removeChild(this.button);
 	}
 };
-PopupCalendar.instances = [];
-PopupCalendar.enableScriptSheet = function() {
-	PopupCalendar.disableScriptSheet(); //prevent double-enabling
-	var flds = document.getElementsByTagName("input");
-	for(var i=0; i<flds.length; i++) {
-		if(flds[i].type=="text" && flds[i].className.match(/\bdate\b/)) {
-			new PopupCalendar(flds[i]);
-		}
-	}
-};
-PopupCalendar.disableScriptSheet = function() {
-	var i, inst;
-	for(i=0; (inst=PopupCalendar.instances[i]); i++) {
-		inst.destroy();
-	}
-	PopupCalendar.instances = [];
-};
+PopupCalendar.scriptSheetSelector = "input[type=text].date";
 
 
 

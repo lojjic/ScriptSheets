@@ -11,8 +11,6 @@
 function TitleTip(elt) {
 	this.element = elt;
 	this.create();
-	var i=TitleTip.instances;
-	i[i.length] = this;
 }
 TitleTip.prototype = {
 	create : function() {
@@ -22,19 +20,7 @@ TitleTip.prototype = {
 		this.element.removeEventListener("mouseover", this.mouseOverHandler, false);
 	}
 };
-TitleTip.instances = [];
-TitleTip.enableScriptSheet = function() {
-	TitleTip.disableScriptSheet();
-	var elts = document.all || document.getElementsByTagName("*");
-	var i, elt;
-	for(i=0; (elt=elts[i]); i++) 
-		if(elt.getAttribute("title")) new TitleTip(elt);
-};
-TitleTip.disableScriptSheet = function() {
-	var i, inst;
-	for(i=0; (inst=TitleTip.instances[i]); i++) inst.destroy();
-	TitleTip.instances = [];
-}
+TitleTip.scriptSheetSelector = "*[title]";
 
 
 
