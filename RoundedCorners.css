@@ -1,0 +1,5 @@
+.rounded-corner {width:12px; height:12px;}
+.top-left     {margin:-1px 0 0 -1px; background:url(assets/corner-tl.gif);}
+.top-right    {margin:-1px -1px 0 0; background:url(assets/corner-tr.gif);}
+.bottom-left  {margin:0 0 -1px -1px; background:url(assets/corner-bl.gif);}
+.bottom-right {margin:0 -1px -1px 0; background:url(assets/corner-br.gif);}
