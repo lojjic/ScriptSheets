@@ -67,8 +67,10 @@ function ColorPickerPopup(evt,position,tgtField) {
 ColorPickerPopup.prototype = new PopupObject("color-picker"); //inherit from base PopupObject class
 //extend the prototype:
 ColorPickerPopup.prototype.buildSwatches = function() {
-	var i, j, k;
+	var i, j, k, table, row, cell;
 	var columns = 18;
+	
+	//Build list of colors:
 	var hex = ["0","3","6","9","C","F"];
 	var colors = [];
 	for(i=0; i<hex.length; i++) {
@@ -79,19 +81,39 @@ ColorPickerPopup.prototype.buildSwatches = function() {
 		}
 	}
 	
-	var thisRef = this;
-	var table = document.createElement("table");
+	//Build color table:
+	table = document.createElement("table");
 	for(i=0; i<colors.length; i+=columns) {
-		var row = document.createElement("tr");
+		row = document.createElement("tr");
 		for(j=i; j<i+columns; j++) {
-			var cell = document.createElement("td");
-			cell.style.backgroundColor = cell.color = colors[j];
-			if(cell.color == this.field.value) cell.className = "color-picker-selected";
-			cell.addEventListener("mouseover", function(evt){window.status = "#"+this.color;}, false);
-			cell.addEventListener("click", function(evt){thisRef.field.value = this.color; thisRef.destroy();}, false);
-			row.appendChild(cell);
+			var swatch = new ColorPickerSwatch(colors[j],this);
+			swatch.appendTo(row);
 		}
 		table.appendChild(row);
 	}
 	this.popupNode.appendChild(table);
+};
+
+
+//A single swatch:
+function ColorPickerSwatch(color, picker) {
+	this.color = color;
+	this.picker = picker;
+	this.create();
+}
+ColorPickerSwatch.prototype = {
+	create : function() {
+		var thisRef = this;
+		var cell = this.cell = document.createElement("td");
+		cell.title = "#" + (cell.style.backgroundColor = this.color);
+		if(this.color==this.picker.field.value) cell.className = "color-picker-selected";
+		cell.addEventListener("click", function(evt){thisRef.onClick(evt);}, false);
+	},
+	onClick : function(evt) {
+		this.picker.field.value = this.color; 
+		this.picker.destroy();
+	},
+	appendTo : function(elt) {
+		elt.appendChild(this.cell);
+	}
 };
