@@ -76,6 +76,7 @@ TextSizeControl.prototype = {
 		if(size > this.maxSize) size = this.maxSize;
 		
 		// set style:
+		var bod = document.body;
 		document.body.style.fontSize = size + "px";
 		
 		// set state of UI controls, in all instances:
@@ -86,8 +87,12 @@ TextSizeControl.prototype = {
 			inst.increaseButton.disabled = (size == inst.maxSize);
 		}
 		
+		// force refresh:
+		document.documentElement.replaceChild(bod, bod);
+		
 		if(window.Cookie) {
 			var cookie = new Cookie("fontSize");
+			cookie.setPath("/");
 			cookie.setValue(size);
 			cookie.setLifespan(60*60*24*365);
 		}
