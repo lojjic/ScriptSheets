@@ -41,6 +41,7 @@ function OSXBar(elt, edge, minSize, maxSize, spacing, reach) { //only elt is req
 	this.iconSpacing = parseInt(spacing) || 12; // space between icons (pixels).
 	this.scaleReach  = parseInt(reach)   || 7;  // "gradualness" of the scaling - larger number gives smoother curve.
 	this.create();
+	OSXBar.instances[OSXBar.instances.length] = this;
 }
 OSXBar.prototype = {
 	scaled : false,
@@ -121,6 +122,7 @@ OSXBar.prototype = {
 			s.height = h + "px"; s.width = w + "px";
 	}
 };
+OSXBar.instances = [];
 
 
 
