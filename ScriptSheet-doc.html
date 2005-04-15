@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>ScriptSheet.js Documentation</title>
+	<style type="text/css">
+	body {font-family:sans-serif; padding:0; margin:.5em 2em;}
+	h1 {font-size:1.5em; font-weight:bold; border-bottom:3px double; padding-bottom:.5em;}
+	h2 {font-size:1.2em; font-weight:bold; background:#EEE; padding:0 .5em; border:1px solid #CCC;}
+	h3 {font-size:1em; font-weight:bold;}
+	p, ul {margin-bottom:1em;}
+	code.block {display:block;}
+	</style>
+</head>
+<body>
+
+<h1>ScriptSheet.js Documentation</h1>
+
+<h2>What It Does:</h2>
+<p>Cascading Style Sheets (CSS) allow for a highly elegant separation of content and presentation; you can specify multiple alternate style sheets to switch between, and even turn off all styles altogether. However, CSS is limited in the complexity of style it can handle; it can't can't manipulate the DOM, perform complex logic or calculations, or provide a high level of user interaction.</p>
+<p>JavaScript in current-day browsers, however, has none of these limitations. But there is currently no standardized<strong>*</strong> mechanism for applying scripts as an independent presentation layer. The ScriptSheet framework is such a layer; it allows scripts to be used to style elements in complex ways, and perhaps more importantly for those same styles to be completely removed, allowing style switching. A page author can specify alternate ScriptSheet styles in the same manner he would specify alternate CSS styles.</p>
+<p>Also included is a StyleChooser widget, which dynamically creates a selection field that allows the user to choose between alternate styles. The user's selection can be remembered between visits.</p>
+<p><strong>*</strong><em>MSIE and Mozilla both have their proprietary technologies: MSIE has <a href="http://msdn.microsoft.com/workshop/author/dhtml/reference/properties/behavior_1.asp">behaviors</a> and Mozilla has <a href="http://mozilla.org/projects/xbl/xbl.html"><acronym title="eXtensible Binding Language">XBL</acronym></a>, but neither are standardized or work in other browsers. Therefore they are not viable options for cross-browser development.</em></p>
+
+
+<h2>How To Use It:</h2>
+
+<h3>Applying a ScriptSheet to an HTML document:</h3>
+<p>There are two steps required to apply a ScriptSheet script to an HTML document:</p>
+<ol>
+	<li>Use a <code>&lt;script&gt;</code> element to import the external .js file containing the ScriptSheet script. This just makes the browser load and parse the script; the script isn't actually run yet.</li>
+	<li>Use a <code>&lt;link rel="scriptsheet"&gt;</code> element to specify how the ScriptSheet is applied to the document. This follows the <a href="http://www.w3.org/TR/html401/present/styles.html#h-14.3.1">rules for applying CSS stylesheets to HTML documents</a>, particularly in regards to specifying alternate styles with the <code>title</code> attribute. Since a JavaScript function does not have its own URL, use <samp>path/to/scriptfile.js#FunctionName</samp> for the <code>href</code> to specify the ScriptSheet function to apply. An example:</li>
+</ol>
+<pre><code>&lt;html>
+  &lt;head>
+    &lt;script type="text/javascript" src="TheScript.js">&lt;/script>
+    &lt;link rel="scriptsheet" type="text/javascript" 
+      href="TheScript.js#TheScript" title="Name of the Style" />
+  &lt;/head>
+  &lt;body>
+    ...
+  &lt;/body>
+&lt;/html></code></pre>
+
+
+<h3>Using the StyleChooser widget:</h3>
+<pre><code>var chooser = new StyleChooser();
+chooser.appendTo(parentElement); //or:
+chooser.insertBefore(siblingElement);</code></pre>
+<p>This StyleChooser is similar to other widgets, except that it is designed to work with the ScriptSheet framework in addition to CSS stylesheets. You can use multiple StyleChooser widgets within a single document; a change in one will update the selection of the others.</p>
+
+<h3>Creating your own ScriptSheet script:</h3>
+<p>On the most basic level, a ScriptSheet is simply a Function object (JavaScript's version of a Class) with three characteristics:</p>
+<ol>
+	<li>Its constructor takes an Element node reference as its first (and probably only) argument, and when instantiated it performs all the styling and DOM manipulation on that Element.</li>
+	<li>It gives each of its instances a <code>destroy()</code> method which undoes everything that was done when the instance was created. This allows side-effect-free unassigning of the style and switching between styles.</li>
+	<li>It has a <code>scriptSheetSelector</code> property which is set to a CSS selector string describing which elements to apply the style to (see the CSS selectors spec for details). The following selectors are supported: universal, element, id, class, attribute, descendant, child, and following-sibling selectors, and the comma separator for specifying multiple selectors.</li>
+</ol>
+<p>Here is a simple example of a complete ScriptSheet script that shows any element with a "duplicate-me" class twice:</p>
+<pre><code>function Duplicated(elt) {
+  this.element = elt;
+  this.create();
+}
+Duplicated.prototype = {
+  create : function() {  //apply the style:
+    this.dupe = this.element.cloneNode(true);
+    this.element.parentNode.insertBefore(this.dupe, this.element);
+  },
+  destroy : function() {  //undo everything:
+    this.element.parentNode.removeChild(this.dupe);
+	this.dupe = this.element = null;
+  }
+};
+Duplicated.scriptSheetSelector = ".duplicate-me";</code></pre>
+
+
+<h2>What It Depends On:</h2>
+<ul>
+	<li>IEtoW3C.js or IEtoW3C-loader.js (required for MSIE) - used to make MSIE understand DOM2 Events methods</li>
+	<li>Cookie.js (optional) - allows the script to remember the chosen style between visits</li>
+</ul>
+
+<h2>Compatibility:</h2>
+<p>Known to work in Mozilla (and derivatives) on any platform and MSIE 5.0+ on Windows.</p>
+
+<h2>Demonstration:</h2>
+<ul>
+	<li><a href="ScriptSheet-test.html">ScriptSheet-test.html</a></li>
+</ul>
+
+<h2>To Do:</h2>
+<ul>
+	<li>Add support for additional browser platforms such as KHTML/Safari and Opera.</li>
+	<li>Add support for additional selectors.</li>
+	<li>Remove dependency on Cookie.js since we don't need all its advanced capability.</li>
+</ul>
+	
+<h2>Known Issues:</h2>
+<ul>
+	<li>Not all specifics of CSS selectors are supported, such as comments, escaped strings, and pseudoclasses/pseudoelements. See above for which selectors are supported.</li>
+</ul>
+
+<h2>License:</h2>
+<p>This work is licensed for use under the Creative Commons Attribution-NonCommercial-ShareAlike license. In summary, you may freely use, modify, and distribute this work as long as:</p>
+<ul>
+	<li>You give me (Jason Johnston) credit,</li>
+	<li>You do not use this work for commercial purposes, and</li>
+	<li>Any redistribution of this or derivative works is made available under a license identical to this one.</li>
+</ul>
+<p>Before using this work please read the full license at <a href="http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode">http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode</a>.</p>
+
+</body>
+</html>
