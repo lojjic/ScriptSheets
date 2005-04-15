@@ -29,7 +29,7 @@ ImageShadow.prototype = {
 		this.shadows = [];
 		
 		//shortcut to get comp. style:
-		var cS = function(prop) {return getComputedStyle(img, null).getPropertyValue(prop);}
+		var cS = function(prop) {return document.defaultView.getComputedStyle(img, null).getPropertyValue(prop);}
 
 		var imgPos = cS("position");
 			if(!imgPos) return; //this script is pretty useless if getComputedStyle not supported, like Opera

@@ -196,6 +196,6 @@ ThrowableObject.prototype = {
 		this.move();
 	},
 	getLength : function(elt,prop) { //utility to get current computed lengths
-		return parseFloat(getComputedStyle(elt,null).getPropertyValue(prop));
+		return parseFloat(document.defaultView.getComputedStyle(elt,null).getPropertyValue(prop));
 	}
 };
