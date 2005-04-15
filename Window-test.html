@@ -6,6 +6,9 @@
 <script type="text/javascript">
 
 window.addEventListener("load", function() {
+	//From elements with class="window":
+	Window.enableScriptSheet();
+
 	//Title from element within content element:
 	new Window(document.getElementById("one"), document.getElementById("one").getElementsByTagName("h1")[0], 200, 200, 20, 20);
 	
@@ -29,7 +32,7 @@ window.addEventListener("load", function() {
 <style type="text/css">
 
 html, body {font-family:Verdana,Arial,sans-serif; font-size:12px;}
-.window {position:absolute; border:2px outset #FFF; background:#EEE;}
+.window-container {position:absolute; border:2px outset #FFF; background:#EEE;}
 .window-content {border:2px inset #FFF; overflow:auto; padding-left:4px;}
 .window-title-bar {margin:0; padding:.25em 1em; margin:0; background:#009; color:#FFF; font-weight:bold; cursor:default; white-space:nowrap; -moz-user-select:none;}
 .window-resizer {position:absolute; right:-5px; bottom:-5px; width:16px; height:16px; border:solid #666; border-width:0 1px 1px 0; cursor:se-resize;}
@@ -56,6 +59,13 @@ h1 {font-size:1em; margin:0; padding:0;}
 		<p>The 3rd Infantry's 1st and 3rd Brigades took Karbala with little effort, Army sources told Rodgers. The 1st Brigade faced only a few tanks and some mortars as it moved through town. The 3rd Brigade came in behind the 1st to secure the city. </p>
 	</div>
 	
+	<div class="window">
+		<p>A statement attributed to Iraqi President Saddam Hussein was read on Iraqi television Wednesday, urging Iraqis to defend their towns. Saddam did not appear.</p>
+		<p>"Victory is at hand, God willing, although we have only utilized a third or less of our army while the criminals have used everything they brought in," a statement read by an Iraqi television announcer said. "Their failure was manifested and victory is glowing, God willing."</p>
+		<p>POW rescued; bodies found</p>
+		<p>U.S. forces launched a pre-dawn raid Wednesday to rescue an Army prisoner of war, who was being held at a Nasiriya hospital used as an Iraqi military post.</p>
+	</div>
+	
 	<h1 id="twoTitle">Window Number Two</h1>
 	<div id="two">
 		<p>A statement attributed to Iraqi President Saddam Hussein was read on Iraqi television Wednesday, urging Iraqis to defend their towns. Saddam did not appear.</p>
@@ -69,6 +79,12 @@ h1 {font-size:1em; margin:0; padding:0;}
 		<p>Central Command said 11 bodies also were discovered at the Nasiriya hospital. It's not clear if the bodies are those of U.S. soldiers. The military is trying to identify the bodies. 	</p>
 	</div>
 
+	<div class="window">
+		<p>"For the enemy invaders of Iraq, it soon will get truly hot in here," Hussein said in the speech, which was televised worldwide Monday. "No amount of clothing removal will be sufficient to withstand the fiery inferno that awaits them on the battlefield."</p>
+		<p>Many U.S. officials have speculated that Saddam may have been killed or injured in the initial March 19 air attacks on Baghdad, suggesting that his subsequent televised speeches were recorded weeks or even months ago.</p>
+		<p>"The 'hot in here' line has definitely raised some eyebrows," CIA director George Tenet said. "However, this may not prove anything: Even though that song is nine months old, you still hear people referencing its chorus all the time. It's even in the new Chris Rock movie."</p>
+	</div>
+	
 	<div id="three">
 		<p>LANGLEY, VA—The CIA announced Monday that it suspects Saddam Hussein's latest televised address was pre-recorded, pointing to its suspiciously dated reference to Nelly's "Hot In Herre," a rap hit from the summer of 2002.</p>
 		<p>Above: In a message believed to be pre-taped, Saddam warns the U.S. about rising heat levels in Iraq.</p>

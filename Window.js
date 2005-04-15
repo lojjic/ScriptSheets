@@ -28,7 +28,7 @@ new Window(contentElement, titleElement, width, height, xPosition, yPosition, zI
 	
 ==Example Styles:==
 <style type="text/css">
-.window {position:absolute; border:2px outset #FFF; background:#EEE;}
+.window-container {position:absolute; border:2px outset #FFF; background:#EEE;}
 .window-content {border:2px inset #FFF; overflow:auto; padding-left:4px;}
 .window-title-bar {margin:0; padding:.25em 1em; margin:0; background:#009; color:#FFF; font-weight:bold; cursor:default; white-space:nowrap; -moz-user-select:none;}
 .window-resizer {position:absolute; right:-5px; bottom:-5px; width:16px; height:16px; border:solid #666; border-width:0 1px 1px 0; cursor:se-resize;}
@@ -40,12 +40,15 @@ new Window(contentElement, titleElement, width, height, xPosition, yPosition, zI
 
 function Window(contentElt, titleElt, w, h, x, y, z) {
 	// Freaks out Mac IE: // if(!(this instanceof Window)) return new Window(elt, title);
+	this.content = contentElt;
+	this.title = titleElt;
 	this.windowW = w;
 	this.windowH = h;
 	this.windowX = x;
 	this.windowY = y;
 	this.windowZ = z;
-	this.init(contentElt, titleElt);
+	this.create();
+	Window.instances[Window.instances.length] = this;
 }
 Window.minWidth  = 100;
 Window.minHeight = 100;
@@ -53,12 +56,12 @@ Window.topZIndex = 0;
 Window.instances = [];
 
 Window.prototype = {
-	init : function(contentElt, titleElt) {
+	create : function(contentElt, titleElt) {
 		var elt = this.element = document.createElement("div");
-		var thisRef = this;		
+		var thisRef = this;
 
 		//Make it positioned:
-		elt.className = "window";
+		elt.className = "window-container";
 		elt.style.position = "absolute";
 		elt.style.left = (this.windowX || 0) + "px";
 		elt.style.top  = (this.windowY || 0) + "px";
@@ -72,7 +75,7 @@ Window.prototype = {
 		//Create title bar:
 		var titlebar = document.createElement("div");
 			titlebar.className = "window-title-bar";
-			titlebar.appendChild(titleElt);
+			titlebar.appendChild(this.title || document.createTextNode("Window"));
 			titlebar.addEventListener("mousedown", function(evt){thisRef.startDrag(evt);}, false);
 			titlebar.onselectstart = titlebar.ondragstart = function(){return false;} //prevent text selection
 		elt.appendChild(titlebar);
@@ -88,14 +91,14 @@ Window.prototype = {
 		Window.instances[Window.instances.length] = this;
 
 		//Make window content a child of the new wrapper element:
-		contentElt.className += " window-content";
-		with (contentElt.style) {
+		this.content.className += " window-content";
+		with (this.content.style) {
 			position = "absolute";
 			left = right = bottom = "0"; top = "20px";
 		}
 			//Hack to make height adjust to container in IE:
-			if(contentElt.style.setExpression) contentElt.style.setExpression("height", "parseFloat(" + elt.uniqueID + ".style.height) - 20");
-		this.element.appendChild(contentElt);
+			if(this.content.style.setExpression) this.content.style.setExpression("height", "parseFloat(" + elt.uniqueID + ".style.height) - 20");
+		this.element.appendChild(this.content);
 		(document.getElementsByTagName("body")[0] || document.documentElement).appendChild(this.element);
 		
 		//Make sure it's not overlapping:
@@ -217,18 +220,18 @@ Window.prototype = {
 	
 	//Utilities to get properties, dimensions:
 	getLength : function(prop) {
-		return parseFloat(window.getComputedStyle(this.element,null).getPropertyValue(prop));
+		return parseFloat(document.defaultView.getComputedStyle(this.element,null).getPropertyValue(prop));
 	},	
 	getWidth : function() {
 		return this.element.offsetWidth || ( this.getLength("width") + 
 			this.getLength("padding-left") + this.getLength("padding-right") +
-			this.getLength("border-left-width") + this.getLength("border-right-width")		
+			this.getLength("border-left-width") + this.getLength("border-right-width")
 		);
 	},	
 	getHeight : function() {
 		return this.element.offsetHeight || ( this.getLength("height") + 
 			this.getLength("padding-top") + this.getLength("padding-bottom") +
-			this.getLength("border-top-width") + this.getLength("border-bottom-width")		
+			this.getLength("border-top-width") + this.getLength("border-bottom-width")
 		);
 	},
 	getMouseX : function(evt) {
@@ -236,5 +239,22 @@ Window.prototype = {
 	},
 	getMouseY : function(evt) {
 		return evt.pageY || (evt.clientY + (window.scrollY || document.body.scrollTop));
+	},
+	
+	destroy : function() {
+	
 	}
+};
+Window.instances = [];
+Window.enableScriptSheet = function() {
+	var all = document.getElementsByTagName("*");
+	for(var i=0; i<all.length; i++) {
+		if(all[i].className && 
+		   all[i].className.match(/^(.*\s)?window(\s.*)?$/) && // has class="window"
+		   !all[i].className.match(/^(.*\s)?window-content(\s.*)?$/) // but not already used in a Window
+		) new Window(all[i]);
+	}
+};
+Window.disableScriptSheet = function() {
+	
 };
