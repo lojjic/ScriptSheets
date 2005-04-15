@@ -12,27 +12,40 @@ function RoundedCorners(elt) {
 }
 RoundedCorners.prototype = {
 	create : function() {
+		var i, c, props;
 		var elt = this.element;
 		this.corners = [];
 		
-		var eltPos = getComputedStyle(elt, null).getPropertyValue("position");
-			if(!eltPos) return; //this script is pretty useless if getComputedStyle not supported, like Opera
-		if(eltPos == "static") elt.style.position = "relative"; //make container
-
-		var props = [["top","left"],["top","right"],["bottom","left"],["bottom","right"]];
-		for(var i in props) {
-			var c = this.corners[this.corners.length] = document.createElement("span");
-			c.className = "rounded-corner " + props[i][0] + "-" + props[i][1];
-			c.style.position = "absolute";
-			for(var j in props[i]) c.style[props[i][j]] = "0px";
-			elt.appendChild(c);
+		function gCS(prop) {
+			return document.defaultView.getComputedStyle(elt, null).getPropertyValue(prop);
 		}
 		
+		//create inner container
+		var inner = this.inner = document.createElement("div");
+			props = ["top","left","bottom","right"];
+			for(i in props) inner.style["padding" + props[i].charAt(0).toUpperCase() + props[i].substring(1)] = gCS("padding-" + props[i]);
+			elt.style.padding = "0px";
+		while(elt.lastChild) inner.appendChild(elt.lastChild);
+		
+		//create corners
+		props = [["top","left"],["top","right"],["bottom","left"],["bottom","right"]];
+		for(i=0; i<props.length; i++) {
+			c = this.corners[i] = document.createElement("div");
+			c.className = "rounded-corner " + props[i][0] + "-" + props[i][1];
+			(i==0 ? elt : this.corners[i-1]).appendChild(c);
+		}
+		this.corners[props.length-1].appendChild(inner);
+		elt.appendChild(this.corners[0]);
+
+
 	},
 	destroy : function() {
 		var elt = this.element;
-		for(var i in this.corners) elt.removeChild(this.corners[i]);
-		elt.style.position = "";
+		//for(var i in this.corners) elt.removeChild(this.corners[i]);
+		//elt.style.position = "";
+		while(this.inner.lastChild) elt.appendChild(this.inner.lastChild);
+		elt.removeChild(this.corners[0]);
+		elt.style.padding = "";
 	}
 };
 RoundedCorners.scriptSheetSelector = ".rounded-corners";
