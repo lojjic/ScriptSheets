@@ -1,0 +1,33 @@
+<html>
+<head>
+
+<script type="text/javascript" src="IEtoW3C-loader.js"></script>
+<script type="text/javascript" src="PopupObject.js"></script>
+<script type="text/javascript" src="PopupContent.js"></script>
+
+<style type="text/css">
+* {font-family:sans-serif;}
+
+.popup-content {width:200px; border:1px solid; padding:1em; background:#FFF;}
+</style>
+</head>
+
+<body>
+	
+	<h1>Content Popup</h1>
+	
+	<h2>Usage:</h2>
+	<pre><code>new PopupContent(HTMLElement);</code></pre>
+	
+	<h2>See it in action:</h2>
+	<p><input type="button" onclick="new PopupContent(document.getElementById('pop'), event);" value="Click me"></p>
+
+	<p id="pop">This content will be shown in a popup. It is up to the page author to hide it initially if desired.</p>
+
+</body>
+</html>
+
+
+
+
+
