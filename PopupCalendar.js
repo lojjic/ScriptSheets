@@ -5,6 +5,9 @@
 **  Use this script to create a popup calendar widget
 **  for picking a date. If a text field is specified, the
 **  chosen date will be put in that field.
+**
+**  The contents of this file are subject to the Mozilla Public License
+**  Version 1.1.
 */
 
 /*

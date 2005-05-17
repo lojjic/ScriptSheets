@@ -1,3 +1,12 @@
+/*
+**  Cookie script by Jason Johnston (jj@lojjic.net) created July 2003.
+**
+**  This script provides a simple Cookie object for manipulating
+**  browser cookies.
+**
+**  The contents of this file are subject to the Mozilla Public License
+**  Version 1.1.
+*/
 
 
 

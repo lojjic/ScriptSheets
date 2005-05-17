@@ -1,21 +1,14 @@
 /*
 **  ScriptSheet script by Jason Johnston (jj@lojjic.net) created July 2003.
 **
-**  This script provides a framework for creating scripts that are applied 
-**  to documents in a separate CSS-like presentation layer. There is also 
-**  a StyleChooser widget for switching between styles; the preferred 
-**  style choice is persisted. For usage and other details see 
-**  http://lojjic.net/script-library/OSXBar-doc.html
+**  This script provides a framework for creating scripts that are applied
+**  to documents in a separate CSS-like presentation layer. There is also
+**  a StyleChooser widget for switching between styles; the preferred
+**  style choice is persisted. For usage and other details see the
+**  documentation at http://lojjic.net/script-library/ScriptSheet-doc.html
 **
-**  This work is licensed for use under the Creative Commons
-**  Attribution-NonCommercial-ShareAlike license. In summary, you
-**  may freely use, modify, and distribute this work as long as:
-**    - You give me (Jason Johnston) credit,
-**    - You do not use this work for commercial purposes, and
-**    - Any redistribution of this or derivative works is made
-**      available under a license identical to this one.
-**  Before using this work please read the full license at 
-**  http://creativecommons.org/licenses/by-nc-sa/1.0/legalcode
+**  The contents of this file are subject to the Mozilla Public License
+**  Version 1.1; for more details see the documentation file.
 */
 
 function ScriptSheet(title, script) {
