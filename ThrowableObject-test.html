@@ -22,8 +22,7 @@
 </head>
 <body>
 
-<form onsubmit="event.preventDefault();
-				createThrowableObject(
+<form onsubmit="createThrowableObject(
 					this.txtWidth.value,
 					this.txtHeight.value,
 					this.txtPlane.value,
@@ -31,6 +30,7 @@
 					this.txtTextColor.value,
 					this.txtText.value
 				);
+				return false;
 				">
 	<table>
 	<tbody>
