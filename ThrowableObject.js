@@ -47,9 +47,10 @@ MouseTracker.prototype = {
 
 
 
-function ThrowableObject(element,plane) {
+function ThrowableObject(element,plane,container) {
 	this.element = element;
 	this.plane = plane || 0;
+	this.container = container || document.documentElement;
 	this.init();
 }
 ThrowableObject.instances = [];
@@ -82,8 +83,8 @@ ThrowableObject.prototype = {
 		var newY = curY - (this.yVel * this.interval);
 		
 		//cache these calculations as properties for quick reuse:
-		this.width = this.getLength(this.element,"width") + this.getLength(this.element,"padding-left") + this.getLength(this.element,"padding-right");
-		this.height = this.getLength(this.element,"height") + this.getLength(this.element,"padding-top") + this.getLength(this.element,"padding-bottom");
+		this.width = this.width || this.getLength(this.element,"width") + this.getLength(this.element,"padding-left") + this.getLength(this.element,"padding-right");
+		this.height = this.height || this.getLength(this.element,"height") + this.getLength(this.element,"padding-top") + this.getLength(this.element,"padding-bottom");
 
 		//check if colliding with object in same plane:
 		var objs = ThrowableObject.instances;
@@ -123,8 +124,8 @@ ThrowableObject.prototype = {
 			
 		}
 
-		var rightX = this.getLength(document.documentElement,"width") - this.width;
-		var bottomY = this.getLength(document.documentElement,"height") - this.height;
+		var rightX = this.getLength(this.container,"width") - this.width;
+		var bottomY = this.getLength(this.container,"height") - this.height;
 		if(newX < 0) {
 			newX = 0;
 			this.collide("left");
